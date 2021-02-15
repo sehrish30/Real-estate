@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
 const sendinBlue = require("nodemailer-sendinblue-transport");
 
 const transporter = nodemailer.createTransport({
@@ -14,6 +15,14 @@ const transporter = nodemailer.createTransport({
     api: process.env.SENDINBLUE_API,
   },
 });
+
+transporter.use(
+  "compile",
+  hbs({
+    viewEngine: "express-handlebars",
+    viewPath: "../views/",
+  })
+);
 
 /*----------------------------------------
                 REGISTER
@@ -105,22 +114,22 @@ router.post("/reset-password", async (req, res) => {
     user.expireToken = Date.now() + 3600000;
 
     user.save().then((result) => {
-      transporter
-        .sendMail({
-          from: 'sehrishwaheed98@gmail.com"', // sender address
-          to: user.email, // list of receivers
-          subject: "Iconic Real Estate ✔", // Subject line
-          html: `<div>
-                  <h1 style={{color: "#214151"}}>Change Password</h1>
-                  <p style={{backgroundColor: "#214151" color: "f8dc81" padding: "3rem"}}>
-                   Your code is ${code}
-                  </p>
-               </div>`, // html body
-        })
-        .then((res) => console.log("Successfully sent"))
-        .catch((err) => console.log("Failed", err));
+      let mailOptions = {
+        from: "sehrishwaheed98@gmail.com",
+        to: user.email,
+        subject: "Iconic Real Estate ✔",
+        template: "index",
+        context: {
+          code: code,
+        },
+      };
 
-      res.status(200).send(`Please check your email ${token}`);
+      transporter.sendMail(mailOptions, (err, data) => {
+        if (err) {
+          return res.status(401).send("Error occurs");
+        }
+        return res.status(200).send("Email sent!!!");
+      });
     });
   } catch (err) {
     res.status(404).json({ error: err });
