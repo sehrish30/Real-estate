@@ -3,6 +3,18 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const sendinBlue = require("nodemailer-sendinblue-transport");
+
+const transporter = nodemailer.createTransport({
+  service: "SendinBlue", // no need to set host or port etc.
+  auth: {
+    user: process.env.SENDINBLUE_USER,
+    pass: process.env.SENDINBLUE_PW,
+    api: process.env.SENDINBLUE_API,
+  },
+});
+
 /*----------------------------------------
                 REGISTER
 ----------------------------------------- */
@@ -61,6 +73,119 @@ router.post("/login", async (req, res) => {
   } catch (e) {
     return res.status(500).send(e);
   }
+});
+
+/*----------------------------------------
+            RESET PASSWORD
+----------------------------------------- */
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    const secret = process.env.SECRET;
+    if (!user) {
+      return res.status(400).send("No user with this email");
+    }
+    const code = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+    // Generate token for user after user email exists and password matches
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        isAdmin: user.isAdmin,
+        code,
+      },
+      secret,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    user.resetToken = token;
+    // Valid for 1 hr
+    user.expireToken = Date.now() + 3600000;
+
+    user.save().then((result) => {
+      transporter
+        .sendMail({
+          from: 'sehrishwaheed98@gmail.com"', // sender address
+          to: user.email, // list of receivers
+          subject: "Iconic Real Estate ✔", // Subject line
+          html: `<div>
+                  <h1 style={{color: "#214151"}}>Change Password</h1>
+                  <p style={{backgroundColor: "#214151" color: "f8dc81" padding: "3rem"}}>
+                   Your code is ${code}
+                  </p>
+               </div>`, // html body
+        })
+        .then((res) => console.log("Successfully sent"))
+        .catch((err) => console.log("Failed", err));
+
+      res.status(200).send(`Please check your email ${token}`);
+    });
+  } catch (err) {
+    res.status(404).json({ error: err });
+  }
+});
+
+router.post("/enter-password", (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+
+    const token = authHeader && authHeader.split(` `)[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Missing token" });
+    }
+
+    const user = {};
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      User.findOne({
+        resetToken: token,
+        expireToken: { $gt: Date.now() },
+      }).then((user) => {
+        if (!user) {
+          return res.status(401).send("Try again Session expired");
+        }
+
+        // has password and save it
+        const hashedPassword = bcrypt.hashSync(req.body.password, 14);
+
+        user.password = hashedPassword;
+        user.resetToken = undefined;
+        user.expireToken = undefined;
+        user.save().then((savedUser) => {
+          res.status(200).send("User updated succcessfully");
+        });
+      });
+    });
+  } catch (e) {
+    res.status(400).send("Something is wrong on our end");
+  }
+});
+
+router.post("/check-code", async (req, res) => {
+  const authHeader = req.headers["authorization"];
+
+  const token = authHeader && authHeader.split(` `)[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Missing token" });
+  }
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: err });
+    }
+    const { code } = decoded;
+    console.log(code, req.body.code);
+    if (Number(code) == Number(req.body.code)) {
+      res.status(200).send(true);
+    } else {
+      return res.status(401).send(false);
+    }
+  });
 });
 
 module.exports = router;
