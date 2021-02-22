@@ -7,7 +7,6 @@ import {
   SafeAreaView,
   Dimensions,
   Platform,
-  Alert,
 } from "react-native";
 
 import { xorBy } from "lodash";
@@ -19,8 +18,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Header } from "react-native-elements";
 import SelectBox from "react-native-multi-selectbox";
-import { items } from "../../Shared/Cities";
 import { catgeories } from "../../Shared/Categories";
+import Dialog from "react-native-dialog";
+
+import { items } from "../../Shared/Cities";
+
 import { Button, Image } from "react-native-elements";
 
 var { width, height } = Dimensions.get("window");
@@ -30,25 +32,6 @@ const RegisterAgent = ({ navigation }) => {
     navigation.toggleDrawer();
   };
 
-  const requestCameraPermission = async () => {
-    if (Platform.OS === "android") {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: "Camera Permission",
-            message: "App needs camera permission",
-          }
-        );
-        // If CAMERA Permission is granted
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
-      } catch (err) {
-        console.warn(err);
-        return false;
-      }
-    } else return true;
-  };
-
   // FORM STATES
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -56,6 +39,8 @@ const RegisterAgent = ({ navigation }) => {
   const [locations, setLocations] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [category, setCategory] = useState("");
 
   const deleteImage = (index) => {
     console.log("delet");
@@ -78,6 +63,12 @@ const RegisterAgent = ({ navigation }) => {
     })();
   }, [attachments]);
 
+  useLayoutEffect(() => {
+    if (category) {
+      setVisible(false);
+    }
+  });
+
   function onMultiChange() {
     return (item) => setLocations(xorBy(locations, [item], "id"));
   }
@@ -93,8 +84,9 @@ const RegisterAgent = ({ navigation }) => {
     if (!result.cancelled) {
       const uri = result.uri;
       setAttachments((prev) => {
-        return [...prev, { uri }];
+        return [...prev, { uri, category: category.item }];
       });
+      setCategory("");
     }
 
     let localUri = result.uri;
@@ -103,28 +95,15 @@ const RegisterAgent = ({ navigation }) => {
     // Infer the type of the image
     let match = /\.(\w+)$/.exec(filename);
     let type = match ? `image/${match[1]}` : `image`;
-    console.log(filename);
-    console.log(match, type);
 
-    Alert.alert(
-      "Alert Title",
-      "My Alert Msg",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ],
-      { cancelable: false }
-    );
+    // const handleCancel = () => {
+    //   setVisible(false);
+    // };
 
     // Upload the image using the fetch and FormData APIs
     let formData = new FormData();
     // Assume "photo" is the name of the form field the server expects
     formData.append("photo", { uri: localUri, name: filename, type });
-
     // return await fetch(YOUR_SERVER_URL, {
     //   method: 'POST',
     //   body: formData,
@@ -134,22 +113,19 @@ const RegisterAgent = ({ navigation }) => {
     // });
   };
 
-  function onChange() {
-    Alert.alert(
-      "Alert Title",
-      "My Alert Msg",
-      [
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel",
-        },
-        { text: "OK", onPress: () => console.log("OK Pressed") },
-      ],
-      { cancelable: false }
-    );
-    // return (val) => setSelectedTeam(val);
-  }
+  useLayoutEffect(() => {
+    if (category) {
+      pickImage();
+    }
+  }, [category]);
+
+  const onChange = () => {
+    return (val) => setCategory(val);
+  };
+
+  const showDialog = () => {
+    setVisible(true);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -209,6 +185,7 @@ const RegisterAgent = ({ navigation }) => {
           />
           <Input
             label="Phone"
+            keyboardType={"numeric"}
             leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
             onChangeText={(value) => setPhone(value)}
             value={phone}
@@ -241,7 +218,7 @@ const RegisterAgent = ({ navigation }) => {
               titleStyle={styles.buttonStyle}
               buttonStyle={styles.addAttachment}
               title="Add attachments"
-              onPress={pickImage}
+              onPress={showDialog}
               loading={loading}
               type="outline"
               icon={
@@ -254,30 +231,75 @@ const RegisterAgent = ({ navigation }) => {
               }
             />
 
-            <SelectBox
-              label="Select single"
-              options={catgeories}
-              value={locations}
-              onChange={onChange()}
-              hideInputFilter={false}
-            />
+            <View style={styles.dialogbackground}>
+              <Dialog.Container
+                headerStyle={styles.dialogbackground}
+                contentStyle={styles.dialog}
+                footerStyle={styles.dialogbackground}
+                visible={visible}
+              >
+                <Dialog.Title>Choose Category for your image</Dialog.Title>
+                <SelectBox
+                  label="Select single"
+                  options={catgeories}
+                  value={category}
+                  onChange={onChange()}
+                  hideInputFilter={false}
+                  arrowIconColor="#f8dc81"
+                  searchIconColor="#f8dc81"
+                  toggleIconColor="#f8dc81"
+                  inputFilterContainerStyle={{
+                    backgroundColor: "#f8dc81",
+                  }}
+                  optionsLabelStyle={{
+                    color: "#214151",
+                    paddingLeft: 10,
+                    backgroundColor: "#f8dc81",
+                  }}
+                  optionContainerStyle={{
+                    backgroundColor: "#f8dc81",
+                  }}
+                />
+              </Dialog.Container>
+            </View>
 
             <View style={styles.image}>
               {attachments.length > 0 &&
-                attachments.map((image, index) => (
-                  <Image
-                    key={index}
-                    onLongPress={() => deleteImage(index)}
-                    transition
-                    containerStyle={{ borderColor: "red" }}
-                    source={{
-                      uri: image.uri,
-                    }}
-                    style={{ width: 50, height: 50 }}
-                  />
+                attachments.map((attach, index) => (
+                  <View style={styles.imageSlide}>
+                    <Image
+                      key={index}
+                      onLongPress={() => deleteImage(index)}
+                      transition
+                      containerStyle={{ borderColor: "red" }}
+                      source={{
+                        uri: attach.uri,
+                      }}
+                      style={{ width: 50, height: 50 }}
+                    />
+                    <Text
+                      style={[
+                        styles.buttonStyle,
+                        { marginTop: 15, paddingLeft: 10 },
+                      ]}
+                    >
+                      {attach.category}
+                    </Text>
+                    <Icon
+                      style={styles.iconImage}
+                      onPress={deleteImage(index)}
+                      name="trash-outline"
+                      color={"#214151"}
+                      size={30}
+                    />
+                  </View>
                 ))}
             </View>
           </View>
+          <Button
+            buttonStyle={[styles.font, styles.register]}
+            title="Register Agency"
+          />
         </ScrollView>
       </KeyboardAwareScrollView>
     </SafeAreaView>
@@ -343,10 +365,28 @@ const styles = StyleSheet.create({
     fontFamily: "EBGaramond-Regular",
   },
   image: {
-    flexDirection: "row",
     marginTop: 5,
   },
   attachmentsRow: {
     flexDirection: "row",
+  },
+  imageSlide: {
+    flexDirection: "row",
+  },
+  iconImage: {
+    justifyContent: "flex-end",
+    marginLeft: "auto",
+    marginTop: 10,
+  },
+  dialog: {
+    backgroundColor: "#f8dc81",
+  },
+  dialogbackground: {
+    backgroundColor: "#f8dc81",
+    borderColor: "#fff",
+  },
+  register: {
+    backgroundColor: "#214151",
+    marginTop: 30,
   },
 });
