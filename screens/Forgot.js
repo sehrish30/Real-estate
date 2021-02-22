@@ -42,8 +42,6 @@ export default Forgot;
 
 const styles = StyleSheet.create({
   input: {
-    outline: "None",
-    border: "None",
     color: "#214151",
   },
   register: {

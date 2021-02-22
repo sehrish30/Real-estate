@@ -1,9 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Input, Button } from "react-native-elements";
-// Use prebuilt version of RNVI in dist folder
-// import Icon from "react-native-vector-icons/dist/FontAwesome";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -110,8 +107,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
-    outline: "None",
-    border: "None",
     color: "#214151",
   },
   register: {

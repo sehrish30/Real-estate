@@ -25,6 +25,7 @@ const Login = ({ navigation }) => {
           alt="bg"
         />
       </View>
+      {/* <DrawerMenu /> */}
 
       <SafeAreaView style={styles.form}>
         <Text style={[styles.font, styles.heading]}>Welcome back!</Text>
@@ -37,12 +38,15 @@ const Login = ({ navigation }) => {
           style={styles.input}
           onChangeText={(value) => setEmail(value)}
           label="Email"
+          value={email}
         />
         <Input
           rightIcon={{ type: "font-awesome", name: "key", color: "#f8dc81" }}
           style={styles}
           onChangeText={(value) => setPassword(value)}
           label="Password"
+          value={password}
+          secureTextEntry
         />
         <Button
           buttonStyle={styles.register}
@@ -92,8 +96,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
-    outline: "None",
-    border: "None",
     color: "#214151",
   },
   register: {

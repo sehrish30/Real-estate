@@ -5,29 +5,15 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Register from "./screens/Register";
 import Login from "./screens/Login";
 import Forgot from "./screens/Forgot";
+import Main from "./Navigators/Main";
 
-const Stack = createStackNavigator();
-const globalScreenOptions = {
-  headerStyle: { backgroundColor: "#2c6bed" },
-  headerTitleStyle: { color: "white" },
-  headerTintColor: "white",
-};
+import DrawerNavigator from "./Navigators/DrawerNavigator";
+
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        // initialRouteName="Home"
-        screenOptions={globalScreenOptions}
-      >
-        {/* <Stack.Screen
-        options={{ title: "Log in" }}
-        name="Login"
-        component={Login}
-      /> */}
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="Forgot" component={Forgot} />
-      </Stack.Navigator>
+      {/* <DrawerNavigator /> */}
+      <Main />
     </NavigationContainer>
   );
 }
