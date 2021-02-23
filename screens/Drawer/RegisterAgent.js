@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -40,9 +40,11 @@ const RegisterAgent = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [category, setCategory] = useState("");
+  const [showUpload, setShowUpload] = useState(false);
+
+  const uploadbtn = useRef();
 
   const deleteImage = (index) => {
-    console.log("delet");
     const newAttachments = attachments.filter(
       (_, newindex) => index !== newindex
     );
@@ -62,16 +64,33 @@ const RegisterAgent = ({ navigation }) => {
         }
       }
     })();
-  }, [attachments]);
+  }, [attachments, category]);
 
   useLayoutEffect(() => {
     if (category) {
       setVisible(false);
+      setShowUpload(true);
+      uploadbtn.current.handleOnPress();
     }
   }, [category]);
 
+  function remove(item) {
+    const filteredLocations = locations.filter(
+      (location) => location.id !== item.id
+    );
+    setLocations(filteredLocations);
+  }
+
   function onMultiChange() {
-    return (item) => setLocations([...locations, item]);
+    return (item) => {
+      for (let i = 0; i < locations.length; i++) {
+        if (locations[i].id === item.id) {
+          remove(item);
+          return;
+        }
+      }
+      setLocations([...locations, item]);
+    };
   }
 
   function removeSelect() {
@@ -93,10 +112,9 @@ const RegisterAgent = ({ navigation }) => {
 
     if (!result.cancelled) {
       const uri = result.uri;
-      setAttachments((prev) => {
-        return [...prev, { uri, category: category.item }];
-      });
+      setAttachments((prev) => [...prev, { uri, category: category.item }]);
       setCategory("");
+      setShowUpload(false);
     }
 
     let localUri = result.uri;
@@ -122,12 +140,6 @@ const RegisterAgent = ({ navigation }) => {
     //   },
     // });
   };
-
-  useLayoutEffect(() => {
-    if (category) {
-      pickImage();
-    }
-  }, [category]);
 
   const onChange = () => {
     return (val) => setCategory(val);
@@ -225,10 +237,11 @@ const RegisterAgent = ({ navigation }) => {
 
           <View style={styles.attachments}>
             <Button
+              // ref={uploadbtn}
               titleStyle={styles.buttonStyle}
               buttonStyle={styles.addAttachment}
-              title="Add attachments"
-              onPress={showDialog}
+              title={showUpload ? `Press to Upload` : `Choose image Category`}
+              onPress={!showUpload ? showDialog : pickImage}
               loading={loading}
               type="outline"
               icon={
@@ -240,6 +253,11 @@ const RegisterAgent = ({ navigation }) => {
                 />
               }
             />
+            <Button
+              ref={uploadbtn}
+              buttonStyle={{ width: 0, height: 0, opacity: 0, display: "none" }}
+              onPress={pickImage}
+            />
 
             <View style={styles.dialogbackground}>
               <Dialog.Container
@@ -249,6 +267,7 @@ const RegisterAgent = ({ navigation }) => {
                 visible={visible}
               >
                 <Dialog.Title>Choose Category for your image</Dialog.Title>
+
                 <SelectBox
                   label="Select single"
                   options={catgeories}
@@ -300,7 +319,7 @@ const RegisterAgent = ({ navigation }) => {
                     </Text>
                     <Icon
                       style={styles.iconImage}
-                      onPress={deleteImage(index)}
+                      onPress={() => deleteImage(index)}
                       name="trash-outline"
                       color={"#214151"}
                       size={30}
