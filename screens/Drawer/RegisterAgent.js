@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useRef, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 
+import { API_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ScrollView } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
@@ -19,6 +20,9 @@ import { Header } from "react-native-elements";
 import SelectBox from "react-native-multi-selectbox";
 import { catgeories } from "../../Shared/Categories";
 import Dialog from "react-native-dialog";
+import { useFocusEffect } from "@react-navigation/native";
+import { uploadToCloudinary } from "../../Shared/services";
+import axios from "axios";
 
 import { items } from "../../Shared/Cities";
 
@@ -41,6 +45,8 @@ const RegisterAgent = ({ navigation }) => {
   const [visible, setVisible] = useState(false);
   const [category, setCategory] = useState("");
   const [showUpload, setShowUpload] = useState(false);
+  const [uploadImage, setUploadImage] = useState([]);
+  const [imageUrls, setImageUrls] = useState([]);
 
   const uploadbtn = useRef();
 
@@ -66,13 +72,22 @@ const RegisterAgent = ({ navigation }) => {
     })();
   }, [attachments, category]);
 
-  useLayoutEffect(() => {
-    if (category) {
+  useFocusEffect(
+    useCallback(() => {
+      if (category) {
+        uploadbtn.current.handleOnPress();
+      }
+    }, [category])
+  );
+
+  const onChange = () => {
+    return (val) => {
       setVisible(false);
       setShowUpload(true);
-      uploadbtn.current.handleOnPress();
-    }
-  }, [category]);
+      // uploadbtn.current.handleOnPress()
+      return setCategory(val);
+    };
+  };
 
   function remove(item) {
     const filteredLocations = locations.filter(
@@ -112,37 +127,73 @@ const RegisterAgent = ({ navigation }) => {
 
     if (!result.cancelled) {
       const uri = result.uri;
+
       setAttachments((prev) => [...prev, { uri, category: category.item }]);
       setCategory("");
       setShowUpload(false);
+
+      // Infer the type of the image
+      // split url by dot
+      let filename = result.uri.split("/").pop();
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      let newfile = {
+        uri: result.uri,
+        type: `test/${result.uri.split(".")[1]}`,
+        name: filename,
+      };
+      setUploadImage((prev) => [
+        ...prev,
+        { newfile, uri, category: category.item },
+      ]);
     }
-
-    let localUri = result.uri;
-    let filename = localUri.split("/").pop();
-
-    // Infer the type of the image
-    let match = /\.(\w+)$/.exec(filename);
-    let type = match ? `image/${match[1]}` : `image`;
-
-    // const handleCancel = () => {
-    //   setVisible(false);
-    // };
-
-    // Upload the image using the fetch and FormData APIs
-    let formData = new FormData();
-    // Assume "photo" is the name of the form field the server expects
-    formData.append("photo", { uri: localUri, name: filename, type });
-    // return await fetch(YOUR_SERVER_URL, {
-    //   method: 'POST',
-    //   body: formData,
-    //   headers: {
-    //     'content-type': 'multipart/form-data',
-    //   },
-    // });
   };
 
-  const onChange = () => {
-    return (val) => setCategory(val);
+  const handleImageUpload = async (image) => {
+    // const data = new FormData();
+    // data.append("file", image);
+    // data.append("upload_preset", "realestate");
+    // data.append("cloud_name", "dtxrrhfqj");
+
+    // fetch("https://api.cloudinary.com/v1_1/dtxrrhfqj/image/upload", {
+    //   method: "post",
+    //   body: data,
+    //   mode: "cors",
+    // })
+    //   .then((res) => res.json())
+    //   .then((response) => {
+    //     // setPicture(data.url);
+    //     // setModal(false);
+    //     console.log(response);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+    uploadToCloudinary(image);
+    // axios.post("/agencies");
+  };
+
+  const registerAgent = async () => {
+    console.log(API_URL);
+    uploadImage.map((image) => {
+      const imageURL = uploadToCloudinary(image.newfile);
+      setImageUrls((prevUrls) => [
+        ...prevUrls,
+        { file: imageURL, category: image.category },
+      ]);
+    });
+    try {
+      const res = await axios.post(`${API_URL}/agencies/register`, {
+        name,
+        phone,
+        email,
+        location: locations,
+        attachments: imageUrls,
+      });
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const showDialog = () => {
@@ -237,7 +288,6 @@ const RegisterAgent = ({ navigation }) => {
 
           <View style={styles.attachments}>
             <Button
-              // ref={uploadbtn}
               titleStyle={styles.buttonStyle}
               buttonStyle={styles.addAttachment}
               title={showUpload ? `Press to Upload` : `Choose image Category`}
@@ -322,7 +372,7 @@ const RegisterAgent = ({ navigation }) => {
                       onPress={() => deleteImage(index)}
                       name="trash-outline"
                       color={"#214151"}
-                      size={30}
+                      size={20}
                     />
                   </View>
                 ))}
@@ -331,6 +381,7 @@ const RegisterAgent = ({ navigation }) => {
           <Button
             buttonStyle={[styles.font, styles.register]}
             title="Register Agency"
+            onPress={registerAgent}
           />
         </ScrollView>
       </KeyboardAwareScrollView>
@@ -346,14 +397,10 @@ const styles = StyleSheet.create({
   },
   menu: {
     paddingTop: 20,
-    paddingLeft: 15,
-
     paddingRight: 10,
   },
   rightNav: {
     flexDirection: "row",
-    justifyContent: "flex-end",
-    order: 1,
   },
 
   font: {
@@ -400,10 +447,11 @@ const styles = StyleSheet.create({
   },
   dialog: {
     backgroundColor: "#f8dc81",
+    width: width / 1.2,
   },
   dialogbackground: {
     backgroundColor: "#f8dc81",
-    borderColor: "#fff",
+    width: width / 1.2,
   },
   register: {
     backgroundColor: "#214151",
