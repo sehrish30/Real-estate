@@ -9,7 +9,6 @@ import {
   Platform,
 } from "react-native";
 
-import { xorBy } from "lodash";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ScrollView } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
@@ -57,7 +56,9 @@ const RegisterAgent = ({ navigation }) => {
           status,
         } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
-          alert("Sorry, we need camera roll permissions to make this work!");
+          alert(
+            "Sorry, we need camera roll permissions to upload your attachments!"
+          );
         }
       }
     })();
@@ -67,10 +68,19 @@ const RegisterAgent = ({ navigation }) => {
     if (category) {
       setVisible(false);
     }
-  });
+  }, [category]);
 
   function onMultiChange() {
-    return (item) => setLocations(xorBy(locations, [item], "id"));
+    return (item) => setLocations([...locations, item]);
+  }
+
+  function removeSelect() {
+    return (item) => {
+      const filteredLocations = locations.filter(
+        (location) => location.id !== item.id
+      );
+      setLocations(filteredLocations);
+    };
   }
 
   const pickImage = async () => {
@@ -195,7 +205,7 @@ const RegisterAgent = ({ navigation }) => {
             options={items}
             selectedValues={locations}
             onMultiSelect={onMultiChange()}
-            onTapClose={onMultiChange()}
+            onTapClose={removeSelect()}
             isMulti
             arrowIconColor="#f8dc81"
             searchIconColor="#f8dc81"
@@ -259,6 +269,9 @@ const RegisterAgent = ({ navigation }) => {
                   optionContainerStyle={{
                     backgroundColor: "#f8dc81",
                   }}
+                  containerStyle={{
+                    backgroundColor: "#f8dc81",
+                  }}
                 />
               </Dialog.Container>
             </View>
@@ -312,12 +325,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    // justifyContent: "space-between",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
   menu: {
     paddingTop: 20,
     paddingLeft: 15,
@@ -329,10 +336,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     order: 1,
   },
-  navLeft: {
-    order: 2,
-    marginLeft: "auto",
-  },
+
   font: {
     fontFamily: "EBGaramond-Regular",
   },
@@ -353,7 +357,6 @@ const styles = StyleSheet.create({
   },
   attachments: {
     marginTop: 15,
-    alignItems: "left",
     position: "relative",
   },
   addAttachment: {
@@ -367,9 +370,7 @@ const styles = StyleSheet.create({
   image: {
     marginTop: 5,
   },
-  attachmentsRow: {
-    flexDirection: "row",
-  },
+
   imageSlide: {
     flexDirection: "row",
   },

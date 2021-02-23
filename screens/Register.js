@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, Input } from "react-native-elements";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
