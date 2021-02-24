@@ -9,7 +9,6 @@ import {
   Platform,
 } from "react-native";
 
-import { API_URL } from "@env";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ScrollView } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
@@ -21,12 +20,19 @@ import SelectBox from "react-native-multi-selectbox";
 import { catgeories } from "../../Shared/Categories";
 import Dialog from "react-native-dialog";
 import { useFocusEffect } from "@react-navigation/native";
-import { uploadToCloudinary } from "../../Shared/services";
-import axios from "axios";
-
-import { items } from "../../Shared/Cities";
-
+import Toast, { BaseToast } from "react-native-toast-message";
 import { Button, Image } from "react-native-elements";
+
+// backend
+import axios from "axios";
+import baseURL from "../../assets/common/baseUrl";
+
+// Services
+import {
+  uploadToCloudinary,
+  validateRegisterAgencyForm,
+} from "../../Shared/services";
+import { items } from "../../Shared/Cities";
 
 var { width, height } = Dimensions.get("window");
 
@@ -149,32 +155,7 @@ const RegisterAgent = ({ navigation }) => {
     }
   };
 
-  const handleImageUpload = async (image) => {
-    // const data = new FormData();
-    // data.append("file", image);
-    // data.append("upload_preset", "realestate");
-    // data.append("cloud_name", "dtxrrhfqj");
-
-    // fetch("https://api.cloudinary.com/v1_1/dtxrrhfqj/image/upload", {
-    //   method: "post",
-    //   body: data,
-    //   mode: "cors",
-    // })
-    //   .then((res) => res.json())
-    //   .then((response) => {
-    //     // setPicture(data.url);
-    //     // setModal(false);
-    //     console.log(response);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-    uploadToCloudinary(image);
-    // axios.post("/agencies");
-  };
-
   const registerAgent = async () => {
-    console.log(API_URL);
     uploadImage.map((image) => {
       const imageURL = uploadToCloudinary(image.newfile);
       setImageUrls((prevUrls) => [
@@ -183,16 +164,60 @@ const RegisterAgent = ({ navigation }) => {
       ]);
     });
     try {
-      const res = await axios.post(`${API_URL}/agencies/register`, {
+      const location = locations.map((location) => location.item);
+      const formData = {
         name,
-        phone,
+        phoneNumber: phone,
         email,
-        location: locations,
+        location,
         attachments: imageUrls,
+      };
+      const validationErrors = await validateRegisterAgencyForm({
+        name,
+        email,
+        phone,
+        locations,
       });
-      console.log(res);
+      const errors = Object.keys(validationErrors).length === 0;
+      console.log("VALIDATE", validationErrors);
+
+      if (errors) {
+        const res = await axios.post(`${baseURL}agencies/register`, formData);
+
+        if (res.status == 200) {
+          Toast.show({
+            type: "success",
+            text1: `${res.data.name} has been registered successfully`,
+            text2: "Our team will connect with you shortly",
+            visibilityTime: 8000,
+            topOffset: 30,
+          });
+          setName("");
+          setEmail("");
+          setAttachments([]);
+          setLocations([]);
+          setPhone("");
+        } else {
+          throw new Error(res.data);
+        }
+        navigation.navigate("User");
+      } else {
+        Toast.show({
+          type: "error",
+          text1: `${Object.values(validationErrors).join(" ")}`,
+          visibilityTime: 4000,
+          topOffset: 30,
+        });
+      }
     } catch (e) {
-      console.error(e);
+      console.log(e);
+      Toast.show({
+        type: "error",
+        text1: `${name} could not be registered`,
+        text2: "Please try again",
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
     }
   };
 
@@ -246,17 +271,20 @@ const RegisterAgent = ({ navigation }) => {
 
           <Input
             label="Name"
+            labelStyle={[styles.font, { color: "#a2d0c1" }]}
             leftIcon={<Icon name="people" size={24} color="#f8dc81" />}
             onChangeText={(value) => setName(value)}
             value={name}
           />
           <Input
+            labelStyle={[styles.font, { color: "#a2d0c1" }]}
             label="Email"
             leftIcon={<MaterialIcon name="email" size={24} color="#f8dc81" />}
             onChangeText={(value) => setEmail(value)}
             value={email}
           />
           <Input
+            labelStyle={[styles.font, { color: "#a2d0c1" }]}
             label="Phone"
             keyboardType={"numeric"}
             leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
@@ -265,6 +293,7 @@ const RegisterAgent = ({ navigation }) => {
           />
           <SelectBox
             label="Locations"
+            style={[styles.font, { color: "#a2d0c1" }]}
             options={items}
             selectedValues={locations}
             onMultiSelect={onMultiChange()}
@@ -287,10 +316,16 @@ const RegisterAgent = ({ navigation }) => {
           />
 
           <View style={styles.attachments}>
+            <Text
+              h4
+              style={[styles.font, { color: "#a2d0c1", marginBottom: 10 }]}
+            >
+              You can upload photos of your documents below*
+            </Text>
             <Button
               titleStyle={styles.buttonStyle}
               buttonStyle={styles.addAttachment}
-              title={showUpload ? `Press to Upload` : `Choose image Category`}
+              title={showUpload ? `Press to Upload` : `Choose photo Category`}
               onPress={!showUpload ? showDialog : pickImage}
               loading={loading}
               type="outline"
@@ -418,7 +453,6 @@ const styles = StyleSheet.create({
     marginBottom: 400,
     width: width / 1.2,
     justifyContent: "center",
-
     marginHorizontal: 20,
   },
   attachments: {

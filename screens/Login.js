@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Input, Button } from "react-native-elements";
+import Form from "../Shared/Input/Form";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ const Login = ({ navigation }) => {
   }, [navigation]);
 
   return (
-    <View>
+    <SafeAreaView>
       <View style={styles.bg}>
         <Image
           style={styles.stretch}
@@ -25,49 +26,22 @@ const Login = ({ navigation }) => {
           alt="bg"
         />
       </View>
-      {/* <DrawerMenu /> */}
 
-      <SafeAreaView style={styles.form}>
-        <Text style={[styles.font, styles.heading]}>Welcome back!</Text>
-        <Input
-          rightIcon={{
-            type: "font-awesome",
-            name: "envelope",
-            color: "#f8dc81",
-          }}
-          style={styles.input}
-          onChangeText={(value) => setEmail(value)}
-          label="Email"
-          value={email}
-        />
-        <Input
-          rightIcon={{ type: "font-awesome", name: "key", color: "#f8dc81" }}
-          style={styles}
-          onChangeText={(value) => setPassword(value)}
-          label="Password"
-          value={password}
-          secureTextEntry
-        />
-        <Button
-          buttonStyle={styles.register}
-          raised
-          title="Login"
-          loading={loading}
-        />
-        <Text
-          style={styles.extra}
-          onPress={() => navigation.navigate("Register")}
-        >
-          Don't have an account? Register
-        </Text>
-        <Text
-          style={styles.extra}
-          onPress={() => navigation.navigate("Forgot")}
-        >
-          Forgot Password
-        </Text>
-      </SafeAreaView>
-    </View>
+      <Text style={[styles.font, styles.heading]}>Welcome back!</Text>
+      <Form
+        email={email}
+        password={password}
+        loading={loading}
+        setEmail={setEmail}
+        password={setPassword}
+        name={"Login"}
+        extra={"Don't have an account? Register"}
+        navigation={navigation}
+      />
+      <Text style={styles.extra} onPress={() => navigation.navigate("Forgot")}>
+        Forgot Password
+      </Text>
+    </SafeAreaView>
   );
 };
 
@@ -82,10 +56,7 @@ const styles = StyleSheet.create({
     display: "flex",
     margin: "auto",
   },
-  form: {
-    marginHorizontal: "auto",
-    marginTop: 15,
-  },
+
   font: {
     fontFamily: "EBGaramond-Regular",
   },
@@ -94,14 +65,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     color: "#214151",
     marginBottom: 12,
-  },
-  input: {
-    color: "#214151",
-  },
-  register: {
     marginTop: 5,
-    backgroundColor: "#214151",
-    color: "#214151",
   },
   extra: {
     color: "#214151",
@@ -109,8 +73,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 12,
     fontFamily: "EBGaramond-Regular",
-  },
-  link: {
-    marginHorizontal: 3,
   },
 });

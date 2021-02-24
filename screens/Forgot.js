@@ -2,6 +2,8 @@ import React, { useState, useLayoutEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Input, Button } from "react-native-elements";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Form from "../Shared/Input/Form";
 
 const Forgot = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -17,23 +19,14 @@ const Forgot = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Input
-        rightIcon={{
-          type: "font-awesome",
-          name: "envelope",
-          color: "#f8dc81",
-        }}
-        style={styles.input}
-        value={email}
-        onChangeText={(value) => setEmail(value)}
-        label="Email"
-      />
-      <Button
-        buttonStyle={styles.register}
-        raised
-        title="Submit"
-        loading={loading}
-      />
+      <KeyboardAwareScrollView>
+        <Form
+          email={email}
+          setEmail={setEmail}
+          loading={loading}
+          name={"Change Password"}
+        />
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

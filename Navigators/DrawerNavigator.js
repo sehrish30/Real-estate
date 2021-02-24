@@ -1,12 +1,8 @@
 import React from "react";
-
-import Icon from "react-native-vector-icons/FontAwesome";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-
-import Forgot from "../screens/Forgot";
 import { useWindowDimensions } from "react-native";
-import Register from "../screens/Register";
-import Login from "../screens/Login";
+
+// imported Screens
 import AffordibilityCalculator from "../screens/Drawer/AffordibilityCalculator";
 import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
