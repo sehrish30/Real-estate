@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Button, Input } from "react-native-elements";
 
@@ -12,6 +12,7 @@ const Form = ({
   setPassword,
   name,
   extra,
+  btnAction,
 }) => {
   const LoginOrRegister = () => {
     name === "Register"
@@ -47,6 +48,7 @@ const Form = ({
         raised
         title={name}
         loading={loading}
+        onPress={btnAction()}
       />
       <Text style={styles.extra} onPress={LoginOrRegister}>
         {extra}

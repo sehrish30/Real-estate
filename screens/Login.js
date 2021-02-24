@@ -1,13 +1,17 @@
 import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Input, Button } from "react-native-elements";
 import Form from "../Shared/Input/Form";
+import { loginUser } from "../Shared/Services/AuthServices";
+import { useSelector, useDispatch } from "react-redux";
+import * as actions from "../Redux/Actions/auth";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -16,6 +20,11 @@ const Login = ({ navigation }) => {
       headerTintColor: "#214151",
     });
   }, [navigation]);
+
+  const LoginUser = () => {
+    // loginUser({ email, password });
+    dispatch(actions.login({ email, password }, navigation));
+  };
 
   return (
     <SafeAreaView>
@@ -37,6 +46,7 @@ const Login = ({ navigation }) => {
         name={"Login"}
         extra={"Don't have an account? Register"}
         navigation={navigation}
+        btnAction={LoginUser}
       />
       <Text style={styles.extra} onPress={() => navigation.navigate("Forgot")}>
         Forgot Password
