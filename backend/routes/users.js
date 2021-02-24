@@ -30,14 +30,13 @@ transporter.use(
 
 router.post("/register", async (req, res) => {
   try {
-    const { email, isAdmin, dp } = req.body;
+    const { email, dp } = req.body;
 
     // hash user password
     const passwordHash = bcrypt.hashSync(req.body.password, 14);
 
     let user = new User({
       email,
-      isAdmin,
       dp,
       password: passwordHash,
     });

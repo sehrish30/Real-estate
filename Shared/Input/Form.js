@@ -48,7 +48,7 @@ const Form = ({
         raised
         title={name}
         loading={loading}
-        onPress={btnAction()}
+        onPress={btnAction}
       />
       <Text style={styles.extra} onPress={LoginOrRegister}>
         {extra}

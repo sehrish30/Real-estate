@@ -1,10 +1,20 @@
 import { LOGIN } from "../constants";
-import * as SecureStore from "expo-secure-store";
+// import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+let getUser = {};
+const userData = async () => {
+  getUser = await AsyncStorage.getItem("user");
+  console.log("GET", getUser);
+};
+
+userData();
 const initialState = {
-  token: SecureStore.getItemAsync("jwt") || "",
-  user: "",
-  isLoggedIn: !!SecureStore.getItemAsync("jwt"),
+  //   token: SecureStore.getItemAsync("jwt") || "",
+  token: AsyncStorage.getItem("jwt") || "",
+  user: !getUser ? JSON.parse(getUser) : {},
+  isLoggedIn: !!AsyncStorage.getItem("jwt"),
+  //   isLoggedIn: !!SecureStore.getItemAsync("jwt"),
 };
 
 const auth = (state = initialState, action) => {
@@ -13,6 +23,7 @@ const auth = (state = initialState, action) => {
       return {
         ...state,
         user: action.payload,
+        token: action.payload.token,
       };
     default:
       return state;

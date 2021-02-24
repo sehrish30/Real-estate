@@ -1,7 +1,9 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
-import * as SecureStore from "expo-secure-store";
+import jwt_decode from "jwt-decode";
+// import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const config = {
   headers: {
@@ -13,7 +15,8 @@ const config = {
 export async function loginUser(data) {
   try {
     const res = await axios.post(`${baseURL}users/login`, data, config);
-    console.log(res.data);
+
+    let sendData = {};
     if (res.status == 200) {
       Toast.show({
         type: "success",
@@ -21,12 +24,35 @@ export async function loginUser(data) {
         visibilityTime: 2000,
         topOffset: 30,
       });
-      await SecureStore.setItemAsync("jwt", res.data.token);
+      //   await SecureStore.setItemAsync("jwt", res.data.token);
+      await AsyncStorage.setItem("jwt", res.data.token);
+
       const decoded = jwt_decode(res.data.token);
-      return { decoded, ...res };
+      sendData = { decoded, ...res.data };
+      await AsyncStorage.setItem("user", JSON.stringify(sendData));
       //   dispatch(setCurrentUser(decoded, user));
     }
+    return sendData;
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function registerUser(data) {
+  try {
+    const res = await axios.post(`${baseURL}users/register`, data, config);
+    const user = await loginUser({
+      email: res.data.email,
+      password: data.password,
+    });
+    return user;
+  } catch (e) {
+    console.err(r);
+    Toast.show({
+      type: "error",
+      text1: `Some error has occurred`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
   }
 }

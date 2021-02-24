@@ -2,7 +2,6 @@ import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Form from "../Shared/Input/Form";
-import { loginUser } from "../Shared/Services/AuthServices";
 import { useSelector, useDispatch } from "react-redux";
 import * as actions from "../Redux/Actions/auth";
 
@@ -21,10 +20,11 @@ const Login = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const LoginUser = () => {
+  function LoginUser() {
+    setLoading(true);
     // loginUser({ email, password });
     dispatch(actions.login({ email, password }, navigation));
-  };
+  }
 
   return (
     <SafeAreaView>
@@ -42,7 +42,7 @@ const Login = ({ navigation }) => {
         password={password}
         loading={loading}
         setEmail={setEmail}
-        password={setPassword}
+        setPassword={setPassword}
         name={"Login"}
         extra={"Don't have an account? Register"}
         navigation={navigation}

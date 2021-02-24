@@ -2,11 +2,19 @@ import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Form from "../Shared/Input/Form";
+import { useSelector, useDispatch } from "react-redux";
+import * as actions from "../Redux/Actions/auth";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+
+  function registerUser() {
+    setLoading(true);
+    dispatch(actions.register({ email, password }, navigation));
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,10 +41,11 @@ const Register = ({ navigation }) => {
         password={password}
         loading={loading}
         setEmail={setEmail}
-        password={setPassword}
+        setPassword={setPassword}
         name={"Register"}
         extra={"Already have an account? Login"}
         navigation={navigation}
+        btnAction={registerUser}
       />
     </SafeAreaView>
   );
