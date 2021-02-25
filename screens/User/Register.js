@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Form from "../../Shared/Input/Form";
 import { useSelector, useDispatch } from "react-redux";
 import * as actions from "../../Redux/Actions/auth";
+import { ScrollView } from "react-native-gesture-handler";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -28,25 +29,27 @@ const Register = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <View style={styles.bg}>
-        <Image
-          style={styles.stretch}
-          source={require("../../assets/login.png")}
-          alt="bg"
-        />
-      </View>
+      <ScrollView>
+        <View style={styles.bg}>
+          <Image
+            style={styles.stretch}
+            source={require("../../assets/login.png")}
+            alt="bg"
+          />
+        </View>
 
-      <Form
-        email={email}
-        password={password}
-        loading={loading}
-        setEmail={setEmail}
-        setPassword={setPassword}
-        name={"Register"}
-        extra={"Already have an account? Login"}
-        navigation={navigation}
-        btnAction={registerUser}
-      />
+        <Form
+          email={email}
+          password={password}
+          loading={loading}
+          setEmail={setEmail}
+          setPassword={setPassword}
+          name={"Register"}
+          extra={"Already have an account? Login"}
+          navigation={navigation}
+          btnAction={registerUser}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -55,12 +58,12 @@ export default Register;
 
 const styles = StyleSheet.create({
   stretch: {
-    width: 350,
-    height: 270,
+    width: 100,
+    height: 100,
   },
   bg: {
     display: "flex",
     margin: "auto",
-    marginBottom: 15,
+    alignItems: "center",
   },
 });

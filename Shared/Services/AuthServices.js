@@ -21,6 +21,7 @@ export async function loginUser(data) {
       Toast.show({
         type: "success",
         text1: `${res.data.email} successfully logged in`,
+        text2: `Code expires in 1 hr`,
         visibilityTime: 2000,
         topOffset: 30,
       });
@@ -47,7 +48,7 @@ export async function registerUser(data) {
     });
     return user;
   } catch (e) {
-    console.err(r);
+    console.err(e);
     Toast.show({
       type: "error",
       text1: `Some error has occurred`,
@@ -66,4 +67,61 @@ export async function checkUser(id, token) {
     },
   });
   return res.status == 200;
+}
+
+export async function forgotUser(data) {
+  try {
+    const res = await axios.post(
+      `${baseURL}users/reset-password`,
+      data,
+      config
+    );
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `Check your email for code`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+      return res;
+    }
+  } catch (e) {
+    console.error(e);
+    Toast.show({
+      type: "error",
+      text1: `Some error occured try again`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+  }
+}
+
+export async function resetUserPassword(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}users/enter-password`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `You successfully changed your password`,
+        text2: `Login to proceed`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    Toast.show({
+      type: "error",
+      text1: `Some error occured try again`,
+      text2: `${err}`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+  }
 }

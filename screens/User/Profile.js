@@ -51,7 +51,7 @@ const Profile = ({ navigation }) => {
       }
     };
     getUser();
-  }, [navigation]);
+  }, [navigation, logout]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

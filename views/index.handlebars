@@ -16,9 +16,19 @@
         width: 25rem;
       }
 
-      h1,p {
+      h1,p{
         color: #214151;
       }
+      .message{
+        color: #a2d0c1;
+        font-size: 0.8rem;
+        font-style: italic;
+      }
+
+      .code{
+        color: #fff;
+      }
+     
     </style>
 
 
@@ -32,7 +42,8 @@
         alt="logo"
       />
       <h1 className="heading">Iconic Real Estate</h1>
-      <p className="heading">Your code is <strong>{{code}}</strong></p>
+      <h3 className="code">Your code is <strong>{{code}}</strong></h3>
+      <p className="message">Code expires in 1 hr</p>
     </div>
 </head>
 <body>

@@ -128,7 +128,7 @@ router.post("/reset-password", async (req, res) => {
         if (err) {
           return res.status(401).send("Error occurs");
         }
-        return res.status(200).send("Email sent!!!");
+        return res.status(200).send({ code, token });
       });
     });
   } catch (err) {
@@ -156,6 +156,7 @@ router.post("/enter-password", (req, res) => {
         return res.status(401).json({ error: err });
       }
       User.findOne({
+        email: req.body.email,
         resetToken: token,
         expireToken: { $gt: Date.now() },
       }).then((user) => {
@@ -224,6 +225,9 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+        GET ALL USERS
+----------------------------------------- */
 router.get(`/`, async (req, res) => {
   try {
     const userList = await User.find().select("-password");

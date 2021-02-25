@@ -38,18 +38,21 @@ const Form = ({
           labelStyle={[styles.font, { color: "#a2d0c1" }]}
           rightIcon={{ type: "font-awesome", name: "key", color: "#f8dc81" }}
           style={styles}
+          secureTextEntry
           onChangeText={(value) => setPassword(value)}
           label="Password"
           value={password}
         />
       )}
-      <Button
-        buttonStyle={styles.register}
-        raised
-        title={name}
-        loading={loading}
-        onPress={btnAction}
-      />
+      {name !== "Change Password" && (
+        <Button
+          buttonStyle={styles.register}
+          raised
+          title={name}
+          loading={loading}
+          onPress={btnAction}
+        />
+      )}
       <Text style={styles.extra} onPress={LoginOrRegister}>
         {extra}
       </Text>
