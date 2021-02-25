@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Form from "../../Shared/Input/Form";
-import SmoothPinCodeInput from "react-native-smooth-pincode-input";
+// import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 
 import {
   forgotUser,
@@ -112,7 +112,7 @@ const Forgot = ({ navigation }) => {
           </>
         )}
 
-        {showCode && (
+        {/* {showCode && (
           <View style={styles.digit}>
             <Text h4 style={styles.command}>
               Enter your code
@@ -145,7 +145,7 @@ const Forgot = ({ navigation }) => {
               codeLength={6}
             />
           </View>
-        )}
+        )} */}
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
