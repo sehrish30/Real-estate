@@ -1,10 +1,14 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useCallback } from "react";
+import { StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import Login from "../screens/Login";
-import Register from "../screens/Register";
-import Forgot from "../screens/Forgot";
-
+import Login from "../screens/User/Login";
+import Register from "../screens/User/Register";
+import Forgot from "../screens/User/Forgot";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Profile from "../screens/User/Profile";
+import { useFocusEffect } from "@react-navigation/native";
+import { useSelector, useDispatch } from "react-redux";
+import { fillStore } from "../Redux/Actions/auth";
 const Stack = createStackNavigator();
 
 const globalScreenOptions = {
@@ -14,19 +18,55 @@ const globalScreenOptions = {
   headerBackTitle: "Back",
 };
 function MyStack() {
+  let isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const getUser = async () => {
+        try {
+          let jwt = await AsyncStorage.getItem("jwt");
+          let userData = await AsyncStorage.getItem("user");
+          let user = userData ? JSON.parse(userData) : {};
+          let isLoggedIn = !!(await AsyncStorage.getItem("jwt"));
+
+          if (isLoggedIn) {
+            dispatch(fillStore({ jwt, user, isLoggedIn }));
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      if (isActive) {
+        getUser();
+      }
+
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
+
   return (
     <Stack.Navigator
-      // initialRouteName="Home"
+      // initialRouteName={token ? "Profile" : "Login"}
       screenOptions={globalScreenOptions}
     >
-      {/* <Stack.Screen
-        options={{ title: "Log in" }}
-        name="Login"
-        component={Login}
-      /> */}
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
-      <Stack.Screen name="Forgot" component={Forgot} />
+      {isLoggedIn ? (
+        <Stack.Screen name="Profile" component={Profile} />
+      ) : (
+        <>
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ title: "Login" }}
+          />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="Forgot" component={Forgot} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }

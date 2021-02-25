@@ -1,9 +1,9 @@
 import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Form from "../Shared/Input/Form";
+import Form from "../../Shared/Input/Form";
 import { useSelector, useDispatch } from "react-redux";
-import * as actions from "../Redux/Actions/auth";
+import * as actions from "../../Redux/Actions/auth";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -18,11 +18,11 @@ const Register = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Register",
-      headerStyle: { backgroundColor: "#eff7e1", fontWeight: "bold" },
-      headerTitleStyle: { color: "#214151" },
-      headerTintColor: "#214151",
+      headerStyle: { backgroundColor: "#eff7e1" },
+      headerTitleStyle: { color: "#a2d0c1" },
+      headerTintColor: "#a2d0c1",
       headerBackTitle: "Back to Register",
+      title: "Register",
     });
   }, [navigation]);
 
@@ -31,7 +31,7 @@ const Register = ({ navigation }) => {
       <View style={styles.bg}>
         <Image
           style={styles.stretch}
-          source={require("../assets/login.png")}
+          source={require("../../assets/login.png")}
           alt="bg"
         />
       </View>

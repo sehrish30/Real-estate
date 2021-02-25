@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const authJwt = require("./helpers/jwt");
 const errorHandler = require("./helpers/error-handler");
-const cloudinary = require("cloudinary");
 
 require("dotenv/config");
 
@@ -37,7 +36,6 @@ const agentRoutes = require("./routes/agencies");
 /*---------------------------------
               ROUTER
 --------------------------------- */
-const api = process.env.API_URL;
 app.use(`/users`, usersRoutes);
 app.use(`/agencies`, agentRoutes);
 
@@ -57,6 +55,5 @@ mongoose
 
 // webserver listen to port
 app.listen(3000, () => {
-  console.log(api);
   console.log("Server is running on 3000");
 });

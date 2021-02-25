@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Form from "../Shared/Input/Form";
+import Form from "../../Shared/Input/Form";
 
 const Forgot = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -10,9 +10,9 @@ const Forgot = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerStyle: { backgroundColor: "#eff7e1", fontWeight: "bold" },
-      headerTitleStyle: { color: "#214151" },
-      headerTintColor: "#214151",
+      headerStyle: { backgroundColor: "#eff7e1" },
+      headerTitleStyle: { color: "#a2d0c1" },
+      headerTintColor: "#a2d0c1",
     });
   }, [navigation]);
 

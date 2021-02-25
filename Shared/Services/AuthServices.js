@@ -56,3 +56,14 @@ export async function registerUser(data) {
     });
   }
 }
+
+export async function checkUser(id, token) {
+  const res = await axios.get(`${baseURL}users/${id}`, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.status == 200;
+}

@@ -10,10 +10,11 @@ const authJwt = () => {
   return expressJwt({
     secret,
     algorithms: ["HS256"],
-    isRevoked,
+    // isRevoked,
   }).unless({
     path: [
       { url: /\/agencies(.*)/, methods: ["GET", "OPTIONS"] },
+      // { url: /\/users(.*)/, methods: ["GET", "OPTIONS"] },
       `/users/register`,
       `/users/login`,
       `/agencies/register`,
@@ -29,6 +30,8 @@ const authJwt = () => {
 // e.g I want data like isAdmin which is signed to the user
 // which this user is sending me with req headers
 async function isRevoked(req, payload, done) {
+  console.log(req.url);
+  const url = req.url;
   if (!payload.isAdmin) {
     // reject the token if not admin
     done(null, true);

@@ -58,6 +58,7 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
     const secret = process.env.SECRET;
+    console.log(secret);
     if (!user) {
       return res.status(400).send("No user with this email");
     }
@@ -74,7 +75,7 @@ router.post("/login", async (req, res) => {
           expiresIn: "1d",
         }
       );
-      return res.status(200).send({ email: user.email, token });
+      return res.status(200).send({ email: user.email, token, dp: user.dp });
     } else {
       return res.status(400).send("Wrong Password");
     }
@@ -135,6 +136,10 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+        ENTER NEW PASSWORD
+----------------------------------------- */
+
 router.post("/enter-password", (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
@@ -174,6 +179,10 @@ router.post("/enter-password", (req, res) => {
   }
 });
 
+/*----------------------------------------
+           CHECK USER CODE
+----------------------------------------- */
+
 router.post("/check-code", async (req, res) => {
   const authHeader = req.headers["authorization"];
 
@@ -194,6 +203,38 @@ router.post("/check-code", async (req, res) => {
       return res.status(401).send(false);
     }
   });
+});
+
+/*----------------------------------------
+        SEARCH USER BY ID
+----------------------------------------- */
+
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res
+        .status(500)
+        .json({ message: "The user with the given ID was not found" });
+    }
+
+    res.status(200).send(true);
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+router.get(`/`, async (req, res) => {
+  try {
+    const userList = await User.find().select("-password");
+
+    if (!userList) {
+      return res.status(500).json({ success: false });
+    }
+    res.send(userList);
+  } catch (e) {
+    console.error(e);
+  }
 });
 
 module.exports = router;
