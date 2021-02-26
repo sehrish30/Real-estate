@@ -129,6 +129,20 @@ router.post("/reset-password", async (req, res) => {
         }
         return res.status(200).send({ code, token });
       });
+      // transporter.sendMail(
+      //   {
+      //     to: user.email,
+      //     from: process.env.EMAIL,
+      //     subject: "Iconic Real Estate ✔",
+      //     html: `<h1>Your code is ${code}</h1><h5>Expires in 1 hr</h5>`,
+      //   },
+      //   (err, data) => {
+      //     if (err) {
+      //       return res.status(401).send(err);
+      //     }
+      //     return res.status(200).send({ code, token });
+      //   }
+      // );
     });
   } catch (err) {
     res.status(404).json({ error: err });

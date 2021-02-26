@@ -414,6 +414,7 @@ const RegisterAgent = ({ navigation }) => {
             </View>
           </View>
           <Button
+            titleStyle={styles.btn}
             buttonStyle={[styles.font, styles.register]}
             title="Register Agency"
             onPress={registerAgent}
@@ -490,5 +491,8 @@ const styles = StyleSheet.create({
   register: {
     backgroundColor: "#214151",
     marginTop: 30,
+  },
+  btn: {
+    fontFamily: "EBGaramond-Bold",
   },
 });

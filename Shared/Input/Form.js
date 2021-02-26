@@ -47,6 +47,7 @@ const Form = ({
       {name !== "Change Password" && (
         <Button
           buttonStyle={styles.register}
+          titleStyle={styles.btn}
           raised
           title={name}
           loading={loading}
@@ -93,5 +94,8 @@ const styles = StyleSheet.create({
   },
   link: {
     marginHorizontal: 3,
+  },
+  btn: {
+    fontFamily: "EBGaramond-Bold",
   },
 });

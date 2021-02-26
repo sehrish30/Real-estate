@@ -1,17 +1,20 @@
-import React, { useState, useLayoutEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useCallback, useRef } from "react";
 import { StyleSheet, View, Dimensions, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Form from "../../Shared/Input/Form";
-import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import { Text } from "react-native-elements";
-import { ScrollView } from "react-native-gesture-handler";
 import {
   forgotUser,
   resetUserPassword,
 } from "../../Shared/Services/AuthServices";
 import { Button, Input } from "react-native-elements";
 import Toast from "react-native-toast-message";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from "react-native-confirmation-code-field";
+import { useFocusEffect } from "@react-navigation/native";
 var { width, height } = Dimensions.get("window");
 
 const Forgot = ({ navigation }) => {
@@ -23,7 +26,13 @@ const Forgot = ({ navigation }) => {
   const [showCode, setShowCode] = useState(false);
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
-  const pinInput = useRef(null);
+  const [value, setValue] = useState("");
+  const CELL_COUNT = 6;
+  const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -34,31 +43,36 @@ const Forgot = ({ navigation }) => {
   }, [navigation]);
 
   const checkCode = async (code) => {
-    if (code !== pin) {
-      await pinInput.current.shake();
-      setPin("");
+    console.log(typeof code);
+    console.log(typeof pin);
+    if (Number(code) !== Number(pin)) {
+      setValue("");
     } else {
       setShowPassword(true);
       setShowCode(false);
     }
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      if (value.length === 6) {
+        checkCode(value);
+      }
+    }, [value])
+  );
+
   const validateEmail = async () => {
-    const res = await forgotUser({ email });
-    setPin(res.data.code);
-    setToken(res.data.token);
-    setShowForm(false);
-    setShowCode(true);
     console.log(email);
-    if (
-      email !== "" &&
-      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-    ) {
+    // let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (email !== "" && /\S+@\S+\.\S+/.test(email)) {
       const res = await forgotUser({ email });
-      setPin(res.data.code);
-      setToken(res.data.token);
-      setShowForm(false);
-      setShowCode(true);
+      console.log(res);
+      if (res) {
+        setPin(res.data.code);
+        setToken(res.data.token);
+        setShowForm(false);
+        setShowCode(true);
+      }
     } else {
       Toast.show({
         type: "error",
@@ -72,7 +86,7 @@ const Forgot = ({ navigation }) => {
   const resetPassword = async () => {
     setLoading(true);
     await resetUserPassword({ email, password }, token);
-    navigation.navigate("home");
+    navigation.navigate("Home");
   };
 
   return (
@@ -95,6 +109,7 @@ const Forgot = ({ navigation }) => {
           />
           <Button
             buttonStyle={styles.register}
+            titleStyle={styles.btn}
             raised
             title={"Submit"}
             loading={loading}
@@ -113,51 +128,47 @@ const Forgot = ({ navigation }) => {
               color: "#f8dc81",
             }}
             secureTextEntry
-            onChangeText={(value) => setPassword(value)}
+            onChangeText={(password) => setPassword(password)}
             label="Password"
             value={password}
           />
           <Button
             buttonStyle={styles.register}
+            titleStyle={styles.btn}
             raised
             title={"Reset Password"}
             loading={loading}
-            onPress={resetPassword()}
+            onPress={resetPassword}
           />
         </>
       )}
 
       {showCode && (
-        <View style={styles.digit}>
+        <View style={[styles.digit, styles.root]}>
           <Text h4 style={styles.command}>
             Enter your code
           </Text>
-          <SmoothPinCodeInput
-            placeholder="⭑"
-            cellStyle={{
-              borderWidth: 2,
-              borderRadius: 24,
-              borderColor: "#a2d0c1",
-              backgroundColor: "#eff7e1",
-            }}
-            cellStyleFocused={{
-              borderColor: "#214151",
-              backgroundColor: "#eff7e1",
-            }}
-            textStyle={{
-              fontSize: 24,
-              color: "#a2d0c1",
-            }}
-            textStyleFocused={{
-              color: "214151",
-            }}
-            ref={pinInput}
-            value={pin}
-            onTextChange={(code) => setPin(code)}
-            onFulfill={checkCode}
-            onBackspace={() => console.log("No more back.")}
-            cellSize={36}
-            codeLength={6}
+          <CodeField
+            ref={ref}
+            {...props}
+            value={value}
+            onChangeText={setValue}
+            cellCount={CELL_COUNT}
+            rootStyle={styles.codeFiledRoot}
+            keyboardType="number-pad"
+            textContentType="oneTimeCode"
+            renderCell={({ index, symbol, isFocused }) => (
+              <View
+                // Make sure that you pass onLayout={getCellOnLayoutHandler(index)} prop to root component of "Cell"
+                onLayout={getCellOnLayoutHandler(index)}
+                key={index}
+                style={[styles.cellRoot, isFocused && styles.focusCell]}
+              >
+                <Text style={styles.cellText}>
+                  {symbol || (isFocused ? <Cursor /> : null)}
+                </Text>
+              </View>
+            )}
           />
         </View>
       )}
@@ -168,6 +179,9 @@ const Forgot = ({ navigation }) => {
 export default Forgot;
 
 const styles = StyleSheet.create({
+  btn: {
+    fontFamily: "EBGaramond-Bold",
+  },
   digit: {
     alignItems: "center",
   },
@@ -182,6 +196,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     backgroundColor: "#214151",
     color: "#214151",
+    fontFamily: "EBGaramond-Bold",
   },
   stretch: {
     width: 100,
@@ -198,5 +213,31 @@ const styles = StyleSheet.create({
     color: "#214151",
     marginBottom: 12,
     marginTop: 5,
+  },
+  root: { padding: 20, minHeight: 300, textAlign: "center" },
+  title: { textAlign: "center", fontSize: 30, fontFamily: "EBGaramond-Italic" },
+  codeFiledRoot: {
+    marginTop: 20,
+    // width: 280,
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  cellRoot: {
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomColor: "#a2d0c1",
+    borderBottomWidth: 2,
+  },
+  cellText: {
+    color: "#214151",
+    fontSize: 36,
+    textAlign: "center",
+  },
+  focusCell: {
+    borderBottomColor: "#f8dc81",
+    borderBottomWidth: 3,
+    color: "red",
   },
 });

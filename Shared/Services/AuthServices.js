@@ -21,7 +21,6 @@ export async function loginUser(data) {
       Toast.show({
         type: "success",
         text1: `${res.data.email} successfully logged in`,
-        text2: `Code expires in 1 hr`,
         visibilityTime: 2000,
         topOffset: 30,
       });
