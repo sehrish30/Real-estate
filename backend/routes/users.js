@@ -1,4 +1,4 @@
-const { User } = require("../models/user");
+const { User } = require("../models/user.js");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -20,7 +20,7 @@ transporter.use(
   "compile",
   hbs({
     viewEngine: "express-handlebars",
-    viewPath: "../views/",
+    viewPath: "./views/",
   })
 );
 
@@ -58,7 +58,6 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
     const secret = process.env.SECRET;
-    console.log(secret);
     if (!user) {
       return res.status(400).send("No user with this email");
     }
@@ -115,7 +114,7 @@ router.post("/reset-password", async (req, res) => {
 
     user.save().then((result) => {
       let mailOptions = {
-        from: "sehrishwaheed98@gmail.com",
+        from: process.env.EMAIL,
         to: user.email,
         subject: "Iconic Real Estate ✔",
         template: "index",
@@ -126,7 +125,7 @@ router.post("/reset-password", async (req, res) => {
 
       transporter.sendMail(mailOptions, (err, data) => {
         if (err) {
-          return res.status(401).send("Error occurs");
+          return res.status(401).send(err);
         }
         return res.status(200).send({ code, token });
       });

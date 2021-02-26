@@ -1,6 +1,6 @@
 const { Agency } = require("../models/agency");
 const express = require("express");
-const { User } = require("../../../EcommerceProject/backend/models/user");
+const { User } = require("../models/user");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");

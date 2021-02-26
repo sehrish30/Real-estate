@@ -13,7 +13,7 @@ require("dotenv/config");
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 app.use(cors());
-// * sometype of http request get, post etc
+// * sometype of http request get, post etc ok
 app.options("*", cors);
 
 /*---------------------------------
@@ -47,13 +47,19 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: "Real-Estate",
+    useCreateIndex: true
   })
   .then(() => {
     console.log("Database connection ready...");
   })
   .catch((err) => console.log(err));
 
-// webserver listen to port
-app.listen(3000, () => {
-  console.log("Server is running on 3000");
+// production
+var server = app.listen(process.env.PORT || 3000, () => {
+  var port = server.address().port;
+  console.log(`Port is ${port}`);
 });
+// // webserver listen to port
+// app.listen(3000, () => {
+//   console.log("Server is running on 3000");
+// });

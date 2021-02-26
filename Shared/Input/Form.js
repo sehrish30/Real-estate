@@ -20,7 +20,7 @@ const Form = ({
       : navigation.navigate("Register");
   };
   return (
-    <KeyboardAwareScrollView style={styles.form}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.regform}>
       <Input
         labelStyle={[styles.font, { color: "#a2d0c1" }]}
         rightIcon={{
@@ -63,7 +63,7 @@ const Form = ({
 export default Form;
 
 const styles = StyleSheet.create({
-  form: {
+  regform: {
     marginHorizontal: "auto",
     marginTop: 15,
   },
