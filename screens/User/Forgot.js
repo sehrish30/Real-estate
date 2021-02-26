@@ -47,6 +47,13 @@ const Forgot = ({ navigation }) => {
     console.log(typeof pin);
     if (Number(code) !== Number(pin)) {
       setValue("");
+      Toast.show({
+        type: "error",
+        text1: `Wrong code`,
+        text2: `Try again!`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
     } else {
       setShowPassword(true);
       setShowCode(false);
@@ -63,6 +70,7 @@ const Forgot = ({ navigation }) => {
 
   const validateEmail = async () => {
     console.log(email);
+    setEmail(email.toLowerCase());
     // let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (email !== "" && /\S+@\S+\.\S+/.test(email)) {
       const res = await forgotUser({ email });
@@ -84,9 +92,21 @@ const Forgot = ({ navigation }) => {
   };
 
   const resetPassword = async () => {
-    setLoading(true);
-    await resetUserPassword({ email, password }, token);
-    navigation.navigate("Home");
+    let regex = "/(?=.*d)(?=.*[a-z]).{6,}/";
+    let agencyRegex = "/(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{6,}/";
+    if (password.length >= 6 && regex.test(password)) {
+      setLoading(true);
+      await resetUserPassword({ email: email.toLowerCase(), password }, token);
+      navigation.navigate("Home");
+    } else {
+      Toast.show({
+        type: "error",
+        text1: `Password must be atleast 6 characters`,
+        text2: `Password must have atleast 1 number`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
   };
 
   return (
@@ -145,9 +165,7 @@ const Forgot = ({ navigation }) => {
 
       {showCode && (
         <View style={[styles.digit, styles.root]}>
-          <Text h4 style={styles.command}>
-            Enter your code
-          </Text>
+          <Text style={styles.command}>Enter your code</Text>
           <CodeField
             ref={ref}
             {...props}
@@ -186,8 +204,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   command: {
-    color: "#a2d0c1",
+    color: "#214151",
     paddingBottom: 10,
+    textAlign: "center",
+    marginHorizontal: "auto",
+    fontFamily: "EBGaramond-Regular",
+    fontSize: 25,
   },
   font: {
     fontFamily: "EBGaramond-Regular",
@@ -210,15 +232,20 @@ const styles = StyleSheet.create({
   heading: {
     textAlign: "center",
     fontSize: 25,
-    color: "#214151",
+    color: "#a2d0c1",
     marginBottom: 12,
     marginTop: 5,
   },
-  root: { padding: 20, minHeight: 300, textAlign: "center" },
+  root: {
+    width: width / 1.2,
+    minHeight: 300,
+    textAlign: "center",
+  },
   title: { textAlign: "center", fontSize: 30, fontFamily: "EBGaramond-Italic" },
   codeFiledRoot: {
     marginTop: 20,
     // width: 280,
+    alignItems: "center",
     marginLeft: "auto",
     marginRight: "auto",
   },

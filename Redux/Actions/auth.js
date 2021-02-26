@@ -4,6 +4,7 @@ import {
   checkUser,
 } from "../../Shared/Services/AuthServices";
 import { LOGIN, FILLSTATE, LOGOUT } from "../constants";
+import Toast from "react-native-toast-message";
 
 export const login = (data, navigation) => (dispatch) => {
   loginUser(data)
@@ -14,6 +15,12 @@ export const login = (data, navigation) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
+      Toast.show({
+        type: "error",
+        text1: `${err}`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
     });
 };
 
@@ -26,6 +33,12 @@ export const register = (data, navigation) => async (dispatch) => {
     }
   } catch (e) {
     console.error(e);
+    Toast.show({
+      type: "error",
+      text1: `${e}`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
   }
 };
 

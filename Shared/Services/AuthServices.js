@@ -85,10 +85,10 @@ export async function forgotUser(data) {
       return res;
     }
   } catch (e) {
-    console.error(e);
     Toast.show({
       type: "error",
-      text1: `Some error occured try again`,
+      text1: `${e}`,
+      text2: `Make sure email is registered`,
       visibilityTime: 4000,
       topOffset: 30,
     });

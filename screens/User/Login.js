@@ -24,7 +24,9 @@ const Login = ({ navigation }) => {
   function LoginUser() {
     setLoading(true);
     // loginUser({ email, password });
-    dispatch(actions.login({ email, password }, navigation));
+    dispatch(
+      actions.login({ email: email.toLowerCase(), password }, navigation)
+    );
   }
 
   return (

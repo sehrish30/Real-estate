@@ -14,7 +14,9 @@ const Register = ({ navigation }) => {
 
   function registerUser() {
     setLoading(true);
-    dispatch(actions.register({ email, password }, navigation));
+    dispatch(
+      actions.register({ email: email.toLowerCase(), password }, navigation)
+    );
   }
 
   useLayoutEffect(() => {
