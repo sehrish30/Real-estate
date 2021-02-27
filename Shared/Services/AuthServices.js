@@ -87,7 +87,7 @@ export async function forgotUser(data) {
   } catch (e) {
     Toast.show({
       type: "error",
-      text1: `${e}`,
+      text1: `Email incorrect`,
       text2: `Make sure email is registered`,
       visibilityTime: 4000,
       topOffset: 30,
@@ -122,5 +122,29 @@ export async function resetUserPassword(data, token) {
       visibilityTime: 4000,
       topOffset: 30,
     });
+  }
+}
+
+export async function loginAgencySrv(data, navigation) {
+  try {
+    const res = await axios.post(`${baseURL}agencies/login`, data, config);
+    if (res.statusText == "OK") {
+      Toast.show({
+        type: "success",
+        text1: `Successfully logged in`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+      navigation.navigate("Home");
+      return res;
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Some error has occurred`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+    console.error(err);
   }
 }

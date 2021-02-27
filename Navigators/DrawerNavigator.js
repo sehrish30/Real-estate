@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useWindowDimensions } from "react-native";
 
@@ -6,13 +6,15 @@ import { useWindowDimensions } from "react-native";
 import AffordibilityCalculator from "../screens/Drawer/AffordibilityCalculator";
 import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
+import Home from "../screens/Drawer/Home";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const { width, height } = useWindowDimensions();
+
   return (
     <Drawer.Navigator
-      initialRouteName="RegisterAgent"
+      initialRouteName="MainView"
       openByDefault={false}
       headerStatusBarHeight="20"
       drawerContentOptions={{
@@ -26,6 +28,7 @@ const DrawerNavigator = () => {
       drawerPosition="right"
       drawerType={width >= 768 ? "permanent" : "slide"}
     >
+      <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="RegisterAgent" component={RegisterAgent} />
       <Drawer.Screen
         name="AffordibilityCalculator"

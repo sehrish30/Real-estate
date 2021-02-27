@@ -5,6 +5,7 @@ import Form from "../../Shared/Input/Form";
 import { useSelector, useDispatch } from "react-redux";
 import * as actions from "../../Redux/Actions/auth";
 import { ScrollView } from "react-native-gesture-handler";
+import Toast from "react-native-toast-message";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -13,10 +14,32 @@ const Register = ({ navigation }) => {
   const dispatch = useDispatch();
 
   function registerUser() {
-    setLoading(true);
-    dispatch(
-      actions.register({ email: email.toLowerCase(), password }, navigation)
-    );
+    emailRegex = "/S+@S+.S+/";
+    passRegex = "/(?=.*d)(?=.*[a-z]).{6,}/";
+    if (email !== "" && emailRegex.test(email)) {
+      if (password.length >= 6 && passRegex.test(password)) {
+        setLoading(true);
+        dispatch(
+          actions.register({ email: email.toLowerCase(), password }, navigation)
+        );
+      } else {
+        Toast.show({
+          type: "error",
+          text1: `Password must be atleast 6 characters`,
+          text2: `Must contain number`,
+          visibilityTime: 4000,
+          topOffset: 30,
+        });
+      }
+    } else {
+      Toast.show({
+        type: "error",
+        text1: `Email Invalid`,
+        text2: `e.g: email@exp.com`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
   }
 
   useLayoutEffect(() => {

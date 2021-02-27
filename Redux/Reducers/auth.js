@@ -1,13 +1,11 @@
-import { LOGIN, FILLSTATE, LOGOUT } from "../constants";
-// import * as SecureStore from "expo-secure-store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LOGIN, FILLSTATE, LOGOUT, LOGINAGENCY } from "../constants";
 
 const initialState = {
-  //   token: SecureStore.getItemAsync("jwt") || "",
   token: "",
   user: {},
   isLoggedIn: false,
-  //   isLoggedIn: !!SecureStore.getItemAsync("jwt"),
+  agency: {},
+  isLoggedInAgency: false,
 };
 
 const auth = (state = initialState, action) => {
@@ -31,6 +29,13 @@ const auth = (state = initialState, action) => {
         token: "",
         user: {},
         isLoggedIn: false,
+      };
+    case LOGINAGENCY:
+      return {
+        ...state,
+        agency: action.payload.agency,
+        token: action.payload.jwt,
+        isLoggedInAgency: action.payload.isLoggedInAgency,
       };
     default:
       return state;

@@ -2,9 +2,10 @@ import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Form from "../../Shared/Input/Form";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import * as actions from "../../Redux/Actions/auth";
 import { ScrollView } from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -13,11 +14,25 @@ const Login = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
+  const goToAgencyLogin = () => {
+    navigation.navigate("AgencyLogin");
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
       headerTitleStyle: { color: "#a2d0c1" },
       headerTintColor: "#a2d0c1",
+      headerTitle: "Login",
+      headerRight: () => (
+        <Icon
+          style={{ marginRight: 20 }}
+          onPress={goToAgencyLogin}
+          name="ios-business"
+          color={"#214151"}
+          size={30}
+        />
+      ),
     });
   }, [navigation]);
 

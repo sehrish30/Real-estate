@@ -182,6 +182,7 @@ const RegisterAgent = ({ navigation }) => {
       console.log("VALIDATE", validationErrors);
 
       if (errors) {
+        setLoading(true);
         const res = await axios.post(`${baseURL}agencies/register`, formData);
 
         if (res.status == 200) {
@@ -198,10 +199,12 @@ const RegisterAgent = ({ navigation }) => {
           setLocations([]);
           setPhone("");
         } else {
+          setLoading(false);
           throw new Error(res.data);
         }
         navigation.navigate("User");
       } else {
+        setLoading(false);
         Toast.show({
           type: "error",
           text1: `${Object.values(validationErrors).join(" ")}`,
@@ -418,6 +421,7 @@ const RegisterAgent = ({ navigation }) => {
             buttonStyle={[styles.font, styles.register]}
             title="Register Agency"
             onPress={registerAgent}
+            disabled={loading}
           />
         </ScrollView>
       </KeyboardAwareScrollView>

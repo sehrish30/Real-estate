@@ -4,6 +4,26 @@ const { User } = require("../models/user");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
+
+const transporter = nodemailer.createTransport({
+  service: "SendinBlue", // no need to set host or port etc.
+  auth: {
+    user: process.env.SENDINBLUE_USER,
+    pass: process.env.SENDINBLUE_PW,
+    api: process.env.SENDINBLUE_API,
+  },
+});
+
+transporter.use(
+  "compile",
+  hbs({
+    viewEngine: "express-handlebars",
+    viewPath: "./views/",
+  })
+);
+
 /*----------------------------------------
             ALL AGENCIES
 ---------------------------------------- */
@@ -13,10 +33,13 @@ router.get(`/`, async (req, res) => {
     let locationFilter = {};
     let nameFilter = {};
     let mainFilter = {};
+
+    // user can query by name and location
     if (req.query.location) {
       locationFilter = { location: { $in: req.query.location.split(",") } };
       mainFilter = { ...locationFilter };
     }
+
     if (req.query.name) {
       let agencyName = new RegExp("^" + req.query.name);
       nameFilter = { name: agencyName };
@@ -176,8 +199,9 @@ router.post("/approved", async (req, res) => {
       if (isAdmin) {
         const randomNumber = Math.floor(Math.random() * 1000 + 1);
 
-        // has password
-        const password = `${req.body.name}${randomNumber}`;
+        // hash password
+        const email = req.body.email.split("@").shift();
+        const password = `${email}${randomNumber}`;
         const passwordHash = bcrypt.hashSync(password, 14);
         Agency.updateOne(
           { _id: req.body.id },
@@ -188,11 +212,32 @@ router.post("/approved", async (req, res) => {
             },
           },
           { upsert: true }
-        ).then((result, err) => {
-          return res
-            .status(200)
-            .send(`You are a certified agency. Your password is ${password}`);
-        });
+        )
+          .then((result, err) => {
+            let mailOptions = {
+              from: process.env.EMAIL,
+              to: req.body.email,
+              subject: "Iconic Real Estate ✔",
+              template: "agency",
+              context: {
+                password: password,
+              },
+            };
+
+            transporter.sendMail(mailOptions, (err, data) => {
+              if (err) {
+                return res.status(401).send(err);
+              }
+              return res
+                .status(200)
+                .send(
+                  `You are a certified agency. Your password is ${password}${email}`
+                );
+            });
+          })
+          .catch((e) => {
+            console.log(e);
+          });
       }
     });
   } catch (e) {
@@ -205,15 +250,17 @@ router.post("/approved", async (req, res) => {
 ---------------------------------------- */
 router.post("/login", async (req, res) => {
   try {
-    const agency = await Agency.findOne({ email: req.body.email }).catch((e) =>
-      console.error(e)
-    );
+    const agency = await Agency.findOne({ email: req.body.email }).select([
+      "-attachments",
+      "-isApproved",
+    ]);
     const secret = process.env.SECRET;
     if (!agency) {
       return res.status(400).send("The agency email not found");
     }
 
     if (agency && bcrypt.compareSync(req.body.password, agency.password)) {
+      agency.password = undefined;
       const token = jwt.sign(
         {
           agencyId: agency.id,
@@ -222,7 +269,8 @@ router.post("/login", async (req, res) => {
         secret,
         { expiresIn: "1d" }
       );
-      return res.status(200).send({ agency: agency.name, token });
+
+      return res.status(200).json({ agency: agency, token });
     } else {
       return res.status(400).send("Password Incorrect");
     }

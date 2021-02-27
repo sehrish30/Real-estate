@@ -3,7 +3,7 @@ import {
   registerUser,
   checkUser,
 } from "../../Shared/Services/AuthServices";
-import { LOGIN, FILLSTATE, LOGOUT } from "../constants";
+import { LOGIN, FILLSTATE, LOGOUT, LOGINAGENCY } from "../constants";
 import Toast from "react-native-toast-message";
 
 export const login = (data, navigation) => (dispatch) => {
@@ -46,11 +46,12 @@ export const fillStore = (data) => async (dispatch) => {
   try {
     const { jwt, user, isLoggedIn } = data;
     const res = await checkUser(user.decoded.userId, jwt);
-
-    dispatch({
-      type: FILLSTATE,
-      payload: { jwt, user, isLoggedIn },
-    });
+    if (res) {
+      dispatch({
+        type: FILLSTATE,
+        payload: { jwt, user, isLoggedIn },
+      });
+    }
   } catch (e) {
     console.log(e);
   }
@@ -59,5 +60,12 @@ export const fillStore = (data) => async (dispatch) => {
 export const logoutUser = () => (dispatch) => {
   dispatch({
     type: LOGOUT,
+  });
+};
+
+export const loginAgencyAction = (data) => (dispatch) => {
+  dispatch({
+    type: LOGINAGENCY,
+    payload: data,
   });
 };
