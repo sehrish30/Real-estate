@@ -4,9 +4,9 @@ import Form from "../../Shared/Input/Form";
 import { SafeAreaView } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { loginAgencySrv } from "../../Shared/Services/AuthServices";
-import Toast from "react-native-toast-message";
 import { useDispatch } from "react-redux";
 import * as actions from "../../Redux/Actions/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AgencyLogin = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -17,14 +17,30 @@ const AgencyLogin = ({ navigation }) => {
     setLoading(true);
     const res = await loginAgencySrv({ email, password }, navigation);
     console.log(res);
-    const { id, name, email, phoneNumber, logo, location } = res.data.agency;
-    dispatch(
-      actions.loginAgencyAction({
-        agency: { id, name, email, phoneNumber, logo, location },
-        token: res.data.token,
-        isLoggedInAgency: true,
-      })
-    );
+    if (res) {
+      const { id, name, email, phoneNumber, logo, location } = res.data.agency;
+      const agency = {
+        id,
+        name,
+        email,
+        phoneNumber,
+        logo,
+        location,
+      };
+      // Storing informatiom in redux
+      dispatch(
+        actions.loginAgencyAction({
+          agency,
+          token: res.data.token,
+          isLoggedInAgency: true,
+        })
+      );
+
+      // Store information in local Storage
+      await AsyncStorage.setItem("jwt", res.data.token);
+      await AsyncStorage.setItem("agency", JSON.stringify(agency));
+      await AsyncStorage.setItem("isLoggedInAgency", true);
+    }
   };
 
   useLayoutEffect(() => {

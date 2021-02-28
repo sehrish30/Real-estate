@@ -8,6 +8,7 @@ import AgencyLogin from "../screens/User/AgencyLogin";
 import Profile from "../screens/User/Profile";
 
 import { useSelector, useDispatch } from "react-redux";
+import AgencyProfile from "../screens/User/AgencyProfile";
 
 const Stack = createStackNavigator();
 
@@ -20,12 +21,16 @@ const globalScreenOptions = {
 
 function MyStack() {
   let isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  let isLoggedInAgency = useSelector((state) => state.auth.isLoggedInAgency);
 
   return (
     <Stack.Navigator
       // initialRouteName={token ? "Profile" : "Login"}
       screenOptions={globalScreenOptions}
     >
+      {isLoggedInAgency && (
+        <Stack.Screen name="AgencyProfile" component={AgencyProfile} />
+      )}
       {isLoggedIn ? (
         <Stack.Screen name="Profile" component={Profile} />
       ) : (

@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import { StyleSheet, Text, View, Animated, Dimensions } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { fillStore } from "../../Redux/Actions/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,11 +9,26 @@ import { Header } from "react-native-elements";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Ionicons";
 
+import Splash from "../Splash";
+
 const Home = ({ navigation }) => {
+  let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
+
   const dispatch = useDispatch();
   const showMenu = () => {
     navigation.toggleDrawer();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const time = setTimeout(function () {
+        setBootSplashIsVisible(false);
+      }, 4000);
+      return () => {
+        clearTimeout(time);
+      };
+    }, [bootSplashIsVisible])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -24,10 +39,15 @@ const Home = ({ navigation }) => {
           let jwt = await AsyncStorage.getItem("jwt");
           let userData = await AsyncStorage.getItem("user");
           let user = userData ? JSON.parse(userData) : {};
-          let isLoggedIn = !!(await AsyncStorage.getItem("jwt"));
-
-          if (isLoggedIn) {
-            dispatch(fillStore({ jwt, user, isLoggedIn }));
+          let isLoggedIn = !!(await AsyncStorage.getItem("isLoggedIn"));
+          let agency = await AsyncStorage.getItem("agency");
+          let isLoggedInAgency = !!(await AsyncStorage.getItem(
+            "isLoggedInAgency"
+          ));
+          if (isLoggedIn || isLoggedInAgency) {
+            dispatch(
+              fillStore({ jwt, user, isLoggedIn, isLoggedInAgency, agency })
+            );
           }
         } catch (e) {
           console.error(e);
@@ -43,38 +63,47 @@ const Home = ({ navigation }) => {
     }, [])
   );
   return (
-    <SafeAreaView>
-      <Header
-        containerStyle={{
-          backgroundColor: "#eff7e1",
-          justifyContent: "space-around",
-        }}
-        leftComponent={
-          <View style={styles.rightNav}>
+    <SafeAreaView style={styles.container}>
+      {bootSplashIsVisible ? (
+        <Splash bootSplashIsVisible={bootSplashIsVisible} />
+      ) : (
+        <Header
+          containerStyle={{
+            backgroundColor: "#eff7e1",
+            justifyContent: "space-around",
+          }}
+          leftComponent={
+            <View style={styles.rightNav}>
+              <TouchableOpacity style={styles.menu}>
+                <Icon
+                  onPress={showMenu}
+                  name="notifications"
+                  color={"#214151"}
+                  size={30}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menu}>
+                <Icon
+                  onPress={showMenu}
+                  name="ios-search"
+                  color={"#214151"}
+                  size={30}
+                />
+              </TouchableOpacity>
+            </View>
+          }
+          rightComponent={
             <TouchableOpacity style={styles.menu}>
               <Icon
                 onPress={showMenu}
-                name="notifications"
+                name="menu"
                 color={"#214151"}
                 size={30}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="ios-search"
-                color={"#214151"}
-                size={30}
-              />
-            </TouchableOpacity>
-          </View>
-        }
-        rightComponent={
-          <TouchableOpacity style={styles.menu}>
-            <Icon onPress={showMenu} name="menu" color={"#214151"} size={30} />
-          </TouchableOpacity>
-        }
-      />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -82,11 +111,15 @@ const Home = ({ navigation }) => {
 export default Home;
 
 const styles = StyleSheet.create({
-  menu: {
-    paddingTop: 20,
-    paddingRight: 10,
+  container: {
+    flex: 1,
   },
   rightNav: {
     flexDirection: "row",
+    marginHorizontal: 10,
+  },
+  menu: {
+    paddingHorizontal: 10,
+    paddingTop: 25,
   },
 });

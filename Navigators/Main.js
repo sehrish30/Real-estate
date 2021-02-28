@@ -1,11 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform, StatusBar } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 const Tab = createBottomTabNavigator();
 import UserAuthNavigator from "./UserAuthNavigator";
 import DrawerNavigator from "./DrawerNavigator";
+// import { StatusBar } from "expo-status-bar";
 
 const Main = () => {
   return (
@@ -17,6 +18,8 @@ const Main = () => {
         activeTintColor: "#214151",
       }}
     >
+      {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
+
       <Tab.Screen
         name="Home"
         component={DrawerNavigator}

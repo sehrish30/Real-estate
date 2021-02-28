@@ -22,6 +22,8 @@ const auth = (state = initialState, action) => {
         user: action.payload.user,
         token: action.payload.jwt,
         isLoggedIn: action.payload.isLoggedIn,
+        isLoggedInAgency: action.payload.isLoggedInAgency,
+        agency: action.payload.agency,
       };
     case LOGOUT:
       return {
@@ -29,6 +31,8 @@ const auth = (state = initialState, action) => {
         token: "",
         user: {},
         isLoggedIn: false,
+        isLoggedInAgency: false,
+        agency: {},
       };
     case LOGINAGENCY:
       return {

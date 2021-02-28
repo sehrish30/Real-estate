@@ -279,4 +279,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+            Agency UPDATE
+---------------------------------------- */
+
+router.put("/:id", async (req, res) => {});
+
 module.exports = router;

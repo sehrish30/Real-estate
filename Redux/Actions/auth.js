@@ -44,14 +44,11 @@ export const register = (data, navigation) => async (dispatch) => {
 
 export const fillStore = (data) => async (dispatch) => {
   try {
-    const { jwt, user, isLoggedIn } = data;
-    const res = await checkUser(user.decoded.userId, jwt);
-    if (res) {
-      dispatch({
-        type: FILLSTATE,
-        payload: { jwt, user, isLoggedIn },
-      });
-    }
+    const { jwt, user, isLoggedIn, isLoggedInAgency, agency } = data;
+    dispatch({
+      type: FILLSTATE,
+      payload: { jwt, user, isLoggedIn, isLoggedInAgency, agency },
+    });
   } catch (e) {
     console.log(e);
   }
