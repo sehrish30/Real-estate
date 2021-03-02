@@ -24,9 +24,12 @@ const agencySchema = mongoose.Schema(
       unique: true,
     },
     logo: {
-      type: String,
-      default:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+      type: Object,
+      default: {
+        public_id: Date.now,
+        url:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+      },
     },
     location: [String],
     attachments: [
@@ -35,7 +38,7 @@ const agencySchema = mongoose.Schema(
         file: String,
       },
     ],
-    details: {
+    bio: {
       type: String,
     },
   },

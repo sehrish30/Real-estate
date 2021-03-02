@@ -1,4 +1,10 @@
-import { LOGIN, FILLSTATE, LOGOUT, LOGINAGENCY } from "../constants";
+import {
+  LOGIN,
+  FILLSTATE,
+  LOGOUT,
+  LOGINAGENCY,
+  UPDATEAGENCYPROFILE,
+} from "../constants";
 
 const initialState = {
   token: "",
@@ -40,6 +46,11 @@ const auth = (state = initialState, action) => {
         agency: action.payload.agency,
         token: action.payload.jwt,
         isLoggedInAgency: action.payload.isLoggedInAgency,
+      };
+    case UPDATEAGENCYPROFILE:
+      return {
+        ...state,
+        agency: action.payload,
       };
     default:
       return state;

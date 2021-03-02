@@ -3,8 +3,15 @@ import {
   registerUser,
   checkUser,
 } from "../../Shared/Services/AuthServices";
-import { LOGIN, FILLSTATE, LOGOUT, LOGINAGENCY } from "../constants";
+import {
+  LOGIN,
+  FILLSTATE,
+  LOGOUT,
+  LOGINAGENCY,
+  UPDATEAGENCYPROFILE,
+} from "../constants";
 import Toast from "react-native-toast-message";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const login = (data, navigation) => (dispatch) => {
   loginUser(data)
@@ -63,6 +70,13 @@ export const logoutUser = () => (dispatch) => {
 export const loginAgencyAction = (data) => (dispatch) => {
   dispatch({
     type: LOGINAGENCY,
+    payload: data,
+  });
+};
+
+export const updateProfile = (data) => (dispatch) => {
+  dispatch({
+    type: UPDATEAGENCYPROFILE,
     payload: data,
   });
 };

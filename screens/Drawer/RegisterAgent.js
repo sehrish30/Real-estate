@@ -20,7 +20,7 @@ import SelectBox from "react-native-multi-selectbox";
 import { catgeories } from "../../Shared/Categories";
 import Dialog from "react-native-dialog";
 import { useFocusEffect } from "@react-navigation/native";
-import Toast, { BaseToast } from "react-native-toast-message";
+import Toast from "react-native-toast-message";
 import { Button, Image } from "react-native-elements";
 
 // backend

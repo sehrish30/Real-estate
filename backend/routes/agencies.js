@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
+const mongoose = require("mongoose");
+const cloudinary = require("cloudinary");
 
 const transporter = nodemailer.createTransport({
   service: "SendinBlue", // no need to set host or port etc.
@@ -23,6 +25,12 @@ transporter.use(
     viewPath: "./views/",
   })
 );
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API,
+  api_secret: process.env.CLOUD_SECRET,
+});
 
 /*----------------------------------------
             ALL AGENCIES
@@ -283,6 +291,86 @@ router.post("/login", async (req, res) => {
             Agency UPDATE
 ---------------------------------------- */
 
-router.put("/:id", async (req, res) => {});
+router.put("/edit-agency", async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(` `)[1];
+
+  if (!mongoose.isValidObjectId(req.body.id)) {
+    return res.status(400).res("Invalid agency");
+  }
+
+  try {
+    jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+
+      if (agencyId == req.body.id) {
+        agency = Agency.findByIdAndUpdate(
+          req.body.id,
+          {
+            bio: req.body.bio,
+            location: req.body.location,
+          },
+          { new: true }
+        ).exec((err, result) => {
+          if (err) {
+            return res.status(422).send("Agency couldn't be updated");
+          } else {
+            return res.send(result);
+          }
+        });
+      } else {
+        return res.status(422).send("Something is wrong");
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+/*----------------------------------------
+            Agency UPDATE Logo
+---------------------------------------- */
+
+router.delete(`/delete-image`, async (req, res) => {
+  // Update Profile dp
+  cloudinary.uploader.destroy(req.body.imageId, async (result) => {
+    console.log(result);
+  });
+});
+
+router.put(`/upload-logo`, async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(` `)[1];
+  jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: err });
+    }
+    const { agencyId } = decoded;
+
+    if (agencyId == req.body.id) {
+      await Agency.findByIdAndUpdate(
+        {
+          id: req.body.id,
+        },
+        {
+          logo: {
+            public_id: req.body.public_id,
+            url: req.body.secure_url,
+          },
+        },
+        { new: true }
+      ).exec((err, result) => {
+        if (err) {
+          return res.status(422).send("Agency couldn't be updated");
+        } else {
+          return res.send(result);
+        }
+      });
+    }
+  });
+});
 
 module.exports = router;

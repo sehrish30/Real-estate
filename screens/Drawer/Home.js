@@ -39,11 +39,14 @@ const Home = ({ navigation }) => {
           let jwt = await AsyncStorage.getItem("jwt");
           let userData = await AsyncStorage.getItem("user");
           let user = userData ? JSON.parse(userData) : {};
-          let isLoggedIn = !!(await AsyncStorage.getItem("isLoggedIn"));
-          let agency = await AsyncStorage.getItem("agency");
-          let isLoggedInAgency = !!(await AsyncStorage.getItem(
-            "isLoggedInAgency"
-          ));
+          let isLoggedIn = !!(
+            (await AsyncStorage.getItem("isLoggedIn")) == "true"
+          );
+          let agencyData = await AsyncStorage.getItem("agency");
+          let agency = agencyData ? JSON.parse(agencyData) : {};
+          let isLoggedInAgency = !!(
+            (await AsyncStorage.getItem("isLoggedInAgency")) == "true"
+          );
           if (isLoggedIn || isLoggedInAgency) {
             dispatch(
               fillStore({ jwt, user, isLoggedIn, isLoggedInAgency, agency })

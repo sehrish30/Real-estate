@@ -15,10 +15,20 @@ const AgencyLogin = ({ navigation }) => {
   const dispatch = useDispatch();
   const loginAgency = async () => {
     setLoading(true);
+    setEmail(email.toLowerCase());
+    setEmail(email.trim());
     const res = await loginAgencySrv({ email, password }, navigation);
     console.log(res);
     if (res) {
-      const { id, name, email, phoneNumber, logo, location } = res.data.agency;
+      const {
+        id,
+        name,
+        email,
+        phoneNumber,
+        logo,
+        location,
+        bio,
+      } = res.data.agency;
       const agency = {
         id,
         name,
@@ -26,7 +36,20 @@ const AgencyLogin = ({ navigation }) => {
         phoneNumber,
         logo,
         location,
+        bio,
       };
+
+      // navigation.replace("Home");
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+
+      // Store information in local Storage
+      await AsyncStorage.setItem("jwt", res.data.token);
+      await AsyncStorage.setItem("agency", JSON.stringify(agency));
+      await AsyncStorage.setItem("isLoggedInAgency", "true");
       // Storing informatiom in redux
       dispatch(
         actions.loginAgencyAction({
@@ -35,11 +58,8 @@ const AgencyLogin = ({ navigation }) => {
           isLoggedInAgency: true,
         })
       );
-
-      // Store information in local Storage
-      await AsyncStorage.setItem("jwt", res.data.token);
-      await AsyncStorage.setItem("agency", JSON.stringify(agency));
-      await AsyncStorage.setItem("isLoggedInAgency", true);
+    } else {
+      setLoading(false);
     }
   };
 

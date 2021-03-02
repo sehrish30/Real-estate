@@ -16,6 +16,7 @@ const Profile = ({ navigation }) => {
     try {
       await AsyncStorage.removeItem("jwt");
       await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("isLoggedIn");
       dispatch(logoutUser());
       navigation.navigate("Home");
     } catch (e) {

@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import store from "./Redux/store";
 import { Provider } from "react-redux";
 import { useFonts } from "expo-font";
+import { ModalPortal } from "react-native-modals";
 
 export default function App() {
   const [loaded] = useFonts({
@@ -23,6 +24,7 @@ export default function App() {
         {/* <DrawerNavigator /> */}
         <Main />
         <Toast ref={(ref) => Toast.setRef(ref)} />
+        <ModalPortal />
       </NavigationContainer>
     </Provider>
   );

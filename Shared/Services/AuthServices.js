@@ -30,6 +30,7 @@ export async function loginUser(data) {
       const decoded = jwt_decode(res.data.token);
       sendData = { decoded, ...res.data };
       await AsyncStorage.setItem("user", JSON.stringify(sendData));
+      await AsyncStorage.setItem("isLoggedIn", "true");
       //   dispatch(setCurrentUser(decoded, user));
     }
     return sendData;
@@ -128,7 +129,7 @@ export async function resetUserPassword(data, token) {
 export async function loginAgencySrv(data, navigation) {
   try {
     const res = await axios.post(`${baseURL}agencies/login`, data, config);
-    if (res.statusText == "OK") {
+    if (res.status == 200) {
       Toast.show({
         type: "success",
         text1: `Successfully logged in`,
