@@ -71,6 +71,7 @@ const Forgot = ({ navigation }) => {
   const validateEmail = async () => {
     console.log(email);
     setEmail(email.toLowerCase());
+    setEmail(email.trim());
     // let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (email !== "" && /\S+@\S+\.\S+/.test(email)) {
       const res = await forgotUser({ email });

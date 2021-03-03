@@ -43,29 +43,31 @@ const ProfileCard = ({
         </Card.Title>
         <Card.Divider />
         <Text style={styles.bio}>{bio}</Text>
-      </Card>
-      <View style={styles.locationRow}>
-        <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-          <IonIcons
-            style={{ verticalAlign: "middle", marginRight: 15 }}
-            name="ios-location-sharp"
-            color={"#214151"}
-            size={20}
-          />
-          Locations
-        </Text>
-
-        <View style={styles.locationSection}>
-          {locations.map((location) => (
-            <Badge
-              value={location}
-              badgeStyle={styles.location}
-              textStyle={[styles.font, { color: "#214151" }]}
-              // containerStyle={styles.badgeSection}
+        <Card.Divider />
+        <View style={styles.locationRow}>
+          <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
+            <IonIcons
+              style={{ marginRight: 8 }}
+              name="ios-location-sharp"
+              color={"#214151"}
+              size={20}
             />
-          ))}
+            Locations
+          </Text>
+
+          <View style={styles.locationSection}>
+            {locations.map((location) => (
+              <Badge
+                key={location}
+                value={location}
+                badgeStyle={styles.location}
+                textStyle={[styles.font, { color: "#214151", fontSize: 14 }]}
+                // containerStyle={styles.badgeSection}
+              />
+            ))}
+          </View>
         </View>
-      </View>
+      </Card>
     </>
   );
 };
@@ -100,6 +102,7 @@ const styles = StyleSheet.create({
     color: "#306968",
     textAlign: "center",
     fontSize: 16,
+    marginBottom: 16,
   },
   locationSection: {
     display: "flex",
@@ -117,6 +120,7 @@ const styles = StyleSheet.create({
   locationRow: {
     // marginHorizontal: "auto",
     padding: 5,
+    paddingBottom: 0,
     alignItems: "center",
 
     backgroundColor: "#e4fbff",

@@ -47,7 +47,8 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     dbName: "Real-Estate",
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false,
   })
   .then(() => {
     console.log("Database connection ready...");

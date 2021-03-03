@@ -336,14 +336,20 @@ router.put("/edit-agency", async (req, res) => {
 
 router.delete(`/delete-image`, async (req, res) => {
   // Update Profile dp
+  console.log(req.body);
   cloudinary.uploader.destroy(req.body.imageId, async (result) => {
     console.log(result);
+    if (result.result == "ok") {
+      return res.status(200).send("DONE");
+    }
+    return res.status(401).send("Not found");
   });
 });
 
 router.put(`/upload-logo`, async (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(` `)[1];
+  console.log(req.body);
   jwt.verify(token, process.env.SECRET, async (err, decoded) => {
     if (err) {
       return res.status(401).json({ error: err });
@@ -352,9 +358,7 @@ router.put(`/upload-logo`, async (req, res) => {
 
     if (agencyId == req.body.id) {
       await Agency.findByIdAndUpdate(
-        {
-          id: req.body.id,
-        },
+        req.body.id,
         {
           logo: {
             public_id: req.body.public_id,
@@ -364,8 +368,11 @@ router.put(`/upload-logo`, async (req, res) => {
         { new: true }
       ).exec((err, result) => {
         if (err) {
-          return res.status(422).send("Agency couldn't be updated");
+          return res.status(422).send(err);
         } else {
+          result.password = undefined;
+          result.isApproved = undefined;
+
           return res.send(result);
         }
       });

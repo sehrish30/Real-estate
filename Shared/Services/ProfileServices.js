@@ -1,9 +1,6 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
-import jwt_decode from "jwt-decode";
-// import * as SecureStore from "expo-secure-store";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const config = {
   headers: {
@@ -21,14 +18,15 @@ export async function editAgencyProfile(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (res.statusText == "OK") {
+    if (res.status == 200) {
       Toast.show({
         type: "success",
         text1: `Profile updated`,
         visibilityTime: 2000,
         topOffset: 30,
       });
-      return res;
+
+      return res.data;
     }
   } catch (e) {
     console.error(e);
@@ -50,20 +48,18 @@ export async function uploadLogoUpdate(data, token, imageId) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (res.statusText == "OK") {
-      await axios.delete(
-        `${baseURL}agencies/delete-image`,
-        { imageId },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(res);
-      return res;
+
+    if (res.status == 200) {
+      const doneOrNOt = await axios.delete(`${baseURL}agencies/delete-image`, {
+        data: { imageId },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("WHAT", doneOrNOt);
+      return res.data;
     }
   } catch (e) {
     console.error(e);

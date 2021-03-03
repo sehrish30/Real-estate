@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
   TextInput,
-  Platform,
   Image,
   Dimensions,
 } from "react-native";
@@ -16,10 +15,10 @@ import {
   ModalContent,
   ScaleAnimation,
 } from "react-native-modals";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import { items } from "../Cities";
 import SelectBox from "react-native-multi-selectbox";
+import { SafeAreaView } from "react-native";
 
 var { width, height } = Dimensions.get("window");
 
@@ -32,6 +31,7 @@ const CustomModal = ({
   setShowModal,
   storeUserInfo,
   setEditBio,
+  setChosenLocations,
 }) => {
   function remove(item) {
     const filteredLocations = chosenLocations.filter(
@@ -65,7 +65,7 @@ const CustomModal = ({
     <Modal
       visible={showModal}
       modalStyle={{ color: "red" }}
-      animationDuration={600}
+      animationDuration={500}
       modalAnimation={
         new ScaleAnimation({
           initialValue: 0, // optional
@@ -92,13 +92,13 @@ const CustomModal = ({
         </ModalFooter>
       }
     >
-      <ModalContent style={{ width: width / 1.2, height: height / 2 }}>
-        <KeyboardAwareScrollView>
+      <ModalContent style={{ width: width / 1.2, height: height / 1.2 }}>
+        <SafeAreaView>
           <View style={{ alignItems: "center", marginTop: 20 }}>
             <Image
               style={styles.image}
               resizeMode="cover"
-              source={{ uri: logo.uri }}
+              source={{ uri: logo.url }}
             />
             <Button
               titleStyle={{
@@ -149,7 +149,7 @@ const CustomModal = ({
             }}
             value={chosenLocations}
           />
-        </KeyboardAwareScrollView>
+        </SafeAreaView>
       </ModalContent>
     </Modal>
   );

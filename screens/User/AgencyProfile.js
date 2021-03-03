@@ -1,11 +1,11 @@
 import React, { useLayoutEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
 
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser, fillStore } from "../../Redux/Actions/auth";
+import { logoutUser, updateProfile } from "../../Redux/Actions/auth";
 import { UPDATEAGENCYPROFILE } from "../../Redux/constants";
 
 import {
@@ -75,14 +75,18 @@ const AgencyProfile = ({ navigation }) => {
 
     if (res) {
       setBio(editBio);
-      setLocations(res.data.location);
+      setLocations(res.location);
       // Update store
-      let payload = { ...agency, bio: editBio, location: res.data.location };
-      dispatch({ type: UPDATEAGENCYPROFILE, payload });
+      let payload = { ...agency, bio: editBio, location: res.location };
+      console.log(res);
+      console.log(payload);
+      dispatch(updateProfile(payload));
+      // dispatch({ type: UPDATEAGENCYPROFILE, payload });
 
       // update Storage Cache
       payload = JSON.stringify(payload);
-      await AsyncStorage.setItem("agency", payload);
+      console.log("RESPONSE", res);
+      await AsyncStorage.setItem("agency", JSON.stringify(res));
     }
   };
 
@@ -92,7 +96,7 @@ const AgencyProfile = ({ navigation }) => {
 
     const res = await uploadLogoToCloudinary(newfile);
 
-    console.log(res);
+    // console.log(res);
     if (res) {
       setUploadLogo(res);
       const sendData = {
@@ -100,10 +104,15 @@ const AgencyProfile = ({ navigation }) => {
         public_id: res.public_id,
         secure_url: res.url,
       };
-      console.log(sendData)
+      // console.log(sendData);
+
       const data = await uploadLogoUpdate(sendData, token, logo.public_id);
-      console.log("HIDE", data);
-      dispatch(fillStore({ agency: data }));
+
+      if (data) {
+        dispatch(updateProfile(data));
+        await AsyncStorage.setItem("agency", JSON.stringify(data));
+      }
+      // dispatch({ type: UPDATEAGENCYPROFILE, payload: data });
     }
   };
 
@@ -142,11 +151,12 @@ const AgencyProfile = ({ navigation }) => {
         setShowModal={setShowModal}
         setEditBio={setEditBio}
         editAgency={editAgency}
-        logo={logo?.url}
+        logo={logo.url}
         bio={bio}
         user={user}
         locations={locations}
       />
+
       <CustomModal
         chosenLocations={chosenLocations}
         showModal={showModal}
@@ -156,6 +166,7 @@ const AgencyProfile = ({ navigation }) => {
         setShowModal={setShowModal}
         storeUserInfo={storeUserInfo}
         setEditBio={setEditBio}
+        setChosenLocations={setChosenLocations}
       />
     </ScrollView>
   );
