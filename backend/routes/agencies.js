@@ -81,15 +81,17 @@ router.get(`/`, async (req, res) => {
             Agency DETAILS
 ---------------------------------------- */
 router.get("/:id", async (req, res) => {
-  const Agency = await Agency.findById(req.params.id).select("-attachments");
+  const agency = await Agency.findById(req.params.id).select(
+    "-attachments -password"
+  );
 
-  if (!Agency) {
+  if (!agency) {
     return res
       .status(400)
       .json({ message: "The user with the given ID was not found" });
   }
 
-  res.status(200).send(Agency);
+  res.status(200).send(agency);
 });
 
 /*----------------------------------------

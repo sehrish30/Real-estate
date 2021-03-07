@@ -38,7 +38,6 @@ const SearchAgency = ({ navigation }) => {
       const res = await searchAgencies(value, location.item);
       setAgencies(res);
       setLoading(false);
-      console.log(res);
     }
   };
 
@@ -92,7 +91,7 @@ const SearchAgency = ({ navigation }) => {
       {agencies.length > 0 ? (
         !loading ? (
           agencies.map((agency, index) => (
-            <AgencySearchCard index={index} agency={agency} />
+            <AgencySearchCard key={agency.id} index={index} agency={agency} />
           ))
         ) : (
           <View style={styles.notFound}>

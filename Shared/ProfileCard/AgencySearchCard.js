@@ -25,7 +25,7 @@ const AgencySearchCard = ({ index, agency }) => {
               {agency.bio ? `${agency.bio?.substring(0, 20)}...` : "No bio"}
             </Text>
             <Text style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}>
-              Rent 40 | Sale 50 | Commercial 60
+              Commercial 40 | Residential 50 | industrial 60
             </Text>
           </View>
           <View style={{ marginLeft: "auto", flexDirection: "row" }}>

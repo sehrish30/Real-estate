@@ -79,7 +79,7 @@ const CustomModal = ({
               <Image
                 style={styles.image}
                 resizeMode="cover"
-                source={{ uri: logo.url }}
+                source={{ uri: logo?.url }}
               />
               <Button
                 titleStyle={{

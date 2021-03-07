@@ -4,14 +4,7 @@ import { Image, Card, Text, Badge } from "react-native-elements";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import IonIcons from "react-native-vector-icons/Ionicons";
 
-const ProfileCard = ({
-  editAgency,
-  logo,
-  bio,
-  user,
-  setShowModal,
-  locations,
-}) => {
+const ProfileCard = ({ editAgency, logo, bio, user, locations }) => {
   return (
     <>
       <Card containerStyle={styles.bg}>
@@ -35,7 +28,7 @@ const ProfileCard = ({
               <Image
                 style={styles.image}
                 resizeMode="cover"
-                source={{ uri: logo }}
+                source={{ uri: logo?.url }}
               />
             </View>
             <Text style={[styles.font, styles.userText]}>{user}</Text>
@@ -56,16 +49,21 @@ const ProfileCard = ({
           </Text>
 
           <View style={styles.locationSection}>
-            {locations.map((location) => (
+            {locations?.map((location) => (
               <Badge
                 key={location}
                 value={location}
                 badgeStyle={styles.location}
                 textStyle={[styles.font, { color: "#214151", fontSize: 14 }]}
-                // containerStyle={styles.badgeSection}
               />
             ))}
           </View>
+        </View>
+        <Card.Divider />
+        <View>
+          <Text style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}>
+            Commercial 40 | Residential 50 | industrial 60
+          </Text>
         </View>
       </Card>
     </>

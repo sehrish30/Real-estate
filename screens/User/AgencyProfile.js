@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import React, { useLayoutEffect, useState, useReducer } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,16 +20,26 @@ import {
 import ProfileCard from "../../Shared/ProfileCard/ProfileCard";
 import CustomModal from "../../Shared/Input/CustomModal";
 
+// Context
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  profile: {},
+  commerical: 0,
+  land: 0,
+  residential: 0,
+  industrial: 0,
+};
+
 const AgencyProfile = ({ navigation }) => {
+  // REDUCERS
+  const [
+    { profile, commerical, land, residential, industrial },
+    dispatchProfile,
+  ] = useReducer(reducer, initialState);
+
   // States
-  const [user, setUser] = useState("");
-  const [bio, setBio] = useState("");
-  const [logo, setLogo] = useState({});
   const [editBio, setEditBio] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [uploadLogo, setUploadLogo] = useState({});
-  const [agencyId, setAgencyId] = useState(null);
-  const [locations, setLocations] = useState([]);
   const [chosenLocations, setChosenLocations] = useState([]);
   const dispatch = useDispatch();
 
@@ -52,7 +62,7 @@ const AgencyProfile = ({ navigation }) => {
   };
 
   const editAgency = () => {
-    setEditBio(bio);
+    setEditBio(profile.bio);
     setShowModal(true);
   };
 
@@ -62,27 +72,31 @@ const AgencyProfile = ({ navigation }) => {
 
     if (chosenLocations.length === 0) {
       res = await editAgencyProfile(
-        { bio: editBio, id: agencyId, location: locations },
+        { bio: editBio, id: profile.id, location: profile.location },
         token
       );
     } else {
       let locationItems;
       locationItems = chosenLocations.map((location) => location.item);
       res = await editAgencyProfile(
-        { bio: editBio, id: agencyId, location: locationItems },
+        { bio: editBio, id: profile.id, location: locationItems },
         token
       );
       setChosenLocations([]);
     }
 
     if (res) {
-      setBio(editBio);
-      setLocations(res.location);
       // Update store
       let payload = { ...agency, bio: editBio, location: res.location };
-
       dispatch(updateProfile(payload));
-      // dispatch({ type: UPDATEAGENCYPROFILE, payload });
+
+      dispatchProfile({
+        profile: payload,
+        commerical,
+        residential,
+        industrial,
+        land,
+      });
 
       // update Storage Cache
       payload = JSON.stringify(payload);
@@ -98,17 +112,29 @@ const AgencyProfile = ({ navigation }) => {
       const res = await uploadLogoToCloudinary(newfile);
       // console.log(res);
       if (res) {
-        setUploadLogo(res);
+        // setUploadLogo(res);
         const sendData = {
-          id: agencyId,
+          id: profile.id,
           public_id: res.public_id,
           secure_url: res.url,
         };
+
         // console.log(sendData);
-        const data = await uploadLogoUpdate(sendData, token, logo.public_id);
+        const data = await uploadLogoUpdate(
+          sendData,
+          token,
+          profile.logo.public_id
+        );
         console.error("DATA", data);
         if (data) {
           dispatch(updateProfile(data));
+          dispatchProfile({
+            profile: data,
+            commerical,
+            residential,
+            industrial,
+            land,
+          });
           await AsyncStorage.setItem("agency", JSON.stringify(data));
         }
         // dispatch({ type: UPDATEAGENCYPROFILE, payload: data });
@@ -136,31 +162,47 @@ const AgencyProfile = ({ navigation }) => {
     });
 
     const getAgency = () => {
-      setUser(agency.email);
-      setBio(agency.bio);
-      setLogo(agency.logo);
-      setAgencyId(agency.id);
-      setLocations(agency.location);
+      // setUser(agency.email);
+      // setBio(agency.bio);
+      // setLogo(agency.logo);
+      // setAgencyId(agency.id);
+      // setLocations(agency.location);
+
+      dispatchProfile({
+        profile: agency,
+        commerical: agency.commerical?.length,
+        residential: agency.residential?.length,
+        industrial: agency.industrial?.length,
+        land: agency.land?.length,
+      });
+      console.log(profile, agency);
     };
     getAgency();
-  }, [navigation, logout]);
+
+    return () => {
+      dispatchProfile(initialState);
+    };
+  }, [agency]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <ProfileCard
         setShowModal={setShowModal}
-        setEditBio={setEditBio}
         editAgency={editAgency}
-        logo={logo.url}
-        bio={bio}
-        user={user}
-        locations={locations}
+        logo={profile.logo}
+        bio={profile.bio}
+        user={profile.email}
+        locations={profile.location}
+        commerical={commerical}
+        residential={residential}
+        industrial={industrial}
+        land={land}
       />
 
       <CustomModal
         chosenLocations={chosenLocations}
         showModal={showModal}
-        logo={logo}
+        logo={profile?.logo}
         uploadLogoFromPhone={uploadLogoFromPhone}
         editBio={editBio}
         setShowModal={setShowModal}

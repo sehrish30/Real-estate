@@ -19,10 +19,10 @@ const Register = ({ navigation }) => {
     if (email !== "" && emailRegex.test(email)) {
       if (password.length >= 6 && passRegex.test(password)) {
         setLoading(true);
-        setEmail(email.trim());
-        dispatch(
-          actions.register({ email: email.toLowerCase(), password }, navigation)
-        );
+        let newEmail = email;
+        newEmail = newEmail.toLowerCase().trim();
+        setEmail(newEmail);
+        dispatch(actions.register({ email, password }, navigation));
       } else {
         Toast.show({
           type: "error",

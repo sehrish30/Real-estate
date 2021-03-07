@@ -66,6 +66,13 @@ export async function uploadLogoUpdate(data, token, imageId) {
   }
 }
 
+export async function getAgencyDetails(id) {
+  const res = await axios.get(`${baseURL}agencies/${id}`, config);
+  if (res.status == 200) {
+    return res.data;
+  }
+}
+
 // export async function uploadLogoUpdate(data, token, imageId) {
 //   try {
 //     const res = await axios.put(`${baseURL}agencies/upload-logo`, data, {
