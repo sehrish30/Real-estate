@@ -1,26 +1,24 @@
 import { Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import { CLOUD_API, CLOUDINARY_NAME, UPLOAD_PRESET } from "@env";
 
 export async function uploadToCloudinary(image) {
   const data = new FormData();
   data.append("file", image);
-  data.append("upload_preset", "realestate");
-  data.append("cloud_name", "dtxrrhfqj");
+  data.append("upload_preset", UPLOAD_PRESET);
+  data.append("cloud_name", CLOUDINARY_NAME);
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dtxrrhfqj/image/upload",
-    {
-      method: "post",
-      body: data,
-      mode: "cors",
-    }
-  );
+  const res = await fetch(CLOUD_API, {
+    method: "post",
+    body: data,
+    mode: "cors",
+  });
   const final = await res.json();
   const sendData = {
     url: final.secure_url,
     public_id: final.public_id,
   };
-  return final.secure_url;
+  return sendData;
 }
 
 export async function uploadImageFromPhone() {
@@ -30,43 +28,41 @@ export async function uploadImageFromPhone() {
       Alert.alert(
         "Sorry, we need camera roll permissions to upload your attachments!"
       );
+    } else {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [3, 2],
+        quality: 0.8,
+      });
+
+      if (!result.cancelled) {
+        // let filename = result.uri.split("/").pop();
+        let filename = "file:///" + result.uri.split("file:/").join("");
+
+        let newfile = {
+          uri: filename,
+          type: `test/${result.uri.split(".")[1]}`,
+          name: filename,
+        };
+
+        return newfile;
+      }
     }
-  }
-
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.All,
-    allowsEditing: true,
-    aspect: [3, 2],
-    quality: 0.8,
-  });
-
-  if (!result.cancelled) {
-    let filename = result.uri.split("/").pop();
-
-    let newfile = {
-      uri: result.uri,
-      type: `test/${result.uri.split(".")[1]}`,
-      name: filename,
-    };
-
-    return newfile;
   }
 }
 
 export async function uploadLogoToCloudinary(image) {
   const data = new FormData();
   data.append("file", image);
-  data.append("upload_preset", "realestate");
-  data.append("cloud_name", "dtxrrhfqj");
+  data.append("upload_preset", UPLOAD_PRESET);
+  data.append("cloud_name", CLOUDINARY_NAME);
 
-  const res = await fetch(
-    "https://api.cloudinary.com/v1_1/dtxrrhfqj/image/upload",
-    {
-      method: "post",
-      body: data,
-      mode: "cors",
-    }
-  );
+  const res = await fetch(CLOUD_API, {
+    method: "post",
+    body: data,
+    mode: "cors",
+  });
   const final = await res.json();
   const sendData = {
     url: final.secure_url,

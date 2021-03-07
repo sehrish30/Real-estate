@@ -136,7 +136,7 @@ const CustomModal = ({
           </KeyboardAwareScrollView>
           <Button
             title="SAVE"
-            buttonStyle={{ backgroundColor: "#214151" }}
+            buttonStyle={{ backgroundColor: "#214151", marginBottom: 10 }}
             style={styles.savebtn}
             onPress={() => {
               setShowModal(false);

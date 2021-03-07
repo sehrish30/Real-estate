@@ -15,7 +15,10 @@ const AgencyLogin = ({ navigation }) => {
   const dispatch = useDispatch();
   const loginAgency = async () => {
     setLoading(true);
-    const res = await loginAgencySrv({ email, password }, navigation);
+    let newEmail = email;
+    newEmail = newEmail.toLowerCase().trim();
+
+    const res = await loginAgencySrv({ email: newEmail, password }, navigation);
     console.log(res);
     if (res) {
       const {
@@ -56,7 +59,9 @@ const AgencyLogin = ({ navigation }) => {
           isLoggedInAgency: true,
         })
       );
+      setLoading(false);
     } else {
+      console.log("ELSE");
       setLoading(false);
     }
   };

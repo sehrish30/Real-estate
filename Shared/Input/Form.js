@@ -29,7 +29,7 @@ const Form = ({
           color: "#f8dc81",
         }}
         style={styles.input}
-        onChangeText={(value) => setEmail(value.toLowerCase().trim())}
+        onChangeText={(value) => setEmail(value)}
         value={email}
         label="Email"
       />

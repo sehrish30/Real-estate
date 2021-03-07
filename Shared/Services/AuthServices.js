@@ -142,7 +142,7 @@ export async function loginAgencySrv(data, navigation) {
   } catch (err) {
     Toast.show({
       type: "error",
-      text1: `Some error has occurred`,
+      text1: `Email or password incorrect`,
       visibilityTime: 2000,
       topOffset: 30,
     });

@@ -8,7 +8,9 @@ const AgencySearchCard = ({ index, agency }) => {
   return (
     <TouchableOpacity key={index}>
       <Card containerStyle={styles.card}>
-        <Card.Title style={styles.title}>{agency.name}</Card.Title>
+        <Card.Title style={styles.title}>
+          <Text>{agency.name}</Text>
+        </Card.Title>
         <Card.Divider />
         <View style={styles.agency}>
           <Avatar
@@ -50,7 +52,9 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#eff7e1",
     borderRadius: 15,
-    boxShadow: "0 20px 50px #839b97",
+    elevation: 4,
+    shadowOffset: { width: 5, height: 5 },
+    // boxShadow: "0 20px 50px #839b97",
     paddingTop: 5,
   },
   basicInfo: {

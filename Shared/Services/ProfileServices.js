@@ -39,9 +39,10 @@ export async function editAgencyProfile(data, token) {
     });
   }
 }
+
 export async function uploadLogoUpdate(data, token, imageId) {
   try {
-    const res = await axios.put(`${baseURL}agencies/upload-logo`, data, {
+    const first = axios.put(`${baseURL}agencies/upload-logo`, data, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -49,19 +50,41 @@ export async function uploadLogoUpdate(data, token, imageId) {
       },
     });
 
-    if (res.status == 200) {
-      const doneOrNOt = await axios.delete(`${baseURL}agencies/delete-image`, {
-        data: { imageId },
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("WHAT", doneOrNOt);
-      return res.data;
-    }
+    const second = axios.delete(`${baseURL}agencies/delete-image`, {
+      data: { imageId },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const [res1, res2] = await Promise.all([first, second]);
+    return res1.data;
   } catch (e) {
     console.error(e);
   }
 }
+
+// export async function uploadLogoUpdate(data, token, imageId) {
+//   try {
+//     const res = await axios.put(`${baseURL}agencies/upload-logo`, data, {
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//     return res.data;
+//     await axios.delete(`${baseURL}agencies/delete-image`, {
+//       data: { imageId },
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+//   } catch (e) {
+//     console.error(e);
+//   }
+// }

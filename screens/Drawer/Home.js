@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native";
 import { Header } from "react-native-elements";
 
 import Icon from "react-native-vector-icons/Ionicons";
-import { SECRET } from "@env";
+
 // import jwt from "jsonwebtoken";
 import jwt_decode from "jwt-decode";
 

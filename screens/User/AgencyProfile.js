@@ -6,7 +6,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser, updateProfile } from "../../Redux/Actions/auth";
-import { UPDATEAGENCYPROFILE } from "../../Redux/constants";
 
 import {
   uploadLogoToCloudinary,
@@ -81,8 +80,7 @@ const AgencyProfile = ({ navigation }) => {
       setLocations(res.location);
       // Update store
       let payload = { ...agency, bio: editBio, location: res.location };
-      console.log(res);
-      console.log(payload);
+
       dispatch(updateProfile(payload));
       // dispatch({ type: UPDATEAGENCYPROFILE, payload });
 
@@ -95,26 +93,26 @@ const AgencyProfile = ({ navigation }) => {
   const uploadLogoFromPhone = async () => {
     let token = await AsyncStorage.getItem("jwt");
     const newfile = await uploadImageFromPhone();
-
-    const res = await uploadLogoToCloudinary(newfile);
-
-    // console.log(res);
-    if (res) {
-      setUploadLogo(res);
-      const sendData = {
-        id: agencyId,
-        public_id: res.public_id,
-        secure_url: res.url,
-      };
-      // console.log(sendData);
-
-      const data = await uploadLogoUpdate(sendData, token, logo.public_id);
-
-      if (data) {
-        dispatch(updateProfile(data));
-        await AsyncStorage.setItem("agency", JSON.stringify(data));
+    console.error("NEW FILE", newfile);
+    if (newfile) {
+      const res = await uploadLogoToCloudinary(newfile);
+      // console.log(res);
+      if (res) {
+        setUploadLogo(res);
+        const sendData = {
+          id: agencyId,
+          public_id: res.public_id,
+          secure_url: res.url,
+        };
+        // console.log(sendData);
+        const data = await uploadLogoUpdate(sendData, token, logo.public_id);
+        console.error("DATA", data);
+        if (data) {
+          dispatch(updateProfile(data));
+          await AsyncStorage.setItem("agency", JSON.stringify(data));
+        }
+        // dispatch({ type: UPDATEAGENCYPROFILE, payload: data });
       }
-      // dispatch({ type: UPDATEAGENCYPROFILE, payload: data });
     }
   };
 

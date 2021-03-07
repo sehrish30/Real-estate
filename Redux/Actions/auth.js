@@ -22,6 +22,7 @@ export const login = (data, navigation) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
+
       Toast.show({
         type: "error",
         text1: `Email or password not correct`,

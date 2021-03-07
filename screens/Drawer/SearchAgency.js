@@ -99,16 +99,13 @@ const SearchAgency = ({ navigation }) => {
             <ActivityIndicator size="large" color="#f8dc81" />
           </View>
         )
-      ) : (
-        debounceValue ||
-        (location && (
-          <View style={styles.notFound}>
-            <Text h3 h3Style={styles.font}>
-              No results found
-            </Text>
-          </View>
-        ))
-      )}
+      ) : debounceValue || location ? (
+        <View style={styles.notFound}>
+          <Text h3 h3Style={styles.font}>
+            No results found
+          </Text>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 };
@@ -136,5 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: "auto",
     marginTop: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
