@@ -7,18 +7,13 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import { Button } from "react-native-elements";
-import {
-  Modal,
-  ModalFooter,
-  ModalButton,
-  ModalContent,
-  ScaleAnimation,
-} from "react-native-modals";
+import { Button, Overlay } from "react-native-elements";
+// import Modal from "modal-react-native-web";
 
 import { items } from "../Cities";
 import SelectBox from "react-native-multi-selectbox";
 import { SafeAreaView } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 var { width, height } = Dimensions.get("window");
 
@@ -62,96 +57,104 @@ const CustomModal = ({
   }
 
   return (
-    <Modal
-      visible={showModal}
-      modalStyle={{ color: "red" }}
-      animationDuration={500}
-      modalAnimation={
-        new ScaleAnimation({
-          initialValue: 0, // optional
-          useNativeDriver: true, // optional
-        })
-      }
-      footer={
-        <ModalFooter>
-          <ModalButton
-            textStyle={styles.cancelbtn}
-            text="CANCEL"
-            onPress={() => {
-              setShowModal(false);
-            }}
-          />
-          <ModalButton
-            textStyle={styles.savebtn}
-            text="SAVE"
+    <>
+      <SafeAreaView style={{ width: width }}>
+        {/* <Button title="Open Overlay" onPress={toggleOverlay} /> */}
+
+        <Overlay
+          isVisible={showModal}
+          // fullScreen={true}
+          // ModalComponent={Modal}
+          onBackdropPress={() => {
+            setShowModal(false);
+          }}
+          overlayStyle={{
+            paddingVertical: 20,
+            width: width,
+            height: height,
+          }}
+        >
+          <KeyboardAwareScrollView>
+            <View style={{ alignItems: "center", marginTop: 20 }}>
+              <Image
+                style={styles.image}
+                resizeMode="cover"
+                source={{ uri: logo.url }}
+              />
+              <Button
+                titleStyle={{
+                  color: "#214151",
+                  fontSize: 16,
+                  fontFamily: "EBGaramond-Regular",
+                }}
+                title="Change Logo"
+                type="clear"
+                onPress={uploadLogoFromPhone}
+              />
+            </View>
+            <TextInput
+              style={styles.texInput}
+              multiline
+              numberOfLines={6}
+              onChangeText={(text) => setEditBio(text)}
+              value={editBio}
+            />
+
+            <View style={{ marginTop: 10 }}>
+              <SelectBox
+                label="Locations"
+                labelStyle={{ color: "#214151" }}
+                style={[styles.font, { color: "#a2d0c1", marginVertical: 20 }]}
+                options={items}
+                selectedValues={chosenLocations}
+                onMultiSelect={onMultiChange()}
+                onTapClose={removeSelect()}
+                isMulti
+                arrowIconColor="#f8dc81"
+                searchIconColor="#f8dc81"
+                toggleIconColor="#f8dc81"
+                inputFilterContainerStyle={{
+                  backgroundColor: "#f7f6e7",
+                  color: "#214151",
+                }}
+                inputFilterStyle={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Regular",
+                  fontSize: 16,
+                  paddingHorizontal: 5,
+                }}
+                optionsLabelStyle={{
+                  color: "#214151",
+                  paddingLeft: 10,
+                }}
+                multiOptionContainerStyle={{
+                  backgroundColor: "#214151",
+                }}
+                value={chosenLocations}
+              />
+            </View>
+          </KeyboardAwareScrollView>
+          <Button
+            title="SAVE"
+            buttonStyle={{ backgroundColor: "#214151" }}
+            style={styles.savebtn}
             onPress={() => {
               setShowModal(false);
               storeUserInfo();
             }}
           />
-        </ModalFooter>
-      }
-    >
-      <ModalContent style={{ width: width / 1.2, height: height / 1.2 }}>
-        <SafeAreaView>
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <Image
-              style={styles.image}
-              resizeMode="cover"
-              source={{ uri: logo.url }}
-            />
-            <Button
-              titleStyle={{
-                color: "#214151",
-                fontSize: 16,
-                fontFamily: "EBGaramond-Regular",
-              }}
-              title="Change Logo"
-              type="clear"
-              onPress={uploadLogoFromPhone}
-            />
-          </View>
-          <TextInput
-            style={styles.texInput}
-            multiline
-            numberOfLines={6}
-            onChangeText={(text) => setEditBio(text)}
-            value={editBio}
+          <Button
+            title="CANCEL"
+            type="outline"
+            titleStyle={{ color: "#214151" }}
+            style={styles.cancelbtn}
+            onPress={() => {
+              setShowModal(false);
+            }}
           />
-
-          <SelectBox
-            label="Locations"
-            labelStyle={{ color: "#214151" }}
-            style={[styles.font, { color: "#a2d0c1", marginVertical: 20 }]}
-            options={items}
-            selectedValues={chosenLocations}
-            onMultiSelect={onMultiChange()}
-            onTapClose={removeSelect()}
-            isMulti
-            arrowIconColor="#f8dc81"
-            searchIconColor="#f8dc81"
-            toggleIconColor="#f8dc81"
-            inputFilterContainerStyle={{
-              backgroundColor: "#f7f6e7",
-              color: "#214151",
-            }}
-            inputFilterStyle={{
-              color: "#214151",
-              fontFamily: "EBGaramond-Regular",
-              fontSize: 16,
-            }}
-            optionsLabelStyle={{
-              color: "#214151",
-              paddingLeft: 10,
-            }}
-            multiOptionContainerStyle={{
-              backgroundColor: "#214151",
-            }}
-            value={chosenLocations}
-          />
-        </SafeAreaView>
-      </ModalContent>
-    </Modal>
+        </Overlay>
+      </SafeAreaView>
+    </>
   );
 };
 

@@ -63,12 +63,12 @@ router.get(`/`, async (req, res) => {
     }
 
     const agencyList = await Agency.find(mainFilter)
-      .select("-attachments")
+      .select("-attachments -password")
       .skip(skip)
       .limit(count);
 
     if (!agencyList) {
-      return res.status(500).send("No Results found");
+      return res.status(204).send("No Results found");
     }
 
     res.send(agencyList);
@@ -275,7 +275,7 @@ router.post("/login", async (req, res) => {
           isApproved: agency.isApproved,
         },
         secret,
-        { expiresIn: "1d" }
+        { expiresIn: "5d" }
       );
 
       return res.status(200).json({ agency: agency, token });

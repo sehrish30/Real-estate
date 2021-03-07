@@ -71,7 +71,7 @@ router.post("/login", async (req, res) => {
         },
         secret,
         {
-          expiresIn: "1d",
+          expiresIn: "15d",
         }
       );
       return res.status(200).send({ email: user.email, token, dp: user.dp });

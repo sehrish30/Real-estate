@@ -96,8 +96,8 @@ export const items = [
     item: "Janabiyah",
   },
   {
-    id: "Diyar AlMuharraq",
-    item: "Diyar AlMuharraq",
+    id: "Muharraq",
+    item: "Muharraq",
   },
   {
     id: "Al Dur",
@@ -130,5 +130,9 @@ export const items = [
   {
     id: "Khamis",
     item: "Khamis",
+  },
+  {
+    id: "Manama",
+    item: "Manama",
   },
 ];

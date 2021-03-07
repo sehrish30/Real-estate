@@ -1,15 +1,26 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { StyleSheet, Text, View, Animated, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Animated,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { fillStore } from "../../Redux/Actions/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native";
 import { Header } from "react-native-elements";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 import Icon from "react-native-vector-icons/Ionicons";
+import { SECRET } from "@env";
+// import jwt from "jsonwebtoken";
+import jwt_decode from "jwt-decode";
 
 import Splash from "../Splash";
+import { Pressable } from "react-native";
 
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
@@ -18,6 +29,29 @@ const Home = ({ navigation }) => {
   const showMenu = () => {
     navigation.toggleDrawer();
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const checkTokenValidity = async () => {
+        const token = await AsyncStorage.getItem("jwt");
+        // if (token) {
+        //   jwt.verify(token, SECRET, (err, decoded) => {
+        //     if (err) {
+        //       console.log(err);
+        //       AsyncStorage.clear();
+        //     } else {
+        //       console.log("Validity Check Passed");
+        //     }
+        //   });
+        // }
+        const decoded = jwt_decode(token);
+        if (Date.now() >= decoded.exp * 1000) {
+          AsyncStorage.clear();
+        }
+      };
+      checkTokenValidity();
+    })
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -65,6 +99,7 @@ const Home = ({ navigation }) => {
       };
     }, [])
   );
+
   return (
     <SafeAreaView style={styles.container}>
       {bootSplashIsVisible ? (
@@ -85,14 +120,21 @@ const Home = ({ navigation }) => {
                   size={30}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.menu}>
+              <Pressable
+                style={styles.menu}
+                onPressIn={() => {
+                  navigation.navigate("SearchAgency");
+                }}
+              >
                 <Icon
-                  onPress={showMenu}
+                  onPress={() => {
+                    navigation.navigate("SearchAgency");
+                  }}
                   name="ios-search"
                   color={"#214151"}
                   size={30}
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           }
           rightComponent={

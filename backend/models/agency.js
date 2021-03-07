@@ -41,7 +41,23 @@ const agencySchema = mongoose.Schema(
     bio: {
       type: String,
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviews: [
+      {
+        user: String,
+        text: String,
+        time: String,
+      },
+    ],
+    commercial: [String],
+    land: [mongoose.ObjectId],
+    residential: [mongoose.ObjectId],
+    industrial: [mongoose.ObjectId],
   },
+
   {
     timestamps: true,
   }

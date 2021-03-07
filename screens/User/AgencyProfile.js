@@ -43,7 +43,10 @@ const AgencyProfile = ({ navigation }) => {
       await AsyncStorage.removeItem("agency");
       await AsyncStorage.removeItem("isLoggedInAgency");
       dispatch(logoutUser());
-      navigation.navigate("Home");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     } catch (e) {
       console.error(e);
     }
@@ -85,7 +88,6 @@ const AgencyProfile = ({ navigation }) => {
 
       // update Storage Cache
       payload = JSON.stringify(payload);
-      console.log("RESPONSE", res);
       await AsyncStorage.setItem("agency", JSON.stringify(res));
     }
   };

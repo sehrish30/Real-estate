@@ -7,10 +7,11 @@ import AffordibilityCalculator from "../screens/Drawer/AffordibilityCalculator";
 import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
 import Home from "../screens/Drawer/Home";
+import HomeNavigator from "./HomeNavigator";
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
-  const { width, height } = useWindowDimensions();
+  const { width } = useWindowDimensions();
 
   return (
     <Drawer.Navigator
@@ -28,7 +29,7 @@ const DrawerNavigator = () => {
       drawerPosition="right"
       drawerType={width >= 768 ? "permanent" : "slide"}
     >
-      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Home" component={HomeNavigator} />
       <Drawer.Screen name="RegisterAgent" component={RegisterAgent} />
       <Drawer.Screen
         name="AffordibilityCalculator"
