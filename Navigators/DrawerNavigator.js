@@ -8,6 +8,7 @@ import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
 import Home from "../screens/Drawer/Home";
 import HomeNavigator from "./HomeNavigator";
+
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {

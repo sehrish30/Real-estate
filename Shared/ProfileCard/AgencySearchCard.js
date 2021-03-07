@@ -4,9 +4,14 @@ import Icon from "react-native-vector-icons/Fontisto";
 import { Avatar } from "react-native-elements";
 import { Card, Text } from "react-native-elements";
 
-const AgencySearchCard = ({ index, agency }) => {
+const AgencySearchCard = ({ index, agency, navigation }) => {
   return (
-    <TouchableOpacity key={index}>
+    <TouchableOpacity
+      key={index}
+      onPress={() => {
+        navigation.navigate("AgencyDetail", { id: agency.id });
+      }}
+    >
       <Card containerStyle={styles.card}>
         <Card.Title style={styles.title}>
           <Text>{agency.name}</Text>

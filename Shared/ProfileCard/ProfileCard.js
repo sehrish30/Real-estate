@@ -1,27 +1,80 @@
 import React from "react";
-import { StyleSheet, View, Pressable } from "react-native";
+import { StyleSheet, View, Pressable, FlatList } from "react-native";
 import { Image, Card, Text, Badge } from "react-native-elements";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-const ProfileCard = ({ editAgency, logo, bio, user, locations }) => {
+const ProfileCard = ({
+  editAgency,
+  logo,
+  bio,
+  user,
+  locations,
+  commercial,
+  residential,
+  industrial,
+  land,
+  showEditbutton,
+}) => {
+  console.log(residential);
+
+  const DATA = [
+    {
+      id: 0,
+      title: commercial,
+      description: "Commercial",
+    },
+    {
+      id: 1,
+      title: residential,
+      description: "Residential",
+    },
+    {
+      id: 3,
+      title: industrial,
+      description: "Industrial",
+    },
+    {
+      id: 4,
+      title: land,
+      description: "Land",
+    },
+  ];
+
+  const Item = ({ title, description }) => (
+    <View style={styles.item}>
+      <Text style={[styles.name, { color: "#8dadb3" }]}>{description}</Text>
+      <Text h4 h4Style={{ fontSize: 15, marginTop: 8, color: "#214151" }}>
+        {title}
+      </Text>
+    </View>
+  );
+
+  const renderItem = ({ item }) => (
+    <Item description={item.description} title={item.title} />
+  );
+
   return (
     <>
       <Card containerStyle={styles.bg}>
-        <View style={{ marginRight: "auto" }}>
-          <Pressable
-            onPressOut={() => {
-              editAgency();
-            }}
-          >
-            <FontIcon
-              style={{ verticalAlign: "middle", marginRight: 15 }}
-              name="pencil-square"
-              color={"#a2d0c1"}
-              size={30}
-            />
-          </Pressable>
-        </View>
+        {showEditbutton && (
+          <View style={{ marginRight: "auto" }}>
+            <Pressable
+              onPressOut={() => {
+                editAgency();
+              }}
+            >
+              <FontIcon
+                style={{ verticalAlign: "middle", marginRight: 15 }}
+                name="pencil-square"
+                color={"#a2d0c1"}
+                size={30}
+              />
+            </Pressable>
+          </View>
+        )}
+
         <Card.Title style={styles.font}>
           <View stye={styles.imgSection}>
             <View style={styles.imageBlock}>
@@ -60,10 +113,25 @@ const ProfileCard = ({ editAgency, logo, bio, user, locations }) => {
           </View>
         </View>
         <Card.Divider />
-        <View>
-          <Text style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}>
-            Commercial 40 | Residential 50 | industrial 60
+        <View style={styles.locationRow}>
+          <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
+            <FontAwesome5
+              style={{ marginRight: 8 }}
+              name="building"
+              color={"#214151"}
+              size={20}
+            />
+            Properties
           </Text>
+
+          <View>
+            <FlatList
+              numColumns={4}
+              data={DATA}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+            />
+          </View>
         </View>
       </Card>
     </>
@@ -101,6 +169,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     marginBottom: 16,
+    letterSpacing: 0.5,
   },
   locationSection: {
     display: "flex",
@@ -127,5 +196,14 @@ const styles = StyleSheet.create({
   font: {
     fontFamily: "EBGaramond-Regular",
     color: "#214151",
+  },
+  item: {
+    // padding: 5,
+    paddingTop: 20,
+    alignItems: "center",
+    width: 80,
+  },
+  name: {
+    fontSize: 12,
   },
 });

@@ -20,11 +20,11 @@ import {
 import ProfileCard from "../../Shared/ProfileCard/ProfileCard";
 import CustomModal from "../../Shared/Input/CustomModal";
 
-// Context
+// Reducers State
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
   profile: {},
-  commerical: 0,
+  commercial: 0,
   land: 0,
   residential: 0,
   industrial: 0,
@@ -33,7 +33,7 @@ const initialState = {
 const AgencyProfile = ({ navigation }) => {
   // REDUCERS
   const [
-    { profile, commerical, land, residential, industrial },
+    { profile, commercial, land, residential, industrial },
     dispatchProfile,
   ] = useReducer(reducer, initialState);
 
@@ -92,7 +92,7 @@ const AgencyProfile = ({ navigation }) => {
 
       dispatchProfile({
         profile: payload,
-        commerical,
+        commercial,
         residential,
         industrial,
         land,
@@ -130,14 +130,13 @@ const AgencyProfile = ({ navigation }) => {
           dispatch(updateProfile(data));
           dispatchProfile({
             profile: data,
-            commerical,
+            commercial,
             residential,
             industrial,
             land,
           });
           await AsyncStorage.setItem("agency", JSON.stringify(data));
         }
-        // dispatch({ type: UPDATEAGENCYPROFILE, payload: data });
       }
     }
   };
@@ -162,15 +161,9 @@ const AgencyProfile = ({ navigation }) => {
     });
 
     const getAgency = () => {
-      // setUser(agency.email);
-      // setBio(agency.bio);
-      // setLogo(agency.logo);
-      // setAgencyId(agency.id);
-      // setLocations(agency.location);
-
       dispatchProfile({
         profile: agency,
-        commerical: agency.commerical?.length,
+        commercial: agency.commercial?.length,
         residential: agency.residential?.length,
         industrial: agency.industrial?.length,
         land: agency.land?.length,
@@ -193,10 +186,11 @@ const AgencyProfile = ({ navigation }) => {
         bio={profile.bio}
         user={profile.email}
         locations={profile.location}
-        commerical={commerical}
+        commercial={commercial}
         residential={residential}
         industrial={industrial}
         land={land}
+        showEditbutton={true}
       />
 
       <CustomModal

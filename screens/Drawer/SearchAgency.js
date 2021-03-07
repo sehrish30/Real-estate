@@ -25,7 +25,7 @@ const SearchAgency = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   let timer;
 
-  const useDebounce = (value, delay = 500) => {
+  const useDebounce = (value, delay = 1000) => {
     timer = setTimeout(() => {
       setDebounceValue(value);
     }, delay);
@@ -91,7 +91,12 @@ const SearchAgency = ({ navigation }) => {
       {agencies.length > 0 ? (
         !loading ? (
           agencies.map((agency, index) => (
-            <AgencySearchCard key={agency.id} index={index} agency={agency} />
+            <AgencySearchCard
+              navigation={navigation}
+              key={agency.id}
+              index={index}
+              agency={agency}
+            />
           ))
         ) : (
           <View style={styles.notFound}>

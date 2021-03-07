@@ -8,7 +8,6 @@ import {
   Dimensions,
 } from "react-native";
 import { Button, Overlay } from "react-native-elements";
-// import Modal from "modal-react-native-web";
 
 import { items } from "../Cities";
 import SelectBox from "react-native-multi-selectbox";
@@ -59,12 +58,8 @@ const CustomModal = ({
   return (
     <>
       <SafeAreaView style={{ width: width }}>
-        {/* <Button title="Open Overlay" onPress={toggleOverlay} /> */}
-
         <Overlay
           isVisible={showModal}
-          // fullScreen={true}
-          // ModalComponent={Modal}
           onBackdropPress={() => {
             setShowModal(false);
           }}
