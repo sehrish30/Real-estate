@@ -28,23 +28,25 @@ function MyStack() {
       // initialRouteName={token ? "Profile" : "Login"}
       screenOptions={globalScreenOptions}
     >
-      {isLoggedInAgency && (
-        <Stack.Screen name="AgencyProfile" component={AgencyProfile} />
-      )}
-      {isLoggedIn ? (
-        <Stack.Screen name="Profile" component={Profile} />
-      ) : (
-        <>
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ title: "Login" }}
-          />
-          <Stack.Screen name="Register" component={Register} />
-          <Stack.Screen name="Forgot" component={Forgot} />
-          <Stack.Screen name="AgencyLogin" component={AgencyLogin} />
-        </>
-      )}
+      <>
+        {isLoggedInAgency && (
+          <Stack.Screen name="AgencyProfile" component={AgencyProfile} />
+        )}
+        {isLoggedIn ? (
+          <Stack.Screen name="Profile" component={Profile} />
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ title: "Login" }}
+            />
+            <Stack.Screen name="Register" component={Register} />
+            <Stack.Screen name="Forgot" component={Forgot} />
+          </>
+        )}
+        <Stack.Screen name="AgencyLogin" component={AgencyLogin} />
+      </>
     </Stack.Navigator>
   );
 }

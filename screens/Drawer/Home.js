@@ -34,19 +34,11 @@ const Home = ({ navigation }) => {
     useCallback(() => {
       const checkTokenValidity = async () => {
         const token = await AsyncStorage.getItem("jwt");
-        // if (token) {
-        //   jwt.verify(token, SECRET, (err, decoded) => {
-        //     if (err) {
-        //       console.log(err);
-        //       AsyncStorage.clear();
-        //     } else {
-        //       console.log("Validity Check Passed");
-        //     }
-        //   });
-        // }
-        const decoded = jwt_decode(token);
-        if (Date.now() >= decoded.exp * 1000) {
-          AsyncStorage.clear();
+        if (token) {
+          const decoded = jwt_decode(token);
+          if (Date.now() >= decoded.exp * 1000) {
+            AsyncStorage.clear();
+          }
         }
       };
       checkTokenValidity();
@@ -112,29 +104,17 @@ const Home = ({ navigation }) => {
           }}
           leftComponent={
             <View style={styles.rightNav}>
-              <TouchableOpacity style={styles.menu}>
-                <Icon
-                  onPress={showMenu}
-                  name="notifications"
-                  color={"#214151"}
-                  size={30}
-                />
+              <TouchableOpacity style={styles.menu} onPress={showMenu}>
+                <Icon name="notifications" color={"#214151"} size={30} />
               </TouchableOpacity>
-              <Pressable
+              <TouchableOpacity
                 style={styles.menu}
-                onPressIn={() => {
+                onPress={() => {
                   navigation.navigate("SearchAgency");
                 }}
               >
-                <Icon
-                  onPress={() => {
-                    navigation.navigate("SearchAgency");
-                  }}
-                  name="ios-search"
-                  color={"#214151"}
-                  size={30}
-                />
-              </Pressable>
+                <Icon name="ios-search" color={"#214151"} size={30} />
+              </TouchableOpacity>
             </View>
           }
           rightComponent={
@@ -162,9 +142,10 @@ const styles = StyleSheet.create({
   rightNav: {
     flexDirection: "row",
     marginHorizontal: 10,
+    justifyContent: "space-between",
   },
   menu: {
-    paddingHorizontal: 10,
     paddingTop: 25,
+    paddingRight: 20,
   },
 });

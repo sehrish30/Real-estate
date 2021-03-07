@@ -36,10 +36,6 @@ export const items = [
     item: "Dar Kulaib",
   },
   {
-    id: "Dar Kulaib",
-    item: "Dar Kulaib",
-  },
-  {
     id: "Zallaq",
     item: "Zallaq",
   },

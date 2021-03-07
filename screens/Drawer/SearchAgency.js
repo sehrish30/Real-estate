@@ -5,21 +5,16 @@ import React, {
   useCallback,
   useEffect,
 } from "react";
-import {
-  SafeAreaView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { StyleSheet, View, Image } from "react-native";
+import { SafeAreaView, ActivityIndicator } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { Card, ListItem, Button, Text } from "react-native-elements";
-import Icon from "react-native-vector-icons/Fontisto";
-import { Avatar } from "react-native-elements";
-import SelectBox from "react-native-multi-selectbox";
+import { Text } from "react-native-elements";
+
 import { useFocusEffect } from "@react-navigation/native";
 
-import { items } from "../../Shared/Cities";
 import { searchAgencies } from "../../Shared/Services/SearchServices";
+import AgencyLocationSearch from "../../Shared/ProfileCard/AgencyLocationSearch";
+import AgencySearchCard from "../../Shared/ProfileCard/AgencySearchCard";
 
 const SearchAgency = ({ navigation }) => {
   const [search, setSearch] = useState(null);
@@ -92,86 +87,12 @@ const SearchAgency = ({ navigation }) => {
           color: "#eff7e1",
         }}
       />
+      <AgencyLocationSearch onChange={onChange} location={location} />
 
-      <View style={{ marginHorizontal: 15, marginTop: 5 }}>
-        <SelectBox
-          label="Select location"
-          options={items}
-          value={location}
-          onChange={onChange()}
-          hideInputFilter={false}
-          arrowIconColor="#faeda5"
-          searchIconColor="#8dadb3"
-          style={[styles.font, { color: "#214151" }]}
-          inputFilterContainerStyle={{
-            backgroundColor: "#f8dc81",
-          }}
-          optionsLabelStyle={{
-            color: "#214151",
-            paddingLeft: 10,
-            backgroundColor: "#faeda5",
-          }}
-          optionContainerStyle={{
-            backgroundColor: "#faeda5",
-          }}
-          containerStyle={{
-            backgroundColor: "#8dadb3",
-            padding: 5,
-          }}
-          inputFilterStyle={{
-            color: "#214151",
-            fontFamily: "EBGaramond-Regular",
-            fontSize: 16,
-            paddingHorizontal: 5,
-          }}
-        />
-      </View>
       {agencies.length > 0 ? (
         !loading ? (
           agencies.map((agency, index) => (
-            <TouchableOpacity key={index}>
-              <Card containerStyle={styles.card}>
-                <Card.Title style={{ textAlign: "left" }}>
-                  {agency.name}
-                </Card.Title>
-                <Card.Divider />
-                <View style={styles.agency}>
-                  <Avatar
-                    style={{ width: 50, height: 50 }}
-                    rounded
-                    source={{
-                      uri: agency.logo.url,
-                    }}
-                  />
-                  <View style={styles.basicInfo}>
-                    <Text h2 h2Style={styles.name}>
-                      {agency.bio
-                        ? `${agency.bio?.substring(0, 30)}...`
-                        : "No bio"}
-                    </Text>
-                    <Text
-                      style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}
-                    >
-                      Rent 40 | Sale 50 | Commercial 60
-                    </Text>
-                  </View>
-                  <View style={{ marginLeft: "auto", flexDirection: "row" }}>
-                    <Text
-                      style={[styles.font, { fontSize: 18, color: "#f8dc81" }]}
-                    >
-                      {agency.rating || 0}
-                    </Text>
-                    <Icon
-                      // onPress={showMenu}
-
-                      name="star"
-                      color={"#f8dc81"}
-                      size={18}
-                    />
-                  </View>
-                </View>
-              </Card>
-            </TouchableOpacity>
+            <AgencySearchCard index={index} agency={agency} />
           ))
         ) : (
           <View style={styles.notFound}>
@@ -179,13 +100,14 @@ const SearchAgency = ({ navigation }) => {
           </View>
         )
       ) : (
-        debounceValue && (
+        debounceValue ||
+        (location && (
           <View style={styles.notFound}>
             <Text h3 h3Style={styles.font}>
               No results found
             </Text>
           </View>
-        )
+        ))
       )}
     </SafeAreaView>
   );
@@ -206,20 +128,6 @@ const styles = StyleSheet.create({
     color: "#eff7e1",
     fontFamily: "EBGaramond-Regular",
   },
-  agency: {
-    display: "flex",
-    flexDirection: "row",
-  },
-  basicInfo: {
-    paddingTop: 5,
-    paddingHorizontal: 10,
-    color: "#214151",
-  },
-  name: {
-    fontFamily: "EBGaramond-Regular",
-    fontSize: 14,
-    fontWeight: "300",
-  },
   font: {
     fontFamily: "EBGaramond-Regular",
   },
@@ -228,8 +136,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: "auto",
     marginTop: 40,
-  },
-  card: {
-    backgroundColor: "#c7ffd8",
   },
 });

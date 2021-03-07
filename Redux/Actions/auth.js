@@ -24,7 +24,8 @@ export const login = (data, navigation) => (dispatch) => {
       console.log(err);
       Toast.show({
         type: "error",
-        text1: `${err}`,
+        text1: `Email or password not correct`,
+        text2: `Please try again`,
         visibilityTime: 2000,
         topOffset: 30,
       });
@@ -42,7 +43,8 @@ export const register = (data, navigation) => async (dispatch) => {
     console.error(e);
     Toast.show({
       type: "error",
-      text1: `${e}`,
+      text1: `Couldn't register user`,
+      text2: `Please try again`,
       visibilityTime: 2000,
       topOffset: 30,
     });

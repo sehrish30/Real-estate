@@ -15,8 +15,6 @@ const AgencyLogin = ({ navigation }) => {
   const dispatch = useDispatch();
   const loginAgency = async () => {
     setLoading(true);
-    setEmail(email.toLowerCase());
-    setEmail(email.trim());
     const res = await loginAgencySrv({ email, password }, navigation);
     console.log(res);
     if (res) {

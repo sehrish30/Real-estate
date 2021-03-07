@@ -38,13 +38,9 @@ const Login = ({ navigation }) => {
 
   function LoginUser() {
     setLoading(true);
-    setEmail(email.trim());
     // loginUser({ email, password });
-    dispatch(
-      actions.login({ email: email.toLowerCase(), password }, navigation)
-    );
+    dispatch(actions.login({ email, password }, navigation));
   }
-
   return (
     <SafeAreaView>
       <ScrollView>
