@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     color: "#214151",
-    fontFamily: "EBGaramond-Regular",
+    fontFamily: "EBGaramond-Bold",
   },
   image: {
     marginTop: 5,

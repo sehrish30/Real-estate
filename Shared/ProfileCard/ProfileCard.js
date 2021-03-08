@@ -16,28 +16,29 @@ const ProfileCard = ({
   industrial,
   land,
   showEditbutton,
+  changePassword,
 }) => {
   console.log(residential);
 
   const DATA = [
     {
       id: 0,
-      title: commercial,
+      title: commercial || 0,
       description: "Commercial",
     },
     {
       id: 1,
-      title: residential,
+      title: residential || 0,
       description: "Residential",
     },
     {
       id: 3,
-      title: industrial,
+      title: industrial || 0,
       description: "Industrial",
     },
     {
       id: 4,
-      title: land,
+      title: land || 0,
       description: "Land",
     },
   ];
@@ -59,7 +60,7 @@ const ProfileCard = ({
     <>
       <Card containerStyle={styles.bg}>
         {showEditbutton && (
-          <View style={{ marginRight: "auto" }}>
+          <View style={{ marginRight: "auto", flexDirection: "row" }}>
             <Pressable
               onPressOut={() => {
                 editAgency();
@@ -70,6 +71,25 @@ const ProfileCard = ({
                 name="pencil-square"
                 color={"#a2d0c1"}
                 size={30}
+              />
+            </Pressable>
+            <Pressable
+              onPressOut={() => {
+                changePassword();
+              }}
+            >
+              <FontAwesome5
+                style={{
+                  verticalAlign: "middle",
+                  marginRight: 15,
+                  marginTop: 2,
+                  padding: 5,
+                  borderRadius: 4,
+                  backgroundColor: "#a2d0c1",
+                }}
+                name="key"
+                color={"#e4fbff"}
+                size={15}
               />
             </Pressable>
           </View>
@@ -92,12 +112,14 @@ const ProfileCard = ({
         <Card.Divider />
         <View style={styles.locationRow}>
           <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-            <IonIcons
-              style={{ marginRight: 8 }}
-              name="ios-location-sharp"
-              color={"#214151"}
-              size={20}
-            />
+            <View style={{ verticalAlign: "middle" }}>
+              <IonIcons
+                style={{ marginRight: 8 }}
+                name="ios-location-sharp"
+                color={"#214151"}
+                size={20}
+              />
+            </View>
             Locations
           </Text>
 
@@ -115,23 +137,27 @@ const ProfileCard = ({
         <Card.Divider />
         <View style={styles.locationRow}>
           <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-            <FontAwesome5
-              style={{ marginRight: 8 }}
-              name="building"
-              color={"#214151"}
-              size={20}
-            />
+            <View style={{ verticalAlign: "middle" }}>
+              <FontAwesome5
+                style={{
+                  marginRight: 8,
+                  verticalAlign: "middle",
+                }}
+                name="building"
+                color={"#214151"}
+                size={20}
+              />
+            </View>
             Properties
           </Text>
-
-          <View>
-            <FlatList
-              numColumns={4}
-              data={DATA}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
+        </View>
+        <View style={{}}>
+          <FlatList
+            numColumns={4}
+            data={DATA}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
         </View>
       </Card>
     </>
@@ -189,7 +215,6 @@ const styles = StyleSheet.create({
     padding: 5,
     paddingBottom: 0,
     alignItems: "center",
-
     backgroundColor: "#e4fbff",
     borderRadius: 5,
   },
@@ -198,7 +223,7 @@ const styles = StyleSheet.create({
     color: "#214151",
   },
   item: {
-    // padding: 5,
+    marginTop: 10,
     paddingTop: 20,
     alignItems: "center",
     width: 80,

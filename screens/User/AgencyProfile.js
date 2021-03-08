@@ -19,6 +19,7 @@ import {
 
 import ProfileCard from "../../Shared/ProfileCard/ProfileCard";
 import CustomModal from "../../Shared/Input/CustomModal";
+import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
 
 // Reducers State
 const reducer = (state, newState) => ({ ...state, ...newState });
@@ -41,6 +42,8 @@ const AgencyProfile = ({ navigation }) => {
   const [editBio, setEditBio] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [chosenLocations, setChosenLocations] = useState([]);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
   const dispatch = useDispatch();
 
   const agency = useSelector((state) => state.auth.agency);
@@ -135,10 +138,15 @@ const AgencyProfile = ({ navigation }) => {
             industrial,
             land,
           });
+
           await AsyncStorage.setItem("agency", JSON.stringify(data));
         }
       }
     }
+  };
+
+  const changePassword = () => {
+    setShowPasswordModal(true);
   };
 
   // Side Effects
@@ -169,6 +177,7 @@ const AgencyProfile = ({ navigation }) => {
         land: agency.land?.length,
       });
       console.log(profile, agency);
+      // console.error(profile.id);
     };
     getAgency();
 
@@ -191,6 +200,7 @@ const AgencyProfile = ({ navigation }) => {
         industrial={industrial}
         land={land}
         showEditbutton={true}
+        changePassword={changePassword}
       />
 
       <CustomModal
@@ -203,6 +213,14 @@ const AgencyProfile = ({ navigation }) => {
         storeUserInfo={storeUserInfo}
         setEditBio={setEditBio}
         setChosenLocations={setChosenLocations}
+      />
+      <CustomModalPassword
+        showPasswordModal={showPasswordModal}
+        setShowPasswordModal={setShowPasswordModal}
+        changePassword={changePassword}
+        agencyId={profile.id}
+        navigation={navigation}
+        dispatchProfile={dispatchProfile}
       />
     </ScrollView>
   );

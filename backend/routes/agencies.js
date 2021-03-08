@@ -382,4 +382,62 @@ router.put(`/upload-logo`, async (req, res) => {
   });
 });
 
+/*----------------------------------------
+            Agency UPDATE Password
+---------------------------------------- */
+
+router.put(`/change-password`, async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(` `)[1];
+
+  if (!mongoose.isValidObjectId(req.body.id)) {
+    return res.status(400).res("Invalid agency");
+  }
+
+  try {
+    jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+
+      if (agencyId === req.body.id) {
+        agency = await Agency.findById(req.body.id).select("password");
+
+        if (bcrypt.compareSync(req.body.password, agency.password)) {
+          const passwordHash = bcrypt.hashSync(req.body.newPassword, 14);
+
+          // Update agency with hashed password
+          newAgency = await Agency.findByIdAndUpdate(req.body.id, {
+            password: passwordHash,
+          });
+
+          // generate token to send to user
+          const token = jwt.sign(
+            {
+              agencyId: newAgency.id,
+              isAdmin: true,
+            },
+            process.env.SECRET,
+            {
+              expiresIn: "15d",
+            }
+          );
+          newAgency.password = undefined;
+          newAgency.isApproved = undefined;
+          const returnData = {
+            newAgency,
+            token,
+          };
+          return res.status(200).send(returnData);
+        }
+      } else {
+        return res.status(401).send("User not authorized");
+      }
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 module.exports = router;

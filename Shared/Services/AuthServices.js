@@ -149,3 +149,29 @@ export async function loginAgencySrv(data, navigation) {
     console.error(err);
   }
 }
+
+export async function changeAgencyPassword(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}agencies/change-password`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      console.error("HERE", res.data);
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+    Toast.show({
+      type: "error",
+      text1: `Password incorrect`,
+      text2: `Try again`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+  }
+}
