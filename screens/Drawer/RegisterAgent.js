@@ -33,6 +33,7 @@ import {
   validateRegisterAgencyForm,
 } from "../../Shared/services";
 import { items } from "../../Shared/Cities";
+import CustomMessage from "../CustomMessage";
 
 var { width, height } = Dimensions.get("window");
 
@@ -53,6 +54,7 @@ const RegisterAgent = ({ navigation }) => {
   const [showUpload, setShowUpload] = useState(false);
   const [uploadImage, setUploadImage] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
+  const [visibleModal, setVisibleModal] = useState(false);
 
   const uploadbtn = useRef();
 
@@ -193,6 +195,7 @@ const RegisterAgent = ({ navigation }) => {
             visibilityTime: 8000,
             topOffset: 30,
           });
+          setVisibleModal(true);
           setName("");
           setEmail("");
           setAttachments([]);
@@ -267,6 +270,15 @@ const RegisterAgent = ({ navigation }) => {
         extraHeight={200}
         enableOnAndroid={true}
       >
+        <CustomMessage
+          visible={visibleModal}
+          setVisible={setVisibleModal}
+          message={
+            "To become a part of Ionic Real estate team you should be be real estate broker or developer."
+          }
+          shortMsg={"If your request gets accepted we will email you"}
+          heading={"Agency Register Request"}
+        />
         <ScrollView contentContainerStyle={styles.form}>
           <Text style={[styles.font, styles.heading]}>
             Register your agency
@@ -470,7 +482,7 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     color: "#214151",
-    fontFamily: "EBGaramond-Bold",
+    fontFamily: "EBGaramond-Regular",
   },
   image: {
     marginTop: 5,

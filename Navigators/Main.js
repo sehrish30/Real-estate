@@ -2,11 +2,19 @@ import React from "react";
 import { StyleSheet, Text, View, Platform, StatusBar } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const Tab = createBottomTabNavigator();
 import UserAuthNavigator from "./UserAuthNavigator";
 import DrawerNavigator from "./DrawerNavigator";
+import AdminNavigator from "./AdminNavigator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { StatusBar } from "expo-status-bar";
+
+let showAdminPanel;
+AsyncStorage.getItem("isLoggedInAgency").then((res) => {
+  showAdminPanel = res;
+});
 
 const Main = () => {
   return (
@@ -16,6 +24,7 @@ const Main = () => {
         keyboardHidesTabBar: true,
         showLabel: false,
         activeTintColor: "#214151",
+        inactiveTintColor: "#839b97",
       }}
     >
       {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
@@ -40,7 +49,7 @@ const Main = () => {
         options={{
           tabBarIcon: ({ color }) => (
             <View>
-              <Icon name="wechat" color={color} size={30} />
+              <Icon name="wechat" color={color} size={25} />
               {/* <CartIcon /> */}
             </View>
           ),
@@ -51,16 +60,30 @@ const Main = () => {
         component={UserAuthNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon name="search" color={color} size={30} />
+            <View>
+              <Icon name="search" color={color} size={25} />
+            </View>
           ),
         }}
       />
+      {showAdminPanel && (
+        <Tab.Screen
+          name="Admin"
+          component={AdminNavigator}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <FontAwesome5 name="shield-alt" color={color} size={25} />
+            ),
+          }}
+        />
+      )}
+
       <Tab.Screen
         name="User"
         component={UserAuthNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <Icon name="user" color={color} size={30} />
+            <Icon name="user" color={color} size={25} />
           ),
         }}
       />
