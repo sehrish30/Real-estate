@@ -14,10 +14,14 @@ export async function uploadToCloudinary(image) {
     mode: "cors",
   });
   const final = await res.json();
+  // console.error(final);
+
   const sendData = {
     url: final.secure_url,
     public_id: final.public_id,
   };
+  console.error(sendData);
+
   return sendData;
 }
 

@@ -49,7 +49,7 @@ const CustomMessage = ({ heading, message, visible, setVisible, shortMsg }) => {
             size={60}
           />
         </View>
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", textAlign: "center" }}>
           <Text style={styles.textInfo}>{shortMsg}</Text>
           <Text style={styles.textInfo}>{message}</Text>
         </View>
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     color: "#839b97",
     fontFamily: "EBGaramond-Regular",
     paddingTop: 5,
+    textAlign: "center",
   },
   headingModal: {
     fontSize: 18,

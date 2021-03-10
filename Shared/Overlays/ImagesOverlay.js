@@ -54,6 +54,7 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
               fontSize: 24,
               fontWeight: "500",
             },
+            dotActiveStyle: { backgroundColor: "#34626c" },
             PrevComponent: ({ onPress }) => (
               <TouchableOpacity onPress={onPress}>
                 <Text

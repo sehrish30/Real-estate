@@ -55,6 +55,7 @@ const RegisterAgent = ({ navigation }) => {
   const [uploadImage, setUploadImage] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
   const [visibleModal, setVisibleModal] = useState(false);
+  const [send, setSend] = useState(false);
 
   const uploadbtn = useRef();
 
@@ -85,6 +86,9 @@ const RegisterAgent = ({ navigation }) => {
       if (category) {
         uploadbtn.current.handleOnPress();
       }
+      return () => {
+        setLoading(false);
+      };
     }, [category])
   );
 
@@ -157,22 +161,31 @@ const RegisterAgent = ({ navigation }) => {
     }
   };
 
+  const settingNewUploads = async () => {
+    let secretImages = [];
+    for (const image of uploadImage) {
+      const imageURL = await uploadToCloudinary(image.newfile);
+
+      let data = { category: image.category, file: imageURL };
+      setImageUrls((prevUrls) => [...prevUrls, data]);
+      secretImages.push(data);
+    }
+
+    return secretImages;
+  };
+
   const registerAgent = async () => {
-    uploadImage.map((image) => {
-      const imageURL = uploadToCloudinary(image.newfile);
-      setImageUrls((prevUrls) => [
-        ...prevUrls,
-        { file: imageURL, category: image.category },
-      ]);
-    });
     try {
+      const imageData = await settingNewUploads();
+
       const location = locations.map((location) => location.item);
+
       const formData = {
         name,
         phoneNumber: phone,
         email,
         location,
-        attachments: imageUrls,
+        attachments: imageData,
       };
       const validationErrors = await validateRegisterAgencyForm({
         name,
@@ -188,6 +201,7 @@ const RegisterAgent = ({ navigation }) => {
         const res = await axios.post(`${baseURL}agencies/register`, formData);
 
         if (res.status == 200) {
+          setLoading(false);
           Toast.show({
             type: "success",
             text1: `${res.data.name} has been registered successfully`,
@@ -203,8 +217,15 @@ const RegisterAgent = ({ navigation }) => {
           setPhone("");
         } else {
           setLoading(false);
+          setVisibleModal(true);
+          setName("");
+          setEmail("");
+          setAttachments([]);
+          setLocations([]);
+          setPhone("");
           throw new Error(res.data);
         }
+        setLoading(false);
         navigation.navigate("User");
       } else {
         setLoading(false);
@@ -217,6 +238,7 @@ const RegisterAgent = ({ navigation }) => {
       }
     } catch (e) {
       console.log(e);
+      setLoading(false);
       Toast.show({
         type: "error",
         text1: `${name} could not be registered`,
@@ -276,7 +298,7 @@ const RegisterAgent = ({ navigation }) => {
           message={
             "To become a part of Ionic Real estate team you should be be real estate broker or developer."
           }
-          shortMsg={"If your request gets accepted we will email you"}
+          shortMsg={"If your request gets accepted we will email you."}
           heading={"Agency Register Request"}
         />
         <ScrollView contentContainerStyle={styles.form}>
