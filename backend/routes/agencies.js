@@ -78,6 +78,24 @@ router.get(`/`, async (req, res) => {
 });
 
 /*----------------------------------------
+      Get all pending agencies
+---------------------------------------- */
+router.get(`/pending-agencies`, async (req, res) => {
+  try {
+    const query = { isApproved: false };
+
+    const agencyList = await Agency.find(query);
+
+    if (!agencyList) {
+      return res.status(204).send("No results found");
+    }
+    res.status(200).send(agencyList);
+  } catch (err) {
+    return res.status(400).json({ error: e });
+  }
+});
+
+/*----------------------------------------
             Agency DETAILS
 ---------------------------------------- */
 router.get("/:id", async (req, res) => {

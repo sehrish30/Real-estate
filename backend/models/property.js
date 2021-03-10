@@ -59,6 +59,7 @@ const propertySchema = mongoose.Schema(
       ref: "Agency",
       required: true,
     },
+    isReported: false,
   },
   {
     timestamps: true,
@@ -73,4 +74,4 @@ propertySchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-exports.Category = mongoose.model("Property", propertySchema);
+exports.Property = mongoose.model("Property", propertySchema);

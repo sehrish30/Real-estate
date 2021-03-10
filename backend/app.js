@@ -32,12 +32,14 @@ app.use(errorHandler);
 --------------------------------- */
 const usersRoutes = require("./routes/users");
 const agentRoutes = require("./routes/agencies");
+const propertyRoutes = require("./routes/properties");
 
 /*---------------------------------
               ROUTER
 --------------------------------- */
 app.use(`/users`, usersRoutes);
 app.use(`/agencies`, agentRoutes);
+app.use(`/properties`, propertyRoutes);
 
 /*---------------------------------
        MONGOOSE CONNECTION

@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  Dimensions,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { fillStore } from "../../Redux/Actions/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
