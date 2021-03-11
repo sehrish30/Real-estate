@@ -1,24 +1,19 @@
-import React from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  Card,
-  ListItem,
-  Button,
-  Icon,
-  Image,
-  Badge,
-  Overlay,
-} from "react-native-elements";
+import { Card, Button, Image, Badge } from "react-native-elements";
 
-const AgencyPending = ({ setVisible, agency }) => {
+import ImagesOverlay from "../Overlays/ImagesOverlay";
+
+const AgencyPending = ({ agency, rejectService, acceptService }) => {
+  const [visible, setVisible] = useState(false);
+
   return (
     <Card containerStyle={styles.card}>
       <Card.Title style={styles.cardTitle}>{agency.name}</Card.Title>
       <Card.Divider />
-
       <View style={styles.cardContent}>
         <View style={{ alignItems: "center" }}>
           <Image
@@ -26,7 +21,7 @@ const AgencyPending = ({ setVisible, agency }) => {
             resizeMode="cover"
             alt={"Agency uploaded images"}
             source={{
-              uri: agency.logo.url,
+              uri: agency.logo?.url,
             }}
           />
         </View>
@@ -75,7 +70,7 @@ const AgencyPending = ({ setVisible, agency }) => {
         </Text>
 
         <View style={styles.locationSection}>
-          {agency.location.map((location, i) => (
+          {agency.location?.map((location, i) => (
             <Badge
               key={i}
               value={location}
@@ -85,7 +80,6 @@ const AgencyPending = ({ setVisible, agency }) => {
           ))}
         </View>
       </View>
-
       <Card.Divider />
       <View>
         <Button
@@ -125,6 +119,7 @@ const AgencyPending = ({ setVisible, agency }) => {
             color: "#e4fbff",
           }}
           title="Accept"
+          onPress={() => acceptService({ id: agency.id, email: agency.email })}
         />
         <Button
           icon={
@@ -133,9 +128,6 @@ const AgencyPending = ({ setVisible, agency }) => {
               name="close-circle-outline"
               color={"#e02e49"}
               size={25}
-              onPress={() => {
-                setVisible(false);
-              }}
             />
           }
           buttonStyle={{
@@ -146,9 +138,15 @@ const AgencyPending = ({ setVisible, agency }) => {
             color: "#e02e49",
           }}
           title="Reject"
+          onPress={() => rejectService(agency.id)}
         />
       </View>
-      <View></View>
+
+      <ImagesOverlay
+        visible={visible}
+        setVisible={setVisible}
+        attachments={agency.attachments}
+      />
     </Card>
   );
 };

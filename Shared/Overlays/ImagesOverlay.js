@@ -88,7 +88,7 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
               Swipe to view images
             </Text>
           </View>
-          {attachments.length === 0 && (
+          {attachments?.length === 0 && (
             <View
               style={{
                 flex: 1,
@@ -108,8 +108,9 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
               </Text>
             </View>
           )}
-          {attachments.map((attachment) => (
+          {attachments?.map((attachment, index) => (
             <View
+              key={index}
               style={{
                 flex: 1,
                 alignItems: "center",
@@ -118,32 +119,12 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
               }}
             >
               <Image
-                source={{ uri: attachment.url }}
-                style={{ width: 200, height: 200 }}
+                source={{ uri: attachment?.file.url }}
+                style={{ width: 300, height: 500, objectFit: "cover" }}
                 PlaceholderContent={<ActivityIndicator />}
               />
             </View>
           ))}
-          {/* <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgba(20,200,20,0.3)",
-            }}
-          >
-            <Text>Slide 2</Text>
-          </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "rgba(200,20,20,0.3)",
-            }}
-          >
-            <Text>Slide 3</Text>
-          </View> */}
         </Swiper>
       </View>
     </Overlay>

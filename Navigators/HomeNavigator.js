@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../screens/Drawer/Home";
 import SearchAgency from "../screens/Drawer/SearchAgency";
 import AgencyDetail from "../screens/Drawer/AgencyDetail";
+import AgencyPending from "../Shared/Admin/AgencyPending";
 
 const Stack = createStackNavigator();
 

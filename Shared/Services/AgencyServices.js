@@ -46,3 +46,67 @@ export async function getReportedProperties() {
     });
   }
 }
+
+export async function rejectAgency(id, token) {
+  console.log("GOT", id, token);
+  try {
+    const res = await axios.delete(`${baseURL}agencies/rejected/${id}`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("RESPOSNSE", res.data);
+
+    if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Agency successfully Rejected`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+    }
+    return id;
+  } catch (err) {
+    console.error(err);
+    Toast.show({
+      type: "error",
+      text1: `Agency couldn't be rejected`,
+      text2: `Try again!`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+  }
+}
+
+export async function acceptAgency(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}agencies/approved`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Agency successfully Accepted`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+    return data.id;
+  } catch (err) {
+    console.error(err);
+    Toast.show({
+      type: "error",
+      text1: `Agency couldn't be accepted`,
+      text2: `Try again!`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+  }
+}

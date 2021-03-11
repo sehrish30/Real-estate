@@ -187,6 +187,8 @@ const RegisterAgent = ({ navigation }) => {
         location,
         attachments: imageData,
       };
+      let modifiedEmail = email;
+      setEmail(modifiedEmail.toLowerCase().trim());
       const validationErrors = await validateRegisterAgencyForm({
         name,
         email,
@@ -194,7 +196,6 @@ const RegisterAgent = ({ navigation }) => {
         locations,
       });
       const errors = Object.keys(validationErrors).length === 0;
-      console.log("VALIDATE", validationErrors);
 
       if (errors) {
         setLoading(true);
@@ -202,6 +203,7 @@ const RegisterAgent = ({ navigation }) => {
 
         if (res.status == 200) {
           setLoading(false);
+
           Toast.show({
             type: "success",
             text1: `${res.data.name} has been registered successfully`,
@@ -215,6 +217,8 @@ const RegisterAgent = ({ navigation }) => {
           setAttachments([]);
           setLocations([]);
           setPhone("");
+          setImageUrls([]);
+          setUploadImage([]);
         } else {
           setLoading(false);
           setVisibleModal(true);
@@ -222,6 +226,8 @@ const RegisterAgent = ({ navigation }) => {
           setEmail("");
           setAttachments([]);
           setLocations([]);
+          setImageUrls([]);
+          setUploadImage([]);
           setPhone("");
           throw new Error(res.data);
         }

@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   View,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 
 import { Text } from "react-native-elements";
@@ -12,13 +13,34 @@ import { Text } from "react-native-elements";
 import { useFocusEffect } from "@react-navigation/native";
 
 import AgencyPending from "../../Shared/Admin/AgencyPending";
-import ImagesOverlay from "../../Shared/Overlays/ImagesOverlay";
-import { getPendingAgencies } from "../../Shared/Services/AgencyServices";
+import { rejectAgency } from "../../Shared/Services/AgencyServices";
+import {
+  getPendingAgencies,
+  acceptAgency,
+} from "../../Shared/Services/AgencyServices";
+import { useSelector } from "react-redux";
+
 var { width, height } = Dimensions.get("window");
 const Requests = () => {
-  const [visible, setVisible] = useState(false);
   const [agencies, setAgencies] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Get token of the logged in user
+  let token = useSelector((state) => state.auth.token);
+
+  const rejectService = async (id) => {
+    const res = await rejectAgency(id, token);
+    if (res) {
+      setAgencies(agencies.filter((agency) => agency.id !== res));
+    }
+  };
+
+  const acceptService = async (data) => {
+    const res = await acceptAgency(data, token);
+    if (res) {
+      setAgencies(agencies.filter((agency) => agency.id !== res));
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -36,6 +58,7 @@ const Requests = () => {
       btn();
       return () => {
         setAgencies([]);
+        setLoading(true);
         clearTimeout(time);
       };
     }, [])
@@ -58,41 +81,34 @@ const Requests = () => {
         </View>
       ) : null}
 
-      {agencies.map((agency) =>
-        agencies.length !== 0 ? (
-          <>
-            <AgencyPending
-              key={agency.id}
-              visible={visible}
-              setVisible={setVisible}
-              agency={agency}
-            />
-            <ImagesOverlay
-              visible={visible}
-              setVisible={setVisible}
-              attachments={agency.attachments}
-            />
-          </>
-        ) : loading ? (
-          <View
+      {agencies.map((agency) => {
+        return (
+          <AgencyPending
+            key={agency.id}
+            acceptService={acceptService}
+            agency={agency}
+            rejectService={rejectService}
+          />
+        );
+      })}
+      {agencies.length === 0 && !loading && (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: height / 7,
+          }}
+        >
+          <Text
             style={{
-              alignItems: "center",
-              justifyContent: "center",
-              height: height,
-              flex: 1,
-              padding: 10,
-              color: "#f8dc81",
+              fontFamily: "EBGaramond-Bold",
+              color: "#214151",
+              fontSize: 20,
             }}
           >
-            <ActivityIndicator size="large" />
-          </View>
-        ) : (
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ fontFamily: "EBGaramond-Bold", color: "#214151" }}>
-              No agencies Found
-            </Text>
-          </View>
-        )
+            No agencies Found
+          </Text>
+        </View>
       )}
     </ScrollView>
   );
