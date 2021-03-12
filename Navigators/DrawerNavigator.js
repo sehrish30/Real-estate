@@ -31,9 +31,9 @@ const DrawerNavigator = () => {
       drawerType={width >= 768 ? "permanent" : "slide"}
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
-      <Drawer.Screen name="RegisterAgent" component={RegisterAgent} />
+      <Drawer.Screen name="Register Agency" component={RegisterAgent} />
       <Drawer.Screen
-        name="AffordibilityCalculator"
+        name="Affordibility calculator"
         component={AffordibilityCalculator}
       />
     </Drawer.Navigator>

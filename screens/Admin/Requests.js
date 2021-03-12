@@ -5,7 +5,6 @@ import {
   ActivityIndicator,
   View,
   Dimensions,
-  TouchableOpacity,
 } from "react-native";
 
 import { Text } from "react-native-elements";
