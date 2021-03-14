@@ -10,6 +10,7 @@ import DrawerNavigator from "./DrawerNavigator";
 import AdminNavigator from "./AdminNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
+import ChatNavigator from "./ChatNavigator";
 // import { StatusBar } from "expo-status-bar";
 
 let showAdminPanel;
@@ -34,7 +35,7 @@ const Main = () => {
         inactiveTintColor: "#839b97",
       }}
     >
-      {Platform.OS === "ios" && <StatusBar barStyle="light-content" />}
+      {/* {Platform.OS === "ios" && <StatusBar barStyle="light-content" />} */}
 
       <Tab.Screen
         name="Home"
@@ -52,7 +53,7 @@ const Main = () => {
       />
       <Tab.Screen
         name="Chat"
-        component={UserAuthNavigator}
+        component={ChatNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <View>

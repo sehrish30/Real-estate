@@ -31,7 +31,7 @@ const AffordibilityCalculator = ({ navigation }) => {
     const mortgageRate = (mortgage / monthlyIncome) * 100;
     const final = Math.round(mortgageRate + dir);
 
-    console.error(Math.round(final));
+    // console.error(Math.round(final));
     if (annualIncome !== "" && monthlyexp !== "" && mortgage !== "") {
       if (final > 50 && final <= 100) {
         // Now tell the customer how much should he reduce
@@ -346,6 +346,7 @@ const AffordibilityCalculator = ({ navigation }) => {
                 height: 90,
                 padding: 20,
                 backgroundColor: "#c7ffd8",
+                marginBottom: 10,
               }}
               titleStyle={{ color: "#214151" }}
               icon={
