@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, TextInput } from "react-native";
+import { Button, KeyboardAvoidingView, TextInput } from "react-native";
 import { SafeAreaView, Dimensions } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { Avatar, Badge, Icon, Input } from "react-native-elements";
@@ -8,12 +8,44 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
+// import AudioRecorderPlayer from "react-native-audio-recorder-player";
+import { Audio } from "expo-av";
 
 var { width, height } = Dimensions.get("window");
 
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
+  const [recording, setRecording] = useState(null);
+
+  async function startRecording() {
+    try {
+      console.log("Requesting permissions..");
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+      console.log("Starting recording..");
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
+      await recording.startAsync();
+      setRecording(recording);
+      console.log("Recording started");
+    } catch (err) {
+      console.error("Failed to start recording", err);
+    }
+  }
+
+  async function stopRecording() {
+    console.log("Stopping recording..");
+    setRecording(undefined);
+    await recording.stopAndUnloadAsync();
+    const uri = recording.getURI();
+    console.log("Recording stopped and stored at", uri);
+  }
 
   // showStates
   const [emojiSelector, setEmojiSelector] = useState(false);
@@ -138,14 +170,21 @@ const Chat = () => {
           <TouchableOpacity style={{ marginTop: 15, marginRight: 15 }}>
             <Ionicons name="md-attach-sharp" size={26} color="#8dadb3" />
           </TouchableOpacity>
-          <View
-            style={{
-              marginTop: 17,
-              marginRight: 10,
-            }}
+
+          <TouchableOpacity
+            style={[
+              {
+                marginTop: 17,
+                marginRight: 10,
+              },
+              recording
+                ? { backgroundColor: "red" }
+                : { backgroundColor: "blue" },
+            ]}
+            onPress={recording ? stopRecording : startRecording}
           >
             <FontAwesome name="microphone" size={24} color="#214151" />
-          </View>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
