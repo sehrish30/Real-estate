@@ -4,6 +4,8 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Animated,
+  LayoutAnimation,
+  UIManager,
 } from "react-native";
 import { SafeAreaView, Dimensions } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
@@ -21,11 +23,23 @@ import { Pressable } from "react-native";
 
 var { width, height } = Dimensions.get("window");
 
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+// let data = this.state.data.filter(cust => cust.id !== item.id)
+//  this.setState({data: data})
+
 const Chat = () => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
   const [recording, setRecording] = useState(null);
   const [sound, setSound] = useState();
+  const [mainIndex, setMainIndex] = useState(null);
+  const [senderIndex, setSenderIndex] = useState(null);
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
@@ -56,16 +70,22 @@ const Chat = () => {
       toValue: { x: 500, y: 0 },
       duration: 2000,
       useNativeDriver: true,
-    }).start();
-    console.error(receiverRef.indexToAnimate, indexToAnimate);
+    }).start(() => {
+      LayoutAnimation.spring();
+    });
+    console.error(mainIndex, indexToAnimate);
   };
 
-  const deleteMessageSender = () => {
+  const deleteMessageSender = (indexToAnimate) => {
+    setSenderIndex(indexToAnimate);
     Animated.timing(senderRef, {
       toValue: { x: -500, y: 0 },
       duration: 2000,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      LayoutAnimation.spring();
+    });
+    console.error(senderIndex, indexToAnimate);
   };
 
   const constDeleteAllMessages = () => {
@@ -150,7 +170,12 @@ const Chat = () => {
             value={<Text style={{ color: "#a2d0c1" }}>Sept 30, 2020</Text>}
           />
         </View>
-        <Pressable onLongPress={() => deleteMessageReceiever(1)}>
+        <Pressable
+          onLongPress={() => {
+            setMainIndex(1);
+            deleteMessageReceiever(1);
+          }}
+        >
           <Animated.View
             key={1}
             style={[
@@ -159,8 +184,7 @@ const Chat = () => {
               {
                 transform: [
                   {
-                    translateX:
-                      1 == receiverRef.indexToAnimate ? receiverRef.x : 0,
+                    translateX: 1 == mainIndex ? receiverRef.x : 0,
                   },
                   {
                     translateY: receiverRef.y,
@@ -188,7 +212,7 @@ const Chat = () => {
             </View>
           </Animated.View>
         </Pressable>
-        <Pressable onLongPress={() => deleteMessageSender()}>
+        <Pressable onLongPress={() => deleteMessageSender(2)}>
           <Animated.View
             key={2}
             style={[
@@ -197,7 +221,7 @@ const Chat = () => {
               {
                 transform: [
                   {
-                    translateX: senderRef.x,
+                    translateX: senderIndex === 2 ? senderRef.x : 0,
                   },
                   {
                     translateY: senderRef.y,
@@ -228,22 +252,43 @@ const Chat = () => {
             </View>
           </Animated.View>
         </Pressable>
-        <View style={[styles.receiver]}>
-          <View>
-            <Text style={[styles.receiverText]}>Hello, My name</Text>
-            <Text
-              style={{
-                color: "#8dadb3",
-                marginTop: "auto",
-                marginLeft: "auto",
-                paddingRight: 5,
-                fontSize: 10,
-              }}
-            >
-              5:00 PM
-            </Text>
-          </View>
-        </View>
+        <Pressable
+          onLongPress={() => {
+            setMainIndex(3);
+            deleteMessageReceiever(3);
+          }}
+        >
+          <Animated.View
+            style={[
+              styles.receiver,
+              {
+                transform: [
+                  {
+                    translateX: 3 == mainIndex ? receiverRef.x : 0,
+                  },
+                  {
+                    translateY: receiverRef.y,
+                  },
+                ],
+              },
+            ]}
+          >
+            <View>
+              <Text style={[styles.receiverText]}>Hello, My name</Text>
+              <Text
+                style={{
+                  color: "#8dadb3",
+                  marginTop: "auto",
+                  marginLeft: "auto",
+                  paddingRight: 5,
+                  fontSize: 10,
+                }}
+              >
+                5:00 PM
+              </Text>
+            </View>
+          </Animated.View>
+        </Pressable>
       </KeyboardAwareScrollView>
 
       <KeyboardAvoidingView>

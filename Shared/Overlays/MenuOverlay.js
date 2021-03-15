@@ -72,6 +72,16 @@ const MenuOverlay = ({
           title="Close"
           onPress={toggleOverlay}
         />
+        <Text
+          style={{
+            color: "#839b97",
+            fontFamily: "EBGaramond-Italic",
+            marginTop: 12,
+            textAlign: "center",
+          }}
+        >
+          *Long press on any message to delete single message
+        </Text>
       </Overlay>
     </View>
   );
