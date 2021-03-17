@@ -14,20 +14,16 @@ function MyStack() {
         headerShown: false,
         keyboardHandlingEnabled: true,
       }}
+      initialRouteName="AllChats"
     >
-      <Stack.Screen
-        name="ChatMain"
-        component={Chat}
-        // options={{
-        //   title: "Chat",
-        // }}
-      />
+      <Stack.Screen name="ChatMain" component={Chat} />
       <Stack.Screen
         name="AllChats"
         component={AllChats}
-        // options={{
-        //   title: "Chat",
-        // }}
+        options={{
+          title: "Chat",
+          headerShown: true,
+        }}
       />
     </Stack.Navigator>
   );

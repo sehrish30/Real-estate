@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo } from "react";
 import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { Button, Overlay } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -72,21 +72,11 @@ const MenuOverlay = ({
           title="Close"
           onPress={toggleOverlay}
         />
-        <Text
-          style={{
-            color: "#839b97",
-            fontFamily: "EBGaramond-Italic",
-            marginTop: 12,
-            textAlign: "center",
-          }}
-        >
-          *Long press on any message to delete single message
-        </Text>
       </Overlay>
     </View>
   );
 };
 
-export default MenuOverlay;
+export default memo(MenuOverlay);
 
 const styles = StyleSheet.create({});

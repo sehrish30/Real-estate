@@ -1,6 +1,8 @@
 import {
   loginUser,
   registerUser,
+  registerGoogleUser,
+  loginGoogleUser,
   checkUser,
 } from "../../Shared/Services/AuthServices";
 import {
@@ -33,9 +35,49 @@ export const login = (data, navigation) => (dispatch) => {
     });
 };
 
+export const googlelogin = (data, navigation) => (dispatch) => {
+  console.log("DATA", data);
+  loginGoogleUser(data)
+    .then((res) => {
+      console.log("RESPONSE ACTION", res);
+      dispatch({ type: LOGIN, payload: res });
+      navigation.navigate("Home");
+    })
+    .catch((err) => {
+      console.log(err);
+
+      Toast.show({
+        type: "error",
+        text1: `Email or password not correct`,
+        text2: `Please try again`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+    });
+};
+
 export const register = (data, navigation) => async (dispatch) => {
   try {
     const res = await registerUser(data);
+    if (res) {
+      dispatch({ type: LOGIN, payload: res });
+      navigation.navigate("Home");
+    }
+  } catch (e) {
+    console.error(e);
+    Toast.show({
+      type: "error",
+      text1: `Couldn't register user`,
+      text2: `Please try again`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+  }
+};
+
+export const googleRegister = (data, navigation) => async (dispatch) => {
+  try {
+    const res = await registerGoogleUser(data);
     if (res) {
       dispatch({ type: LOGIN, payload: res });
       navigation.navigate("Home");

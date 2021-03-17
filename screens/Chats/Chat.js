@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { EvilIcons } from "@expo/vector-icons";
 import {
   Button,
   KeyboardAvoidingView,
@@ -7,19 +8,19 @@ import {
   LayoutAnimation,
   UIManager,
 } from "react-native";
-import { SafeAreaView, Dimensions } from "react-native";
-import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView, Dimensions, StyleSheet, Text, View } from "react-native";
+
 import { Avatar, Badge, Icon, Input } from "react-native-elements";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
 // import AudioRecorderPlayer from "react-native-audio-recorder-player";
 import { Audio } from "expo-av";
 import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
 import { Pressable } from "react-native";
+import MessageInput from "../../Shared/Chats/MessageInput";
+import ChatHeader from "../../Shared/Chats/ChatHeader";
 
 var { width, height } = Dimensions.get("window");
 
@@ -40,12 +41,14 @@ const Chat = () => {
   const [sound, setSound] = useState();
   const [mainIndex, setMainIndex] = useState(null);
   const [senderIndex, setSenderIndex] = useState(null);
+
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
   // showStates
   const [emojiSelector, setEmojiSelector] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
 
   // animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -68,24 +71,13 @@ const Chat = () => {
   const deleteMessageReceiever = (indexToAnimate) => {
     Animated.timing(receiverRef, {
       toValue: { x: 500, y: 0 },
-      duration: 2000,
+      duration: 500,
       useNativeDriver: true,
     }).start(() => {
       LayoutAnimation.spring();
     });
     console.error(mainIndex, indexToAnimate);
-  };
-
-  const deleteMessageSender = (indexToAnimate) => {
-    setSenderIndex(indexToAnimate);
-    Animated.timing(senderRef, {
-      toValue: { x: -500, y: 0 },
-      duration: 2000,
-      useNativeDriver: true,
-    }).start(() => {
-      LayoutAnimation.spring();
-    });
-    console.error(senderIndex, indexToAnimate);
+    setShowTrash(false);
   };
 
   const constDeleteAllMessages = () => {
@@ -128,41 +120,18 @@ const Chat = () => {
     console.error("URI", uri);
   }
 
-  // async function playSound() {
-  //   console.log("Loading Sound");
-  //   const { sound } = await Audio.Sound.createAsync(require(location));
-  //   setSound(sound);
-
-  //   console.log("Playing Sound");
-  //   console.error("SOUND", sound);
-  //   await sound.playAsync();
-  // }
-
   const handleStoringFilesInPhone = async () => {};
 
   return (
     <SafeAreaView
       style={{ flex: 1, marginTop: 20, backgroundColor: "#98ded9" }}
     >
-      <View style={styles.header}>
-        <View style={{ marginLeft: "auto" }}>
-          <Text style={styles.name}>Dignity</Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "flex-end",
-            marginLeft: "auto",
-            marginRight: 5,
-          }}
-        >
-          <MaterialCommunityIcons
-            onPress={toggleOverlay}
-            name="dots-vertical"
-            size={26}
-            color="#8dadb3"
-          />
-        </View>
-      </View>
+      <ChatHeader
+        showTrash={showTrash}
+        toggleOverlay={toggleOverlay}
+        setShowTrash={setShowTrash}
+        deleteMessageReceiever={deleteMessageReceiever}
+      />
       <KeyboardAwareScrollView style={styles.content}>
         <View style={styles.badge}>
           <Badge
@@ -173,7 +142,10 @@ const Chat = () => {
         <Pressable
           onLongPress={() => {
             setMainIndex(1);
-            deleteMessageReceiever(1);
+            console.error(mainIndex);
+            if (mainIndex) {
+              setShowTrash(true);
+            }
           }}
         >
           <Animated.View
@@ -212,7 +184,13 @@ const Chat = () => {
             </View>
           </Animated.View>
         </Pressable>
-        <Pressable onLongPress={() => deleteMessageSender(2)}>
+        <Pressable
+          onLongPress={() => {
+            setMainIndex(2);
+            console.error(mainIndex);
+            setShowTrash(true);
+          }}
+        >
           <Animated.View
             key={2}
             style={[
@@ -221,10 +199,10 @@ const Chat = () => {
               {
                 transform: [
                   {
-                    translateX: senderIndex === 2 ? senderRef.x : 0,
+                    translateX: mainIndex === 2 ? receiverRef.x : 0,
                   },
                   {
-                    translateY: senderRef.y,
+                    translateY: receiverRef.y,
                   },
                 ],
               },
@@ -312,64 +290,15 @@ const Chat = () => {
         )}
 
         <View style={styles.chatArea}>
-          <TouchableOpacity
-            onPress={() => setEmojiSelector(!emojiSelector)}
-            style={{ marginTop: 15, marginLeft: 10 }}
-          >
-            <FontAwesome name="smile-o" size={24} color="#8dadb3" />
-          </TouchableOpacity>
-          <TextInput
-            autoCorrect={false}
-            autoFocus={true}
-            multiline
-            numberOfLines={20}
-            style={{
-              backgroundColor: "#fff",
-              width: width / 1.43,
-              paddingHorizontal: 5,
-              paddingVertical: 5,
-              color: "#214151",
-              borderRadius: 5,
-              height: 50,
-
-              marginBottom: 4,
-            }}
-            onChangeText={(text) => setMessage(text)}
-            value={message}
-            placeholder="Type a message"
+          <MessageInput
+            setEmojiSelector={setEmojiSelector}
+            emojiSelector={emojiSelector}
+            setMessage={setMessage}
+            message={message}
+            recording={recording}
+            stopRecording={stopRecording}
+            startRecording={startRecording}
           />
-
-          <TouchableOpacity style={{ marginTop: 15, marginRight: 8 }}>
-            <Ionicons name="ios-camera-outline" size={26} color="#8dadb3" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              {
-                marginTop: 10,
-                marginRight: 3,
-              },
-              recording
-                ? {
-                    backgroundColor: "#214151",
-                    paddingVertical: 6,
-                    paddingHorizontal: 10,
-                    borderRadius: 100,
-                  }
-                : {
-                    backgroundColor: "#fff",
-                    paddingVertical: 6,
-                    paddingHorizontal: 10,
-                    borderRadius: 100,
-                  },
-            ]}
-            onPress={recording ? stopRecording : startRecording}
-          >
-            {recording ? (
-              <FontAwesome name="microphone" size={24} color="#fff" />
-            ) : (
-              <FontAwesome name="microphone" size={24} color="#214151" />
-            )}
-          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
       <MenuOverlay
@@ -385,19 +314,6 @@ const Chat = () => {
 export default Chat;
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: "#98ded9",
-    paddingTop: 25,
-    paddingBottom: 15,
-    alignItems: "center",
-    flexDirection: "row",
-    // justifyContent: "center",
-  },
-  name: {
-    fontFamily: "EBGaramond-Bold",
-    fontSize: 16,
-    color: "#214151",
-  },
   content: {
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,

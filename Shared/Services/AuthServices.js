@@ -39,12 +39,62 @@ export async function loginUser(data) {
   }
 }
 
+export async function loginGoogleUser(data) {
+  try {
+    const res = await axios.post(`${baseURL}users/google-login`, data, config);
+
+    let sendData = {};
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `${res.data.email} successfully logged in`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+      //   await SecureStore.setItemAsync("jwt", res.data.token);
+      await AsyncStorage.setItem("jwt", res.data.token);
+
+      const decoded = jwt_decode(res.data.token);
+      sendData = { decoded, ...res.data };
+      await AsyncStorage.setItem("user", JSON.stringify(sendData));
+      await AsyncStorage.setItem("isLoggedIn", "true");
+    }
+    return sendData;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function registerUser(data) {
   try {
     const res = await axios.post(`${baseURL}users/register`, data, config);
     const user = await loginUser({
       email: res.data.email,
       password: data.password,
+    });
+    return user;
+  } catch (e) {
+    console.err(e);
+    Toast.show({
+      type: "error",
+      text1: `Some error has occurred`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+  }
+}
+
+export async function registerGoogleUser(data) {
+  console.error(data);
+  try {
+    const res = await axios.post(
+      `${baseURL}users/google-register`,
+      data,
+      config
+    );
+    console.error("RESPONSe", res);
+    const user = await loginGoogleUser({
+      email: res.data.email,
     });
     return user;
   } catch (e) {

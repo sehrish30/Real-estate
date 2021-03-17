@@ -15,12 +15,19 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "host.exp.exponent",
       "supportsTablet": true,
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "674824076901-jna2rtqmnkuf6vu2ecpkqc37ov724fp8.apps.googleusercontent.com"
+        }
+      },
       "infoPlist": {
         "UIBackgroundModes": ["audio"]
       }
     },
     "android": {
+      "package": "host.exp.exponent",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

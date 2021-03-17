@@ -37,7 +37,7 @@ const Form = ({
         <Input
           labelStyle={[styles.font, { color: "#a2d0c1" }]}
           rightIcon={{ type: "font-awesome", name: "key", color: "#f8dc81" }}
-          style={styles}
+          style={styles.input}
           secureTextEntry
           onChangeText={(value) => setPassword(value)}
           label="Password"
@@ -81,9 +81,9 @@ const styles = StyleSheet.create({
     color: "#214151",
   },
   register: {
-    marginTop: 5,
     backgroundColor: "#214151",
     color: "#214151",
+    marginHorizontal: 10,
   },
   extra: {
     color: "#214151",
