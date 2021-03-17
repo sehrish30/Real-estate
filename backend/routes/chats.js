@@ -29,7 +29,7 @@ router.get("/check-chat", async (req, res) => {
       return res.status(200).json({ status: true });
     });
   } catch (err) {
-    console.error(err);
+    return res.status(500).send(err);
   }
 });
 
@@ -48,7 +48,7 @@ router.post("/createchat", async (req, res) => {
 
     return res.status(200).json({ status: "Chat created" });
   } catch (err) {
-    console.error(err);
+    return res.status(500).send(err);
   }
 });
 
@@ -99,5 +99,71 @@ router.post("/send", async (req, res) => {
     return res.status(500).json({ error: e });
   }
 });
+
+/*----------------------------------------
+       GET ALL CHATS OF CHATROOM
+---------------------------------------- */
+
+router.get(`/all-chats`, async (req, res) => {
+  try {
+    const chats = await Chat.findOne({
+      customer: req.body.customer,
+      agency: req.body.agency,
+    })
+      .populate("chats")
+      .sort({ createdAt: -1 });
+
+    if (!chats) {
+      return res.status(422).send("No chats");
+    }
+
+    return res.send(chats);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/*----------------------------------------
+          DELETE CHAT
+---------------------------------------- */
+
+router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
+  try {
+    console.log(req.params);
+    const chat = await ChatMsg.findByIdAndRemove(req.params.chatMsgId);
+    if (chat) {
+      await Chat.findOneAndUpdate(
+        { _id: req.params.chatId },
+        {
+          $pull: { chats: req.params.chatMsgId },
+        },
+        {
+          new: true,
+        }
+      )
+        .populate("chats")
+        .exec((err, newUpdatedChatRoom) => {
+          if (!newUpdatedChatRoom || err) {
+            return res.status(422).send(err);
+          }
+          return res.status(200).send(newUpdatedChatRoom);
+        });
+    } else {
+      return res.status(400).send("Chat doesn't exist");
+    }
+
+    //   .sort({ createdAt: -1 });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+        BLOCK CHAT ROOM
+---------------------------------------- */
+
+/*----------------------------------------
+          CLEAR CHAT
+---------------------------------------- */
 
 module.exports = router;

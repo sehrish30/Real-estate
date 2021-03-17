@@ -34,37 +34,41 @@ router.get("/check-chat", function _callee(req, res) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          try {
-            Chat.findOne({
-              customer: req.body.customer,
-              agency: req.body.agency
-            }).exec(function (err, chat) {
-              if (err) {
-                return res.status(422).json({
-                  error: err
-                });
-              }
-
-              if (!chat) {
-                return res.status(200).json({
-                  status: false
-                });
-              }
-
-              return res.status(200).json({
-                status: true
+          _context.prev = 0;
+          Chat.findOne({
+            customer: req.body.customer,
+            agency: req.body.agency
+          }).exec(function (err, chat) {
+            if (err) {
+              return res.status(422).json({
+                error: err
               });
-            });
-          } catch (err) {
-            console.error(err);
-          }
+            }
 
-        case 1:
+            if (!chat) {
+              return res.status(200).json({
+                status: false
+              });
+            }
+
+            return res.status(200).json({
+              status: true
+            });
+          });
+          _context.next = 7;
+          break;
+
+        case 4:
+          _context.prev = 4;
+          _context.t0 = _context["catch"](0);
+          return _context.abrupt("return", res.status(500).send(_context.t0));
+
+        case 7:
         case "end":
           return _context.stop();
       }
     }
-  });
+  }, null, null, [[0, 4]]);
 });
 /*----------------------------------------
          CREATE CHAT
@@ -103,7 +107,7 @@ router.post("/createchat", function _callee2(req, res) {
         case 10:
           _context2.prev = 10;
           _context2.t0 = _context2["catch"](0);
-          console.error(_context2.t0);
+          return _context2.abrupt("return", res.status(500).send(_context2.t0));
 
         case 13:
         case "end":
@@ -197,4 +201,119 @@ router.post("/send", function _callee3(req, res) {
     }
   }, null, null, [[0, 11]]);
 });
+/*----------------------------------------
+       GET ALL CHATS OF CHATROOM
+---------------------------------------- */
+
+router.get("/all-chats", function _callee4(req, res) {
+  var chats;
+  return regeneratorRuntime.async(function _callee4$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          _context5.next = 3;
+          return regeneratorRuntime.awrap(Chat.findOne({
+            customer: req.body.customer,
+            agency: req.body.agency
+          }).populate("chats").sort({
+            createdAt: -1
+          }));
+
+        case 3:
+          chats = _context5.sent;
+
+          if (chats) {
+            _context5.next = 6;
+            break;
+          }
+
+          return _context5.abrupt("return", res.status(422).send("No chats"));
+
+        case 6:
+          return _context5.abrupt("return", res.send(chats));
+
+        case 9:
+          _context5.prev = 9;
+          _context5.t0 = _context5["catch"](0);
+          console.error(_context5.t0);
+
+        case 12:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, null, null, [[0, 9]]);
+});
+/*----------------------------------------
+          DELETE CHAT
+---------------------------------------- */
+
+router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee5(req, res) {
+  var chat;
+  return regeneratorRuntime.async(function _callee5$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.prev = 0;
+          console.log(req.params);
+          _context6.next = 4;
+          return regeneratorRuntime.awrap(ChatMsg.findByIdAndRemove(req.params.chatMsgId));
+
+        case 4:
+          chat = _context6.sent;
+
+          if (!chat) {
+            _context6.next = 10;
+            break;
+          }
+
+          _context6.next = 8;
+          return regeneratorRuntime.awrap(Chat.findOneAndUpdate({
+            _id: req.params.chatId
+          }, {
+            $pull: {
+              chats: req.params.chatMsgId
+            }
+          }, {
+            "new": true
+          }).populate("chats").exec(function (err, newUpdatedChatRoom) {
+            if (!newUpdatedChatRoom || err) {
+              return res.status(422).send(err);
+            }
+
+            return res.status(200).send(newUpdatedChatRoom);
+          }));
+
+        case 8:
+          _context6.next = 11;
+          break;
+
+        case 10:
+          return _context6.abrupt("return", res.status(400).send("Chat doesn't exist"));
+
+        case 11:
+          _context6.next = 16;
+          break;
+
+        case 13:
+          _context6.prev = 13;
+          _context6.t0 = _context6["catch"](0);
+          return _context6.abrupt("return", res.status(500).send(_context6.t0));
+
+        case 16:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  }, null, null, [[0, 13]]);
+});
+/*----------------------------------------
+        BLOCK CHAT ROOM
+---------------------------------------- */
+
+/*----------------------------------------
+          CLEAR CHAT
+---------------------------------------- */
+
 module.exports = router;
