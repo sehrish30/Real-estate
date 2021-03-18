@@ -204,43 +204,6 @@ router.post("/send", function _callee3(req, res) {
 /*----------------------------------------
        GET ALL CHATS OF CHATROOM
 ---------------------------------------- */
-// router.get(`/all-chats`, async (req, res) => {
-//   try {
-//     Chat.findOne({ customer: req.body.customer, agency: req.body.agency })
-//       // .populate("chats")
-//       .sort({ createdAt: -1 })
-//       .exec(function (err, chatroom) {
-//         let chatMsgs = [];
-//         const requests = chatroom.chats.map(async (chatmessage) => {
-//           let chatMsg = await ChatMsg.findById(chatmessage);
-//           if (chatMsg) {
-//             chatMsgs.push(chatMsg);
-//             console.log(chatMsgs);
-//           }
-//         });
-//         if (err) return res.status(422).send("No chats");
-//         Promise.all(requests).then(() => {
-//           return res.status(200).json({ chatroom, chatMsgs });
-//         });
-//       });
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).send(err);
-//   }
-// });
-// router.get(`/all-chats`, async (req, res) => {
-//   Chat.findOne(
-//     { customer: req.body.customer, agency: req.body.agency },
-//     (err, chat) => {
-//       if (err) {
-//         res.status(422).send(err);
-//       }
-//       chat.populate("chats").execPopulate(() => {
-//         res.send(chat);
-//       });
-//     }
-//   );
-// });
 
 router.get("/all-chats", function _callee4(req, res) {
   return regeneratorRuntime.async(function _callee4$(_context5) {
@@ -331,7 +294,7 @@ router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee5(req, res) 
   }, null, null, [[0, 13]]);
 });
 /*----------------------------------------
-              CLEAR CHAT
+          BLOCK CHAT ROOM
 ---------------------------------------- */
 
 router["delete"]("/block-chatroom/:chatId", function _callee8(req, res) {
