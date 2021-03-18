@@ -1,20 +1,25 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
-const chatSchema = mongoose.Schema({
+const chatSchema = new mongoose.Schema({
   customer: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
   agency: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Agent",
   },
   chats: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "ChatMsg",
     },
   ],
+  isblocked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 chatSchema.set("toJSON", {

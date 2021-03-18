@@ -104,23 +104,57 @@ router.post("/send", async (req, res) => {
        GET ALL CHATS OF CHATROOM
 ---------------------------------------- */
 
+// router.get(`/all-chats`, async (req, res) => {
+//   try {
+//     Chat.findOne({ customer: req.body.customer, agency: req.body.agency })
+//       // .populate("chats")
+//       .sort({ createdAt: -1 })
+//       .exec(function (err, chatroom) {
+//         let chatMsgs = [];
+//         const requests = chatroom.chats.map(async (chatmessage) => {
+//           let chatMsg = await ChatMsg.findById(chatmessage);
+
+//           if (chatMsg) {
+//             chatMsgs.push(chatMsg);
+//             console.log(chatMsgs);
+//           }
+//         });
+//         if (err) return res.status(422).send("No chats");
+
+//         Promise.all(requests).then(() => {
+//           return res.status(200).json({ chatroom, chatMsgs });
+//         });
+//       });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).send(err);
+//   }
+// });
+
+// router.get(`/all-chats`, async (req, res) => {
+//   Chat.findOne(
+//     { customer: req.body.customer, agency: req.body.agency },
+//     (err, chat) => {
+//       if (err) {
+//         res.status(422).send(err);
+//       }
+//       chat.populate("chats").execPopulate(() => {
+//         res.send(chat);
+//       });
+//     }
+//   );
+// });
+
 router.get(`/all-chats`, async (req, res) => {
-  try {
-    const chats = await Chat.findOne({
-      customer: req.body.customer,
-      agency: req.body.agency,
-    })
-      .populate("chats")
-      .sort({ createdAt: -1 });
-
-    if (!chats) {
-      return res.status(422).send("No chats");
-    }
-
-    return res.send(chats);
-  } catch (err) {
-    console.error(err);
-  }
+  Chat.findOne({ customer: req.body.customer, agency: req.body.agency })
+    .populate("chats")
+    .sort({ createdAt: -1 })
+    .exec((err, chatReturn) => {
+      if (err) {
+        return res.status(402).send(err);
+      }
+      return res.send(chatReturn);
+    });
 });
 
 /*----------------------------------------
@@ -159,11 +193,63 @@ router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
 });
 
 /*----------------------------------------
-        BLOCK CHAT ROOM
+              CLEAR CHAT
 ---------------------------------------- */
+router.delete(`/block-chatroom/:chatId`, async (req, res) => {
+  try {
+    // get all the chatMsgs from chatRoom
+    Chat.findById(req.params.chatId)
+      .then((chatroom) => {
+        // loop through chat msgs ids and delete them in Chat Msg table
+        const requests = chatroom.chats.map(async (chatmessage) => {
+          await ChatMsg.findByIdAndDelete(chatmessage);
+        });
+        Promise.all(requests).then(async () => {
+          // delete chatroom
+          const deletedChatMsgs = await Chat.findByIdAndUpdate(
+            req.params.chatId,
+            {
+              isblocked: true,
+              chats: [],
+            },
+            {
+              new: true,
+            }
+          );
+
+          if (deletedChatMsgs) {
+            return res.status(200).send(deletedChatMsgs);
+          }
+        });
+      })
+      .catch((err) => res.status(422).send(err));
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
 
 /*----------------------------------------
-          CLEAR CHAT
+              UNBLOCK Chat
 ---------------------------------------- */
+
+router.post(`/unblock-chat`, async (req, res) => {
+  try {
+    const unblockedChat = await Chat.findByIdAndUpdate(
+      req.body.chatId,
+      {
+        isblocked: false,
+      },
+      {
+        new: true,
+      }
+    );
+    if (!unblockedChat) {
+      res.status(422).send("Some error has occured");
+    }
+    res.send(unblockedChat);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
 
 module.exports = router;

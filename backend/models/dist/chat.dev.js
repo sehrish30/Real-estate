@@ -2,19 +2,24 @@
 
 var mongoose = require("mongoose");
 
-var chatSchema = mongoose.Schema({
+var Schema = mongoose.Schema;
+var chatSchema = new mongoose.Schema({
   customer: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User"
   },
   agency: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "Agent"
   },
   chats: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "ChatMsg"
-  }]
+  }],
+  isblocked: {
+    type: Boolean,
+    "default": false
+  }
 });
 chatSchema.set("toJSON", {
   virtuals: true
