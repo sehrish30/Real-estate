@@ -8,7 +8,14 @@ import {
   LayoutAnimation,
   UIManager,
 } from "react-native";
-import { SafeAreaView, Dimensions, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+} from "react-native";
 
 import { Avatar, Badge, Icon, Input } from "react-native-elements";
 

@@ -7,5 +7,6 @@ import { Platform } from "react-native";
 // {
 //   Platform.OS == "android" ? (baseURL = ANDROID_API) : (baseURL = IOS_API);
 // }
-let baseURL = "https://real-estate-app-server.herokuapp.com/";
+// let baseURL = "https://real-estate-app-server.herokuapp.com/";
+let baseURL = "http://localhost:3000/";
 export default baseURL;

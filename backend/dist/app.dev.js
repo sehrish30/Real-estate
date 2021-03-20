@@ -16,7 +16,15 @@ var authJwt = require("./helpers/jwt");
 
 var errorHandler = require("./helpers/error-handler");
 
-require("dotenv/config"); // middleware to parse json response from frontend
+var http = require("http");
+
+require("dotenv/config");
+/*---------------------------------
+              Web socket
+--------------------------------- */
+
+
+var SocketServer = require("./socket/index"); // middleware to parse json response from frontend
 
 
 app.use(bodyParser.json());
@@ -70,9 +78,12 @@ mongoose.connect(process.env.DB_CONNECTION, {
 }); // production
 
 var server = app.listen(process.env.PORT || 3000, function () {
+  SocketServer(server);
   var port = server.address().port;
   console.log("Port is ".concat(port));
-}); // // webserver listen to port
-// app.listen(3000, () => {
-//   console.log("Server is running on 3000");
+}); // const serverr = http.createServer(app);
+// SocketServer(serverr);
+// let port = 3002;
+// serverr.listen(port, () => {
+//   console.log(`Sever listening on ${port}`);
 // });

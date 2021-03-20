@@ -2,14 +2,14 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem, Avatar, Badge } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
-import TouchableScale from "react-native-touchable-scale";
+// import TouchableScale from "react-native-touchable-scale";
 const ChatsCard = ({ name, uri, id, message, navigation }) => (
   <View style={styles.card}>
     <ListItem
       onPress={() => navigation.navigate("ChatMain")}
       key={id}
       bottomDivider
-      Component={TouchableScale}
+      // Component={TouchableScale}
       friction={90} //
       tension={100} // These props are passed to the parent component (here TouchableScale)
       activeScale={0.95} //

@@ -9,7 +9,10 @@ import {
   StatusBar,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-
+import { useSocket } from "../../hooks/socketConnect";
+import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
 
 const DATA = [
@@ -36,56 +39,25 @@ const DATA = [
   },
 ];
 
-// const ChatsCard = ({ name, uri, id, message,  }) => (
-//   <View style={styles.card}>
-//     <ListItem
-//       onPress={() => navigation.navigate("ChatMain")}
-//       key={id}
-//       bottomDivider
-//       Component={TouchableScale}
-//       friction={90} //
-//       tension={100} // These props are passed to the parent component (here TouchableScale)
-//       activeScale={0.95} //
-//       linearGradientProps={{
-//         colors: ["#a2d0c1", "#e4fbff"],
-//         start: { x: 1, y: 0 },
-//         end: { x: 0.7, y: 2 },
-//       }}
-//       ViewComponent={LinearGradient}
-//     >
-//       <Avatar source={{ uri }} />
-//       <ListItem.Content>
-//         <ListItem.Title
-//           style={{ color: "#214151", fontFamily: "EBGaramond-Bold" }}
-//         >
-//           {name}
-//         </ListItem.Title>
-//         <ListItem.Subtitle style={{ color: "#214151" }}>
-//           {message}
-//         </ListItem.Subtitle>
-//       </ListItem.Content>
-//       <View>
-//         <Badge
-//           value="99+"
-//           badgeStyle={{
-//             backgroundColor: "#f8dc81",
-//             paddingVertical: 10,
-//           }}
-//           containerStyle={{
-//             borderRadius: 100,
-//           }}
-//           textStyle={{ color: "#214151" }}
-//         />
-//         <Text style={{ fontSize: 8, marginTop: 5, color: "#839b97" }}>
-//           5:09PM
-//         </Text>
-//       </View>
-//       <ListItem.Chevron color="white" />
-//     </ListItem>
-//   </View>
-// );
-
 const AllChats = ({ navigation }) => {
+  const dispatch = useDispatch();
+  let user = useSelector((state) => state.auth.user);
+  const ENDPOINT = "localhost:3000";
+
+  const socket = socketIOClient(ENDPOINT);
+
+  // WEBSOCKETE
+  useFocusEffect(
+    React.useCallback(() => {
+      useSocket(user, dispatch);
+      return () => {
+        socket.emit("disconnect");
+        // turn off instance of chat
+        socket.off();
+      };
+    }, [dispatch])
+  );
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
