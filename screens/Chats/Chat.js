@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { EvilIcons } from "@expo/vector-icons";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+
 import {
-  Button,
   KeyboardAvoidingView,
-  TextInput,
   Animated,
   LayoutAnimation,
   UIManager,
@@ -16,9 +14,10 @@ import {
   View,
   Platform,
 } from "react-native";
-
-import { Avatar, Badge, Icon, Input } from "react-native-elements";
-
+import { useFocusEffect } from "@react-navigation/native";
+import { Badge } from "react-native-elements";
+import { useSocket } from "../../hooks/socketConnect";
+import { useSelector, useDispatch } from "react-redux";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
@@ -28,6 +27,13 @@ import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
 import { Pressable } from "react-native";
 import MessageInput from "../../Shared/Chats/MessageInput";
 import ChatHeader from "../../Shared/Chats/ChatHeader";
+import CreateChat from "../../Shared/Chats/CreateChat";
+import {
+  checkChatExists,
+  fetchAllChats,
+} from "../../Shared/Services/ChatServices";
+import * as actions from "../../Redux/Actions/chat";
+import Loading from "../../Shared/Loading";
 
 var { width, height } = Dimensions.get("window");
 
@@ -41,14 +47,17 @@ if (
 // let data = this.state.data.filter(cust => cust.id !== item.id)
 //  this.setState({data: data})
 
-const Chat = () => {
+const Chat = ({ navigation, route }) => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
   const [recording, setRecording] = useState(null);
   const [sound, setSound] = useState();
   const [mainIndex, setMainIndex] = useState(null);
   const [senderIndex, setSenderIndex] = useState(null);
+  const [chatExists, setChatExists] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  console.log(route.params, "Route Params");
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
@@ -60,16 +69,56 @@ const Chat = () => {
   // animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const receiverRef = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
-  const senderRef = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+
+  // sockets
+  const dispatch = useDispatch();
+  let user = useSelector((state) => state.auth.user);
+  let token = useSelector((state) => state.auth.token);
+
+  // useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //         console.log("Unloading Sound");
+  //         sound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, [sound]);
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        if (route.params) {
+          const res = await checkChatExists(route.params, token);
+          console.error("RES", res);
+          if (res.status) {
+            setChatExists(true);
+            setLoading(false);
+            // fetchChats()
+          }
+        } else {
+          setChatExists(true);
+          setLoading(false);
+        }
+      })();
+
+      return () => {
+        setChatExists(false);
+        setLoading(true);
+        navigation.navigate("AllChats");
+      };
+    }, [])
+  );
 
   useEffect(() => {
-    return sound
-      ? () => {
-          console.log("Unloading Sound");
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+    (async () => {
+      const res = await fetchAllChats(route.params, token);
+      console.log("ALL CHAT", res);
+      useSocket(user, dispatch);
+      dispatch(actions.allChats(res));
+    })();
+
+    return () => {};
+  }, [dispatch]);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -133,187 +182,212 @@ const Chat = () => {
     <SafeAreaView
       style={{ flex: 1, marginTop: 20, backgroundColor: "#98ded9" }}
     >
-      <ChatHeader
-        showTrash={showTrash}
-        toggleOverlay={toggleOverlay}
-        setShowTrash={setShowTrash}
-        deleteMessageReceiever={deleteMessageReceiever}
-      />
-      <KeyboardAwareScrollView style={styles.content}>
-        <View style={styles.badge}>
-          <Badge
-            badgeStyle={styles.badgeText}
-            value={<Text style={{ color: "#a2d0c1" }}>Sept 30, 2020</Text>}
+      {!loading ? (
+        <View>
+          <ChatHeader
+            showTrash={showTrash}
+            toggleOverlay={toggleOverlay}
+            setShowTrash={setShowTrash}
+            deleteMessageReceiever={deleteMessageReceiever}
+          />
+          <KeyboardAwareScrollView style={styles.content}>
+            <View style={styles.badge}>
+              <Badge
+                badgeStyle={styles.badgeText}
+                value={<Text style={{ color: "#a2d0c1" }}>Sept 30, 2020</Text>}
+              />
+            </View>
+            {chatExists ? (
+              <>
+                <Pressable
+                  onLongPress={() => {
+                    setMainIndex(1);
+                    console.error(mainIndex);
+                    if (mainIndex) {
+                      setShowTrash(true);
+                    }
+                  }}
+                >
+                  <Animated.View
+                    key={1}
+                    style={[
+                      styles.receiver,
+                      { opacity: fadeAnim },
+                      {
+                        transform: [
+                          {
+                            translateX: 1 == mainIndex ? receiverRef.x : 0,
+                          },
+                          {
+                            translateY: receiverRef.y,
+                          },
+                        ],
+                      },
+                    ]}
+                  >
+                    <View>
+                      <Text style={[styles.receiverText]}>
+                        Hello, My name Hello, My name Hello, My name Hello, My
+                        name Hello, My name Hello, My name
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#8dadb3",
+                          marginTop: "auto",
+                          marginLeft: "auto",
+                          paddingRight: 5,
+                          fontSize: 10,
+                        }}
+                      >
+                        5:00 PM
+                      </Text>
+                    </View>
+                  </Animated.View>
+                </Pressable>
+                <Pressable
+                  onLongPress={() => {
+                    setMainIndex(2);
+                    console.error(mainIndex);
+                    setShowTrash(true);
+                  }}
+                >
+                  <Animated.View
+                    key={2}
+                    style={[
+                      styles.sender,
+                      { opacity: fadeAnim },
+                      {
+                        transform: [
+                          {
+                            translateX: mainIndex === 2 ? receiverRef.x : 0,
+                          },
+                          {
+                            translateY: receiverRef.y,
+                          },
+                        ],
+                      },
+                    ]}
+                  >
+                    <View>
+                      <Text style={[styles.senderText]}>
+                        Hello, My name is Sehrish Hello, My name is
+                        SehrishHello, My name is SehrishHello, My name is
+                        Sehrish
+                      </Text>
+                      <Text
+                        style={{
+                          marginLeft: "auto",
+                          color: "#8dadb3",
+                          marginTop: "auto",
+                          paddingRight: 5,
+                          fontSize: 10,
+                        }}
+                      >
+                        5:00 PM
+                      </Text>
+                    </View>
+                  </Animated.View>
+                </Pressable>
+                <Pressable
+                  onLongPress={() => {
+                    setMainIndex(3);
+                    deleteMessageReceiever(3);
+                  }}
+                >
+                  <Animated.View
+                    style={[
+                      styles.receiver,
+                      {
+                        transform: [
+                          {
+                            translateX: 3 == mainIndex ? receiverRef.x : 0,
+                          },
+                          {
+                            translateY: receiverRef.y,
+                          },
+                        ],
+                      },
+                    ]}
+                  >
+                    <View>
+                      <Text style={[styles.receiverText]}>Hello, My name</Text>
+                      <Text
+                        style={{
+                          color: "#8dadb3",
+                          marginTop: "auto",
+                          marginLeft: "auto",
+                          paddingRight: 5,
+                          fontSize: 10,
+                        }}
+                      >
+                        5:00 PM
+                      </Text>
+                    </View>
+                  </Animated.View>
+                </Pressable>
+              </>
+            ) : (
+              <View
+                style={{
+                  marginTop: height / 6,
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <CreateChat
+                  data={route.params}
+                  message="You don't have any conversation with this agency"
+                />
+              </View>
+            )}
+          </KeyboardAwareScrollView>
+
+          {chatExists && (
+            <KeyboardAvoidingView>
+              {emojiSelector && (
+                <View style={{ height: height / 2, backgroundColor: "#fff" }}>
+                  <EmojiSelector
+                    columns={8}
+                    theme="#f8dc81"
+                    category={Categories.all}
+                    shouldInclude={(e) =>
+                      parseFloat(e["added_in"]) <= 11 &&
+                      e["has_img_apple"] === true
+                    }
+                    onEmojiSelected={(emoji) => {
+                      setEmoji(emoji);
+                      setEmojiSelector(false);
+
+                      console.error(emoji);
+                    }}
+                  />
+                </View>
+              )}
+
+              <View style={styles.chatArea}>
+                <MessageInput
+                  setEmojiSelector={setEmojiSelector}
+                  emojiSelector={emojiSelector}
+                  setMessage={setMessage}
+                  message={message}
+                  recording={recording}
+                  stopRecording={stopRecording}
+                  startRecording={startRecording}
+                />
+              </View>
+            </KeyboardAvoidingView>
+          )}
+          <MenuOverlay
+            visible={visible}
+            setVisible={setVisible}
+            toggleOverlay={toggleOverlay}
+            constDeleteAllMessages={constDeleteAllMessages}
           />
         </View>
-        <Pressable
-          onLongPress={() => {
-            setMainIndex(1);
-            console.error(mainIndex);
-            if (mainIndex) {
-              setShowTrash(true);
-            }
-          }}
-        >
-          <Animated.View
-            key={1}
-            style={[
-              styles.receiver,
-              { opacity: fadeAnim },
-              {
-                transform: [
-                  {
-                    translateX: 1 == mainIndex ? receiverRef.x : 0,
-                  },
-                  {
-                    translateY: receiverRef.y,
-                  },
-                ],
-              },
-            ]}
-          >
-            <View>
-              <Text style={[styles.receiverText]}>
-                Hello, My name Hello, My name Hello, My name Hello, My name
-                Hello, My name Hello, My name
-              </Text>
-              <Text
-                style={{
-                  color: "#8dadb3",
-                  marginTop: "auto",
-                  marginLeft: "auto",
-                  paddingRight: 5,
-                  fontSize: 10,
-                }}
-              >
-                5:00 PM
-              </Text>
-            </View>
-          </Animated.View>
-        </Pressable>
-        <Pressable
-          onLongPress={() => {
-            setMainIndex(2);
-            console.error(mainIndex);
-            setShowTrash(true);
-          }}
-        >
-          <Animated.View
-            key={2}
-            style={[
-              styles.sender,
-              { opacity: fadeAnim },
-              {
-                transform: [
-                  {
-                    translateX: mainIndex === 2 ? receiverRef.x : 0,
-                  },
-                  {
-                    translateY: receiverRef.y,
-                  },
-                ],
-              },
-            ]}
-          >
-            <View>
-              <Text style={[styles.senderText]}>
-                Hello, My name is Sehrish Hello, My name is SehrishHello, My
-                name is SehrishHello, My name is Sehrish
-              </Text>
-              <Text
-                style={{
-                  marginLeft: "auto",
-                  color: "#8dadb3",
-                  marginTop: "auto",
-                  paddingRight: 5,
-                  fontSize: 10,
-                }}
-              >
-                5:00 PM
-              </Text>
-              {/* <View style={styles.container}>
-              <Button title="Play Sound" onPress={playSound} />
-            </View> */}
-            </View>
-          </Animated.View>
-        </Pressable>
-        <Pressable
-          onLongPress={() => {
-            setMainIndex(3);
-            deleteMessageReceiever(3);
-          }}
-        >
-          <Animated.View
-            style={[
-              styles.receiver,
-              {
-                transform: [
-                  {
-                    translateX: 3 == mainIndex ? receiverRef.x : 0,
-                  },
-                  {
-                    translateY: receiverRef.y,
-                  },
-                ],
-              },
-            ]}
-          >
-            <View>
-              <Text style={[styles.receiverText]}>Hello, My name</Text>
-              <Text
-                style={{
-                  color: "#8dadb3",
-                  marginTop: "auto",
-                  marginLeft: "auto",
-                  paddingRight: 5,
-                  fontSize: 10,
-                }}
-              >
-                5:00 PM
-              </Text>
-            </View>
-          </Animated.View>
-        </Pressable>
-      </KeyboardAwareScrollView>
-
-      <KeyboardAvoidingView>
-        {emojiSelector && (
-          <View style={{ height: height / 2, backgroundColor: "#fff" }}>
-            <EmojiSelector
-              columns={8}
-              theme="#f8dc81"
-              category={Categories.all}
-              shouldInclude={(e) =>
-                parseFloat(e["added_in"]) <= 11 && e["has_img_apple"] === true
-              }
-              onEmojiSelected={(emoji) => {
-                setEmoji(emoji);
-                setEmojiSelector(false);
-
-                console.error(emoji);
-              }}
-            />
-          </View>
-        )}
-
-        <View style={styles.chatArea}>
-          <MessageInput
-            setEmojiSelector={setEmojiSelector}
-            emojiSelector={emojiSelector}
-            setMessage={setMessage}
-            message={message}
-            recording={recording}
-            stopRecording={stopRecording}
-            startRecording={startRecording}
-          />
-        </View>
-      </KeyboardAvoidingView>
-      <MenuOverlay
-        visible={visible}
-        setVisible={setVisible}
-        toggleOverlay={toggleOverlay}
-        constDeleteAllMessages={constDeleteAllMessages}
-      />
+      ) : (
+        <Loading />
+      )}
     </SafeAreaView>
   );
 };

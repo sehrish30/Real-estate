@@ -90,7 +90,7 @@ const Requests = () => {
           />
         );
       })}
-      {agencies.length === 0 && !loading && (
+      {agencies?.length === 0 && !loading && (
         <View
           style={{
             alignItems: "center",

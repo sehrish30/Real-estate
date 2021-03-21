@@ -65,11 +65,13 @@ const AgencyDetail = ({ route, navigation }) => {
         logo={profile.logo}
         bio={profile.bio}
         user={profile.email}
-        locations={profile.location}
+        id={profile.id}
+        ocations={profile.location}
         commercial={commercial}
         land={land}
         residential={residential}
         industrial={industrial}
+        navigation={navigation}
       />
     </ScrollView>
   );

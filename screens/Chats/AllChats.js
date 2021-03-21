@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,6 +7,7 @@ import {
   FlatList,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useSocket } from "../../hooks/socketConnect";
@@ -14,48 +15,80 @@ import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
-
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    name: "Rija",
-    message: "funky bunky",
-    uri:
-      "https://images.unsplash.com/photo-1600421719060-f18eba3cba4d?ixid=MXwxMjA3fDB8MHx0b3BpYy1mZWVkfDJ8YkRvNDhjVWh3bll8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    name: "Dignity",
-    message: "MEssage me asap",
-    uri:
-      "https://images.unsplash.com/photo-1602408960011-61d979be537e?ixid=MXwxMjA3fDB8MHx0b3BpYy1mZWVkfDN8YkRvNDhjVWh3bll8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    name: "Opara",
-    message: "Hunky bujsjso",
-    uri:
-      "https://images.unsplash.com/photo-1532072918578-b5583b5b585e?ixid=MXwxMjA3fDB8MHx0b3BpYy1mZWVkfDR8YkRvNDhjVWh3bll8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-];
+import { userOnline, userOffline } from "../../Redux/Actions/chat";
+import { agencyRooms, customerRooms } from "../../Shared/Services/ChatServices";
+import CreateChat from "../../Shared/Chats/CreateChat";
 
 const AllChats = ({ navigation }) => {
+  const [chatRooms, setChatRooms] = useState([]);
+  const [allChats, setAllChats] = useState([]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+
   let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+  let token = useSelector((state) => state.auth.token);
+
   const ENDPOINT = "localhost:3000";
 
   const socket = socketIOClient(ENDPOINT);
 
   // WEBSOCKETE
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
+      dispatch(userOnline());
       useSocket(user, dispatch);
+
+      if (user.email) {
+        (async () => {
+          const res = await customerRooms(
+            { customer: user.decoded.userId },
+            token
+          );
+
+          if (!res) {
+            setChatRooms([]);
+            setLoading(false);
+          } else {
+            setChatRooms(res);
+            setLoading(false);
+
+            let unSeenCount = 0;
+            for (const i of res.chats) {
+              if ((i.seen = false)) {
+                unSeenCount++;
+              }
+            }
+            const info = {
+              id: res._id,
+              name: res.agency?.name,
+              message:
+                res?.chats[res.chats?.length - 1].content || "No message",
+              uri: res.agency.logo.url,
+              createdAt: res?.chats[res.chats?.length - 1].createdAt || null,
+              unSeenCount,
+              agencyId: res.agency.id,
+            };
+            setAllChats([info]);
+          }
+        })();
+      } else if (agency.email) {
+        (async () => {
+          const res = await agencyRooms(
+            { agency: agency.decoded.userId },
+            token
+          );
+          setChatRooms(res);
+        })();
+      }
+
       return () => {
-        socket.emit("disconnect");
+        // socket.emit("disconnect");
+        dispatch(userOffline());
         // turn off instance of chat
         socket.off();
       };
-    }, [dispatch])
+    }, [dispatch, ENDPOINT])
   );
 
   useLayoutEffect(() => {
@@ -84,18 +117,46 @@ const AllChats = ({ navigation }) => {
       id={item.id}
       message={item.message}
       navigation={navigation}
+      createdAt={item.createdAt}
+      unSeenCount={item.unSeenCount}
+      agencyId={item.agencyId}
     />
   );
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </ScrollView>
+      {allChats.length !== 0 && !loading ? (
+        <ScrollView
+          style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}
+        >
+          <FlatList
+            data={allChats}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        </ScrollView>
+      ) : (
+        <View>
+          {!loading ? (
+            <CreateChat
+              navigation={navigation}
+              searchAgency={true}
+              message="You don't have any conversation with any agency"
+            />
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: 100,
+              }}
+            >
+              <ActivityIndicator size="large" color="#f8dc81" />
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 };

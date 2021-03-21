@@ -11,10 +11,10 @@ const chatMsgSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Agent",
     },
-    // user: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "User",
-    // },
+    seen: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

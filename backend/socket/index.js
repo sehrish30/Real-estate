@@ -28,6 +28,18 @@ const SocketServer = (server) => {
     });
 
     io.to(socket.id).emit("typing", "Usee typing...");
+
+    // socket.on("disconnect", () => {
+    //   // remove user when disconnected
+    //   console.log("User had left");
+    // });
+    socket.on("disconnect", function () {
+      // io.socket.removeAllListeners();
+      console.log("USER LEFT");
+      // socket.removeAllListeners("room");
+      // socket.removeAllListeners("disconnect");
+      io.removeAllListeners("connection");
+    });
   });
 };
 

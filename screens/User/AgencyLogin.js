@@ -95,6 +95,12 @@ const AgencyLogin = ({ navigation }) => {
           navigation={navigation}
           btnAction={loginAgency}
         />
+        {/* <Text
+          style={styles.extra}
+          onPress={() => navigation.navigate("Forgot")}
+        >
+          Forgot Password
+        </Text> */}
       </ScrollView>
     </SafeAreaView>
   );

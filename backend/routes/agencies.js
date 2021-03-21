@@ -486,4 +486,8 @@ router.put(`/change-password`, async (req, res) => {
   }
 });
 
+/*----------------------------------------
+        Agency Forgot Password
+---------------------------------------- */
+
 module.exports = router;

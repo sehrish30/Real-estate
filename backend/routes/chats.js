@@ -15,9 +15,10 @@ const cloudinary = require("cloudinary");
 ---------------------------------------- */
 router.get("/check-chat", async (req, res) => {
   try {
+    console.log(req.query);
     Chat.findOne({
-      customer: req.body.customer,
-      agency: req.body.agency,
+      customer: req.query.customer,
+      agency: req.query.agency,
     }).exec((err, chat) => {
       if (err) {
         return res.status(422).json({ error: err });
@@ -38,6 +39,7 @@ router.get("/check-chat", async (req, res) => {
 ---------------------------------------- */
 router.post("/createchat", async (req, res) => {
   try {
+    console.error(req.body);
     let chatRoom = new Chat({
       customer: req.body.customer,
       agency: req.body.agency,
@@ -57,7 +59,7 @@ router.post("/createchat", async (req, res) => {
 ---------------------------------------- */
 router.post("/send", async (req, res) => {
   try {
-    console.log(req.body);
+    console.error(req.body);
 
     // Save message in ChatMsg table and get the object id back
     const getmsgId = async () => {
@@ -72,10 +74,10 @@ router.post("/send", async (req, res) => {
       return msg._id;
     };
     const msgId = await getmsgId();
-    console.log(msgId);
+    console.error(msgId);
 
     // Save all messages in chat with room details
-    console.log("HERE", msgId);
+    console.error("HERE", msgId);
 
     Chat.findOneAndUpdate(
       {
@@ -105,8 +107,16 @@ router.post("/send", async (req, res) => {
 ---------------------------------------- */
 
 router.get(`/all-chats`, async (req, res) => {
-  Chat.findOne({ customer: req.body.customer, agency: req.body.agency })
-    .populate("chats")
+  console.error(req.query);
+  Chat.findOne({ customer: req.query.customer, agency: req.query.agency })
+    .populate({
+      path: "chats",
+      options: {
+        limit: 20,
+        sort: { created: -1 },
+        skip: req.params.pageIndex * 2,
+      },
+    })
     .sort({ createdAt: -1 })
     .exec((err, chatReturn) => {
       if (err) {
@@ -117,12 +127,48 @@ router.get(`/all-chats`, async (req, res) => {
 });
 
 /*----------------------------------------
+      GET ALL CHATROOMS OF A PERSON 
+---------------------------------------- */
+
+router.get(`/all-chatrooms`, async (req, res) => {
+  console.error(req.query);
+  Chat.findOne({ customer: req.query.customer })
+    .populate("agency")
+    .populate("chats")
+    .sort({ createdAt: -1 })
+    .exec((err, chatrooms) => {
+      if (err) {
+        return res.status(402).send(err);
+      }
+      console.log(chatrooms);
+      return res.status(200).send(chatrooms);
+    });
+});
+
+/*----------------------------------------
+    GET ALL CHATROOMS OF AN AGENCY
+---------------------------------------- */
+
+router.get(`/all-agencychatrooms`, async (req, res) => {
+  console.error(req.query);
+  Chat.findOne({ agency: req.query.agency })
+    .populate("customer")
+    .sort({ createdAt: -1 })
+    .exec((err, chatrooms) => {
+      if (err) {
+        return res.status(402).send(err);
+      }
+      return res.send(chatrooms);
+    });
+});
+
+/*----------------------------------------
           DELETE CHAT
 ---------------------------------------- */
 
 router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
   try {
-    console.log(req.params);
+    console.error(req.params);
     const chat = await ChatMsg.findByIdAndRemove(req.params.chatMsgId);
     if (chat) {
       await Chat.findOneAndUpdate(
@@ -155,6 +201,7 @@ router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
           BLOCK CHAT ROOM
 ---------------------------------------- */
 router.delete(`/block-chatroom/:chatId`, async (req, res) => {
+  console.error(req.params);
   try {
     // get all the chatMsgs from chatRoom
     Chat.findById(req.params.chatId)
@@ -193,6 +240,7 @@ router.delete(`/block-chatroom/:chatId`, async (req, res) => {
 
 router.post(`/unblock-chat`, async (req, res) => {
   try {
+    console.error(req.body);
     const unblockedChat = await Chat.findByIdAndUpdate(
       req.body.chatId,
       {

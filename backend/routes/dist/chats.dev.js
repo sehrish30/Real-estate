@@ -35,9 +35,10 @@ router.get("/check-chat", function _callee(req, res) {
       switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
+          console.log(req.query);
           Chat.findOne({
-            customer: req.body.customer,
-            agency: req.body.agency
+            customer: req.query.customer,
+            agency: req.query.agency
           }).exec(function (err, chat) {
             if (err) {
               return res.status(422).json({
@@ -55,20 +56,20 @@ router.get("/check-chat", function _callee(req, res) {
               status: true
             });
           });
-          _context.next = 7;
+          _context.next = 8;
           break;
 
-        case 4:
-          _context.prev = 4;
+        case 5:
+          _context.prev = 5;
           _context.t0 = _context["catch"](0);
           return _context.abrupt("return", res.status(500).send(_context.t0));
 
-        case 7:
+        case 8:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[0, 4]]);
+  }, null, null, [[0, 5]]);
 });
 /*----------------------------------------
          CREATE CHAT
@@ -81,40 +82,41 @@ router.post("/createchat", function _callee2(req, res) {
       switch (_context2.prev = _context2.next) {
         case 0:
           _context2.prev = 0;
+          console.error(req.body);
           chatRoom = new Chat({
             customer: req.body.customer,
             agency: req.body.agency,
             chats: []
           });
-          _context2.next = 4;
+          _context2.next = 5;
           return regeneratorRuntime.awrap(chatRoom.save());
 
-        case 4:
+        case 5:
           chatRoom = _context2.sent;
 
           if (chatRoom) {
-            _context2.next = 7;
+            _context2.next = 8;
             break;
           }
 
           return _context2.abrupt("return", res.status(400).send("Chat couldn't be created"));
 
-        case 7:
+        case 8:
           return _context2.abrupt("return", res.status(200).json({
             status: "Chat created"
           }));
 
-        case 10:
-          _context2.prev = 10;
+        case 11:
+          _context2.prev = 11;
           _context2.t0 = _context2["catch"](0);
           return _context2.abrupt("return", res.status(500).send(_context2.t0));
 
-        case 13:
+        case 14:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[0, 10]]);
+  }, null, null, [[0, 11]]);
 });
 /*----------------------------------------
          CHATS MSG SEND
@@ -127,7 +129,7 @@ router.post("/send", function _callee3(req, res) {
       switch (_context4.prev = _context4.next) {
         case 0:
           _context4.prev = 0;
-          console.log(req.body); // Save message in ChatMsg table and get the object id back
+          console.error(req.body); // Save message in ChatMsg table and get the object id back
 
           getmsgId = function getmsgId() {
             var _req$body, content, type, msg;
@@ -163,9 +165,9 @@ router.post("/send", function _callee3(req, res) {
 
         case 5:
           msgId = _context4.sent;
-          console.log(msgId); // Save all messages in chat with room details
+          console.error(msgId); // Save all messages in chat with room details
 
-          console.log("HERE", msgId);
+          console.error("HERE", msgId);
           Chat.findOneAndUpdate({
             customer: req.body.customer,
             agency: req.body.agency
@@ -210,10 +212,20 @@ router.get("/all-chats", function _callee4(req, res) {
     while (1) {
       switch (_context5.prev = _context5.next) {
         case 0:
+          console.error(req.query);
           Chat.findOne({
-            customer: req.body.customer,
-            agency: req.body.agency
-          }).populate("chats").sort({
+            customer: req.query.customer,
+            agency: req.query.agency
+          }).populate({
+            path: "chats",
+            options: {
+              limit: 20,
+              sort: {
+                created: -1
+              },
+              skip: req.params.pageIndex * 2
+            }
+          }).sort({
             createdAt: -1
           }).exec(function (err, chatReturn) {
             if (err) {
@@ -223,9 +235,68 @@ router.get("/all-chats", function _callee4(req, res) {
             return res.send(chatReturn);
           });
 
-        case 1:
+        case 2:
         case "end":
           return _context5.stop();
+      }
+    }
+  });
+});
+/*----------------------------------------
+      GET ALL CHATROOMS OF A PERSON 
+---------------------------------------- */
+
+router.get("/all-chatrooms", function _callee5(req, res) {
+  return regeneratorRuntime.async(function _callee5$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          console.error(req.query);
+          Chat.findOne({
+            customer: req.query.customer
+          }).populate("agency").populate("chats").sort({
+            createdAt: -1
+          }).exec(function (err, chatrooms) {
+            if (err) {
+              return res.status(402).send(err);
+            }
+
+            console.log(chatrooms);
+            return res.status(200).send(chatrooms);
+          });
+
+        case 2:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  });
+});
+/*----------------------------------------
+    GET ALL CHATROOMS OF AN AGENCY
+---------------------------------------- */
+
+router.get("/all-agencychatrooms", function _callee6(req, res) {
+  return regeneratorRuntime.async(function _callee6$(_context7) {
+    while (1) {
+      switch (_context7.prev = _context7.next) {
+        case 0:
+          console.error(req.query);
+          Chat.findOne({
+            agency: req.query.agency
+          }).populate("customer").sort({
+            createdAt: -1
+          }).exec(function (err, chatrooms) {
+            if (err) {
+              return res.status(402).send(err);
+            }
+
+            return res.send(chatrooms);
+          });
+
+        case 2:
+        case "end":
+          return _context7.stop();
       }
     }
   });
@@ -234,26 +305,26 @@ router.get("/all-chats", function _callee4(req, res) {
           DELETE CHAT
 ---------------------------------------- */
 
-router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee5(req, res) {
+router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee7(req, res) {
   var chat;
-  return regeneratorRuntime.async(function _callee5$(_context6) {
+  return regeneratorRuntime.async(function _callee7$(_context8) {
     while (1) {
-      switch (_context6.prev = _context6.next) {
+      switch (_context8.prev = _context8.next) {
         case 0:
-          _context6.prev = 0;
-          console.log(req.params);
-          _context6.next = 4;
+          _context8.prev = 0;
+          console.error(req.params);
+          _context8.next = 4;
           return regeneratorRuntime.awrap(ChatMsg.findByIdAndRemove(req.params.chatMsgId));
 
         case 4:
-          chat = _context6.sent;
+          chat = _context8.sent;
 
           if (!chat) {
-            _context6.next = 10;
+            _context8.next = 10;
             break;
           }
 
-          _context6.next = 8;
+          _context8.next = 8;
           return regeneratorRuntime.awrap(Chat.findOneAndUpdate({
             _id: req.params.chatId
           }, {
@@ -271,24 +342,24 @@ router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee5(req, res) 
           }));
 
         case 8:
-          _context6.next = 11;
+          _context8.next = 11;
           break;
 
         case 10:
-          return _context6.abrupt("return", res.status(400).send("Chat doesn't exist"));
+          return _context8.abrupt("return", res.status(400).send("Chat doesn't exist"));
 
         case 11:
-          _context6.next = 16;
+          _context8.next = 16;
           break;
 
         case 13:
-          _context6.prev = 13;
-          _context6.t0 = _context6["catch"](0);
-          return _context6.abrupt("return", res.status(500).send(_context6.t0));
+          _context8.prev = 13;
+          _context8.t0 = _context8["catch"](0);
+          return _context8.abrupt("return", res.status(500).send(_context8.t0));
 
         case 16:
         case "end":
-          return _context6.stop();
+          return _context8.stop();
       }
     }
   }, null, null, [[0, 13]]);
@@ -297,37 +368,38 @@ router["delete"]("/delete-chat/:chatMsgId/:chatId", function _callee5(req, res) 
           BLOCK CHAT ROOM
 ---------------------------------------- */
 
-router["delete"]("/block-chatroom/:chatId", function _callee8(req, res) {
-  return regeneratorRuntime.async(function _callee8$(_context9) {
+router["delete"]("/block-chatroom/:chatId", function _callee10(req, res) {
+  return regeneratorRuntime.async(function _callee10$(_context11) {
     while (1) {
-      switch (_context9.prev = _context9.next) {
+      switch (_context11.prev = _context11.next) {
         case 0:
-          _context9.prev = 0;
+          console.error(req.params);
+          _context11.prev = 1;
           // get all the chatMsgs from chatRoom
           Chat.findById(req.params.chatId).then(function (chatroom) {
             // loop through chat msgs ids and delete them in Chat Msg table
-            var requests = chatroom.chats.map(function _callee6(chatmessage) {
-              return regeneratorRuntime.async(function _callee6$(_context7) {
+            var requests = chatroom.chats.map(function _callee8(chatmessage) {
+              return regeneratorRuntime.async(function _callee8$(_context9) {
                 while (1) {
-                  switch (_context7.prev = _context7.next) {
+                  switch (_context9.prev = _context9.next) {
                     case 0:
-                      _context7.next = 2;
+                      _context9.next = 2;
                       return regeneratorRuntime.awrap(ChatMsg.findByIdAndDelete(chatmessage));
 
                     case 2:
                     case "end":
-                      return _context7.stop();
+                      return _context9.stop();
                   }
                 }
               });
             });
-            Promise.all(requests).then(function _callee7() {
+            Promise.all(requests).then(function _callee9() {
               var deletedChatMsgs;
-              return regeneratorRuntime.async(function _callee7$(_context8) {
+              return regeneratorRuntime.async(function _callee9$(_context10) {
                 while (1) {
-                  switch (_context8.prev = _context8.next) {
+                  switch (_context10.prev = _context10.next) {
                     case 0:
-                      _context8.next = 2;
+                      _context10.next = 2;
                       return regeneratorRuntime.awrap(Chat.findByIdAndUpdate(req.params.chatId, {
                         isblocked: true,
                         chats: []
@@ -336,18 +408,18 @@ router["delete"]("/block-chatroom/:chatId", function _callee8(req, res) {
                       }));
 
                     case 2:
-                      deletedChatMsgs = _context8.sent;
+                      deletedChatMsgs = _context10.sent;
 
                       if (!deletedChatMsgs) {
-                        _context8.next = 5;
+                        _context10.next = 5;
                         break;
                       }
 
-                      return _context8.abrupt("return", res.status(200).send(deletedChatMsgs));
+                      return _context10.abrupt("return", res.status(200).send(deletedChatMsgs));
 
                     case 5:
                     case "end":
-                      return _context8.stop();
+                      return _context10.stop();
                   }
                 }
               });
@@ -355,60 +427,61 @@ router["delete"]("/block-chatroom/:chatId", function _callee8(req, res) {
           })["catch"](function (err) {
             return res.status(422).send(err);
           });
-          _context9.next = 7;
+          _context11.next = 8;
           break;
 
-        case 4:
-          _context9.prev = 4;
-          _context9.t0 = _context9["catch"](0);
-          return _context9.abrupt("return", res.status(500).send(_context9.t0));
+        case 5:
+          _context11.prev = 5;
+          _context11.t0 = _context11["catch"](1);
+          return _context11.abrupt("return", res.status(500).send(_context11.t0));
 
-        case 7:
+        case 8:
         case "end":
-          return _context9.stop();
+          return _context11.stop();
       }
     }
-  }, null, null, [[0, 4]]);
+  }, null, null, [[1, 5]]);
 });
 /*----------------------------------------
               UNBLOCK Chat
 ---------------------------------------- */
 
-router.post("/unblock-chat", function _callee9(req, res) {
+router.post("/unblock-chat", function _callee11(req, res) {
   var unblockedChat;
-  return regeneratorRuntime.async(function _callee9$(_context10) {
+  return regeneratorRuntime.async(function _callee11$(_context12) {
     while (1) {
-      switch (_context10.prev = _context10.next) {
+      switch (_context12.prev = _context12.next) {
         case 0:
-          _context10.prev = 0;
-          _context10.next = 3;
+          _context12.prev = 0;
+          console.error(req.body);
+          _context12.next = 4;
           return regeneratorRuntime.awrap(Chat.findByIdAndUpdate(req.body.chatId, {
             isblocked: false
           }, {
             "new": true
           }));
 
-        case 3:
-          unblockedChat = _context10.sent;
+        case 4:
+          unblockedChat = _context12.sent;
 
           if (!unblockedChat) {
             res.status(422).send("Some error has occured");
           }
 
           res.send(unblockedChat);
-          _context10.next = 11;
+          _context12.next = 12;
           break;
 
-        case 8:
-          _context10.prev = 8;
-          _context10.t0 = _context10["catch"](0);
-          return _context10.abrupt("return", res.status(500).send(_context10.t0));
+        case 9:
+          _context12.prev = 9;
+          _context12.t0 = _context12["catch"](0);
+          return _context12.abrupt("return", res.status(500).send(_context12.t0));
 
-        case 11:
+        case 12:
         case "end":
-          return _context10.stop();
+          return _context12.stop();
       }
     }
-  }, null, null, [[0, 8]]);
+  }, null, null, [[0, 9]]);
 });
 module.exports = router;

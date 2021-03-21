@@ -1,10 +1,21 @@
 import React from "react";
-import { StyleSheet, View, Pressable, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  FlatList,
+  Dimensions,
+} from "react-native";
 import { Image, Card, Text, Badge } from "react-native-elements";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { Button } from "react-native-elements";
+import { useSelector } from "react-redux";
 
+var { width, height } = Dimensions.get("screen");
+
+import { Feather } from "@expo/vector-icons";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -17,8 +28,11 @@ const ProfileCard = ({
   land,
   showEditbutton,
   changePassword,
+  navigation,
+  id,
 }) => {
   console.log(residential);
+  let customer = useSelector((state) => state.auth.user);
 
   const DATA = [
     {
@@ -157,6 +171,45 @@ const ProfileCard = ({
             data={DATA}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
+          />
+        </View>
+        <View style={{ marginTop: 30, flexDirection: "row" }}>
+          <Button
+            onPress={() =>
+              navigation.navigate("Chat", {
+                screen: "ChatMain",
+                params: {
+                  agency: id,
+                  customer: customer.decoded.userId,
+                },
+              })
+            }
+            buttonStyle={{ width: width / 2.5, backgroundColor: "#f8dc81" }}
+            // containerStyle={{ backgroundColor: "red" }}
+            titleStyle={{ color: "#214151" }}
+            icon={
+              <Feather
+                style={{ marginRight: 5 }}
+                name="message-square"
+                size={15}
+                color="#214151"
+              />
+            }
+            title="Contact"
+          />
+          <Button
+            type="outline"
+            buttonStyle={{ width: width / 2.5, borderColor: "#f8dc81" }}
+            titleStyle={{ color: "#214151" }}
+            icon={
+              <Feather
+                style={{ marginRight: 5 }}
+                name="phone-call"
+                size={15}
+                color="#214151"
+              />
+            }
+            title="Call"
           />
         </View>
       </Card>

@@ -88,7 +88,7 @@ const SearchAgency = ({ navigation }) => {
       />
       <AgencyLocationSearch onChange={onChange} location={location} />
 
-      {agencies.length > 0 ? (
+      {agencies?.length > 0 ? (
         !loading ? (
           agencies.map((agency, index) => (
             <AgencySearchCard
