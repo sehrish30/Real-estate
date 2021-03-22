@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, TextInput, Dimensions } from "react-native";
 
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
@@ -13,6 +13,8 @@ const MessageInput = ({
   stopRecording,
   startRecording,
 }) => {
+  const [showSend, setShowSend] = useState(false);
+
   return (
     <>
       <TouchableOpacity
@@ -67,10 +69,18 @@ const MessageInput = ({
         ]}
         onPress={recording ? stopRecording : startRecording}
       >
-        {recording ? (
-          <FontAwesome name="microphone" size={24} color="#fff" />
+        {message.length > 0 ? (
+          <>
+            <Ionicons name="send" size={24} color="#214151" />
+          </>
         ) : (
-          <FontAwesome name="microphone" size={24} color="#214151" />
+          <>
+            {recording ? (
+              <FontAwesome name="microphone" size={24} color="#fff" />
+            ) : (
+              <FontAwesome name="microphone" size={24} color="#214151" />
+            )}
+          </>
         )}
       </TouchableOpacity>
     </>

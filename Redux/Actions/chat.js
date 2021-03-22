@@ -5,6 +5,9 @@ import {
   USER_ONLINE,
   USER_OFFLINE,
   ALL_CHATS,
+  FRIENDS_ONLINE,
+  FRIEND_ONLINE,
+  SET_CHATS,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -28,4 +31,12 @@ export const userOffline = () => (dispatch) => {
 
 export const allChats = (data) => (dispatch) => {
   dispatch({ type: ALL_CHATS, payload: data });
+};
+
+export const online = (userId) => (dispatch) => {
+  dispatch({ type: FRIEND_ONLINE, payload: userId });
+};
+
+export const getChats = (chats) => (dispatch) => {
+  dispatch({ type: SET_CHATS, payload: chats });
 };

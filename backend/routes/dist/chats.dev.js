@@ -252,7 +252,7 @@ router.get("/all-chatrooms", function _callee5(req, res) {
       switch (_context6.prev = _context6.next) {
         case 0:
           console.error(req.query);
-          Chat.findOne({
+          Chat.find({
             customer: req.query.customer
           }).populate("agency").populate("chats").sort({
             createdAt: -1
@@ -282,7 +282,7 @@ router.get("/all-agencychatrooms", function _callee6(req, res) {
       switch (_context7.prev = _context7.next) {
         case 0:
           console.error(req.query);
-          Chat.findOne({
+          Chat.find({
             agency: req.query.agency
           }).populate("customer").sort({
             createdAt: -1

@@ -14,7 +14,7 @@ var _reactNative = require("react-native");
 // {
 //   Platform.OS == "android" ? (baseURL = ANDROID_API) : (baseURL = IOS_API);
 // }
-var baseURL = "https://real-estate-app-server.herokuapp.com/"; // let baseURL = "http://localhost:3000/";
-
+// let baseURL = "https://real-estate-app-server.herokuapp.com/";
+var baseURL = "http://localhost:3000/";
 var _default = baseURL;
 exports["default"] = _default;

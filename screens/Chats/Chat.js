@@ -44,9 +44,6 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// let data = this.state.data.filter(cust => cust.id !== item.id)
-//  this.setState({data: data})
-
 const Chat = ({ navigation, route }) => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
@@ -56,6 +53,7 @@ const Chat = ({ navigation, route }) => {
   const [senderIndex, setSenderIndex] = useState(null);
   const [chatExists, setChatExists] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [myChats, setMyChats] = useState([]);
 
   console.log(route.params, "Route Params");
   // const location =
@@ -87,6 +85,7 @@ const Chat = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       (async () => {
+        console.log(route.params, "TESTING");
         if (route.params) {
           const res = await checkChatExists(route.params, token);
           console.error("RES", res);
@@ -100,7 +99,7 @@ const Chat = ({ navigation, route }) => {
           setLoading(false);
         }
       })();
-
+      setLoading(false);
       return () => {
         setChatExists(false);
         setLoading(true);
@@ -112,9 +111,10 @@ const Chat = ({ navigation, route }) => {
   useEffect(() => {
     (async () => {
       const res = await fetchAllChats(route.params, token);
+      setMyChats(res.chats);
       console.log("ALL CHAT", res);
-      useSocket(user, dispatch);
-      dispatch(actions.allChats(res));
+      // useSocket(user, dispatch);
+      // dispatch(actions.allChats(res));
     })();
 
     return () => {};
@@ -199,132 +199,92 @@ const Chat = ({ navigation, route }) => {
             </View>
             {chatExists ? (
               <>
-                <Pressable
-                  onLongPress={() => {
-                    setMainIndex(1);
-                    console.error(mainIndex);
-                    if (mainIndex) {
-                      setShowTrash(true);
-                    }
-                  }}
-                >
-                  <Animated.View
-                    key={1}
-                    style={[
-                      styles.receiver,
-                      { opacity: fadeAnim },
-                      {
-                        transform: [
+                {myChats.map((chat) =>
+                  chat.author === user.decoded.userId ? (
+                    <Pressable
+                      onLongPress={() => {
+                        setMainIndex(3);
+                        deleteMessageReceiever(3);
+                      }}
+                    >
+                      <Animated.View
+                        style={[
+                          styles.receiver,
                           {
-                            translateX: 1 == mainIndex ? receiverRef.x : 0,
+                            transform: [
+                              {
+                                translateX: 3 == mainIndex ? receiverRef.x : 0,
+                              },
+                              {
+                                translateY: receiverRef.y,
+                              },
+                            ],
                           },
-                          {
-                            translateY: receiverRef.y,
-                          },
-                        ],
-                      },
-                    ]}
-                  >
-                    <View>
-                      <Text style={[styles.receiverText]}>
-                        Hello, My name Hello, My name Hello, My name Hello, My
-                        name Hello, My name Hello, My name
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#8dadb3",
-                          marginTop: "auto",
-                          marginLeft: "auto",
-                          paddingRight: 5,
-                          fontSize: 10,
-                        }}
+                        ]}
                       >
-                        5:00 PM
-                      </Text>
-                    </View>
-                  </Animated.View>
-                </Pressable>
-                <Pressable
-                  onLongPress={() => {
-                    setMainIndex(2);
-                    console.error(mainIndex);
-                    setShowTrash(true);
-                  }}
-                >
-                  <Animated.View
-                    key={2}
-                    style={[
-                      styles.sender,
-                      { opacity: fadeAnim },
-                      {
-                        transform: [
+                        <View>
+                          <Text style={[styles.receiverText]}>
+                            {chat.content}
+                          </Text>
+                          <Text
+                            style={{
+                              color: "#8dadb3",
+                              marginTop: "auto",
+                              marginLeft: "auto",
+                              paddingRight: 5,
+                              fontSize: 10,
+                            }}
+                          >
+                            {chat.createdAt}
+                          </Text>
+                        </View>
+                      </Animated.View>
+                    </Pressable>
+                  ) : (
+                    <Pressable
+                      onLongPress={() => {
+                        setMainIndex(2);
+                        console.error(mainIndex);
+                        setShowTrash(true);
+                      }}
+                    >
+                      <Animated.View
+                        key={2}
+                        style={[
+                          styles.sender,
+                          { opacity: fadeAnim },
                           {
-                            translateX: mainIndex === 2 ? receiverRef.x : 0,
+                            transform: [
+                              {
+                                translateX: mainIndex === 2 ? receiverRef.x : 0,
+                              },
+                              {
+                                translateY: receiverRef.y,
+                              },
+                            ],
                           },
-                          {
-                            translateY: receiverRef.y,
-                          },
-                        ],
-                      },
-                    ]}
-                  >
-                    <View>
-                      <Text style={[styles.senderText]}>
-                        Hello, My name is Sehrish Hello, My name is
-                        SehrishHello, My name is SehrishHello, My name is
-                        Sehrish
-                      </Text>
-                      <Text
-                        style={{
-                          marginLeft: "auto",
-                          color: "#8dadb3",
-                          marginTop: "auto",
-                          paddingRight: 5,
-                          fontSize: 10,
-                        }}
+                        ]}
                       >
-                        5:00 PM
-                      </Text>
-                    </View>
-                  </Animated.View>
-                </Pressable>
-                <Pressable
-                  onLongPress={() => {
-                    setMainIndex(3);
-                    deleteMessageReceiever(3);
-                  }}
-                >
-                  <Animated.View
-                    style={[
-                      styles.receiver,
-                      {
-                        transform: [
-                          {
-                            translateX: 3 == mainIndex ? receiverRef.x : 0,
-                          },
-                          {
-                            translateY: receiverRef.y,
-                          },
-                        ],
-                      },
-                    ]}
-                  >
-                    <View>
-                      <Text style={[styles.receiverText]}>Hello, My name</Text>
-                      <Text
-                        style={{
-                          color: "#8dadb3",
-                          marginTop: "auto",
-                          marginLeft: "auto",
-                          paddingRight: 5,
-                          fontSize: 10,
-                        }}
-                      >
-                        5:00 PM
-                      </Text>
-                    </View>
-                  </Animated.View>
-                </Pressable>
+                        <View>
+                          <Text style={[styles.senderText]}>
+                            {chat.content}
+                          </Text>
+                          <Text
+                            style={{
+                              marginLeft: "auto",
+                              color: "#8dadb3",
+                              marginTop: "auto",
+                              paddingRight: 5,
+                              fontSize: 10,
+                            }}
+                          >
+                            {chat.createdAt}
+                          </Text>
+                        </View>
+                      </Animated.View>
+                    </Pressable>
+                  )
+                )}
               </>
             ) : (
               <View
@@ -338,6 +298,7 @@ const Chat = ({ navigation, route }) => {
                 <CreateChat
                   data={route.params}
                   message="You don't have any conversation with this agency"
+                  navigation={navigation}
                 />
               </View>
             )}

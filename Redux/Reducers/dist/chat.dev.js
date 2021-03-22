@@ -25,8 +25,7 @@ var initialState = {
   senderTyping: {
     typing: false
   },
-  chatExists: false,
-  online: false
+  chatExists: false
 };
 
 var chat = function chat() {
@@ -36,13 +35,19 @@ var chat = function chat() {
   switch (action.type) {
     case _constants.CHAT_EXISTS:
       return _objectSpread({}, state, {
-        chatExists: true,
-        online: true
+        chatExists: true
       });
 
     case _constants.USER_ONLINE:
+      var chats = state.chats.Users.map(function (user) {
+        if (user.id == payload) {
+          return _objectSpread({}, state.chats, {
+            status: "online"
+          });
+        }
+      });
       return _objectSpread({}, state, {
-        online: true
+        chats: chats
       });
 
     case _constants.USER_OFFLINE:
@@ -52,7 +57,6 @@ var chat = function chat() {
 
     case _constants.ALL_CHATS:
       return _objectSpread({}, state, {
-        online: true,
         chats: action.payload
       });
 

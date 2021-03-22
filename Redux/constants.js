@@ -6,8 +6,7 @@ export const UPDATEAGENCYPROFILE = "UPDATEAGENCYPROFILE";
 
 export const FETCH_CHATS = "FETCH_CHATS";
 export const SET_CURRENT_CHAT = "SET_CURRENT_CHAT";
-export const FRIENDS_ONLINE = "FRIENDS_ONLINE";
-export const FRIEND_ONLINE = "FRIEND_ONLINE";
+
 export const FRIEND_OFFLINE = "FRIEND_OFFLINE";
 export const SET_SOCKET = "SET_SOCKET";
 export const RECEIVED_MESSAGE = "RECEIVED_MESSAGE";
@@ -23,3 +22,6 @@ export const CHAT_EXISTS = "CHAT_EXISTS";
 export const USER_ONLINE = "USER_ONLINE";
 export const USER_OFFLINE = "USER_OFFLINE";
 export const ALL_CHATS = "ALL_CHATS";
+export const FRIENDS_ONLINE = "FRIENDS_ONLINE";
+export const SET_CHATS = "SET_CHATS";
+export const FRIEND_ONLINE = "FRIEND_ONLINE";

@@ -66,7 +66,7 @@ const AgencyDetail = ({ route, navigation }) => {
         bio={profile.bio}
         user={profile.email}
         id={profile.id}
-        ocations={profile.location}
+        locations={profile.location}
         commercial={commercial}
         land={land}
         residential={residential}

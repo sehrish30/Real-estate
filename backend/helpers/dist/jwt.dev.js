@@ -21,7 +21,7 @@ var authJwt = function authJwt() {
       url: /\/properties(.*)/,
       methods: ["GET", "OPTIONS"]
     }, // { url: /\/users(.*)/, methods: ["GET", "OPTIONS"] },
-    "/users/register", "/users/login", "/users/google-register", "/users/google-login", "/users/reset-password", "/agencies/register", "/agencies/login", "/chats/check-chat"]
+    "/users/register", "/users/login", "/users/google-register", "/users/google-login", "/users/reset-password", "/agencies/register", "/agencies/login", "/chats/check-chat", "/chats/all-chatrooms"]
   });
 }; // req e.g req body from frontend
 // payload from token and this user is sending me from payload headers

@@ -113,7 +113,7 @@ router.get(`/all-chats`, async (req, res) => {
       path: "chats",
       options: {
         limit: 20,
-        sort: { created: -1 },
+        sort: { createdAt: -1 },
         skip: req.params.pageIndex * 2,
       },
     })
@@ -132,7 +132,7 @@ router.get(`/all-chats`, async (req, res) => {
 
 router.get(`/all-chatrooms`, async (req, res) => {
   console.error(req.query);
-  Chat.findOne({ customer: req.query.customer })
+  Chat.find({ customer: req.query.customer })
     .populate("agency")
     .populate("chats")
     .sort({ createdAt: -1 })
@@ -151,7 +151,7 @@ router.get(`/all-chatrooms`, async (req, res) => {
 
 router.get(`/all-agencychatrooms`, async (req, res) => {
   console.error(req.query);
-  Chat.findOne({ agency: req.query.agency })
+  Chat.find({ agency: req.query.agency })
     .populate("customer")
     .sort({ createdAt: -1 })
     .exec((err, chatrooms) => {

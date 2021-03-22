@@ -175,15 +175,19 @@ const ProfileCard = ({
         </View>
         <View style={{ marginTop: 30, flexDirection: "row" }}>
           <Button
-            onPress={() =>
-              navigation.navigate("Chat", {
-                screen: "ChatMain",
-                params: {
-                  agency: id,
-                  customer: customer.decoded.userId,
-                },
-              })
-            }
+            onPress={() => {
+              if (customer) {
+                navigation.navigate("Chat", {
+                  screen: "ChatMain",
+                  params: {
+                    agency: id,
+                    customer: customer.decoded.userId,
+                  },
+                });
+              } else {
+                navigation.navigate("Login");
+              }
+            }}
             buttonStyle={{ width: width / 2.5, backgroundColor: "#f8dc81" }}
             // containerStyle={{ backgroundColor: "red" }}
             titleStyle={{ color: "#214151" }}

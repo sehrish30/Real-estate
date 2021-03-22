@@ -14,7 +14,7 @@ require("dotenv/config");
 /*---------------------------------
               Web socket
 --------------------------------- */
-const SocketServer = require("./socket/index");
+const SocketServer = require("./socket/index.js");
 
 // middleware to parse json response from frontend
 app.use(bodyParser.json());

@@ -17,6 +17,7 @@ const CreateChat = ({ data, searchAgency = false, navigation, message }) => {
       navigation.navigate("SearchAgency");
     } else {
       createChat(data, token);
+      navigation.navigate("AllChats");
     }
   };
 

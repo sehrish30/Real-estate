@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.allChats = exports.userOffline = exports.userOnline = exports.chectChatExistAction = void 0;
+exports.getChats = exports.online = exports.allChats = exports.userOffline = exports.userOnline = exports.chectChatExistAction = void 0;
 
 var _ChatServices = require("../../Shared/Services/ChatServices");
 
@@ -55,3 +55,25 @@ var allChats = function allChats(data) {
 };
 
 exports.allChats = allChats;
+
+var online = function online(userId) {
+  return function (dispatch) {
+    dispatch({
+      type: _constants.FRIEND_ONLINE,
+      payload: userId
+    });
+  };
+};
+
+exports.online = online;
+
+var getChats = function getChats(chats) {
+  return function (dispatch) {
+    dispatch({
+      type: _constants.SET_CHATS,
+      payload: chats
+    });
+  };
+};
+
+exports.getChats = getChats;
