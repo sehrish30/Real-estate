@@ -54,6 +54,7 @@ const Chat = ({ navigation, route }) => {
   const [chatExists, setChatExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [myChats, setMyChats] = useState([]);
+  const [otherChatName, setOtherchatName] = useState("");
 
   console.log(route.params, "Route Params");
   // const location =
@@ -72,6 +73,8 @@ const Chat = ({ navigation, route }) => {
   const dispatch = useDispatch();
   let user = useSelector((state) => state.auth.user);
   let token = useSelector((state) => state.auth.token);
+  let agency = useSelector((state) => state.auth.agency);
+  let chats = useSelector((state) => state.chat.chats);
 
   // useEffect(() => {
   //   return sound
@@ -89,6 +92,7 @@ const Chat = ({ navigation, route }) => {
         if (route.params) {
           const res = await checkChatExists(route.params, token);
           console.error("RES", res);
+
           if (res.status) {
             setChatExists(true);
             setLoading(false);
@@ -111,14 +115,33 @@ const Chat = ({ navigation, route }) => {
   useEffect(() => {
     (async () => {
       const res = await fetchAllChats(route.params, token);
+
       setMyChats(res.chats);
+      let show = false;
+
+      if (agency.id) {
+        chats?.map((chat) => {
+          chat.users.map((user) => {
+            if (user.id === res.customer.id && user.online) show = true;
+          });
+        });
+        setOtherchatName({ name: res.customer.email, id: show });
+        console.log("I AM SRTTING HERE", show);
+      } else {
+        chats?.map((chat) => {
+          chat.users.map((user) => {
+            if (user.id === res.agency.id && user.online) show = true;
+          });
+        });
+        setOtherchatName({ name: res.agency.name, id: show });
+      }
       console.log("ALL CHAT", res);
       // useSocket(user, dispatch);
       // dispatch(actions.allChats(res));
     })();
 
     return () => {};
-  }, [dispatch]);
+  }, [dispatch, chats]);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -189,6 +212,7 @@ const Chat = ({ navigation, route }) => {
             toggleOverlay={toggleOverlay}
             setShowTrash={setShowTrash}
             deleteMessageReceiever={deleteMessageReceiever}
+            otherChatName={otherChatName}
           />
           <KeyboardAwareScrollView style={styles.content}>
             <View style={styles.badge}>

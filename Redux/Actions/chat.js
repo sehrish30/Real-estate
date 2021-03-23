@@ -25,8 +25,9 @@ export const userOnline = () => (dispatch) => {
   dispatch({ type: USER_ONLINE });
 };
 
-export const userOffline = () => (dispatch) => {
-  dispatch({ type: USER_OFFLINE });
+export const userOffline = (userId) => (dispatch) => {
+  console.log("OKAY RELAX I AM DISPATCHING", userId);
+  dispatch({ type: USER_OFFLINE, payload: userId });
 };
 
 export const allChats = (data) => (dispatch) => {
@@ -39,4 +40,8 @@ export const online = (userId) => (dispatch) => {
 
 export const getChats = (chats) => (dispatch) => {
   dispatch({ type: SET_CHATS, payload: chats });
+};
+
+export const onlineFriends = (friends) => (dispatch) => {
+  dispatch({ type: FRIENDS_ONLINE, payload: friends });
 };

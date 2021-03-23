@@ -14,15 +14,16 @@ const ChatsCard = ({
   createdAt,
   unSeenCount,
   agencyId,
+  customerId,
 }) => {
-  let user = useSelector((state) => state.auth.user.decoded.userId);
+  // let user = useSelector((state) => state.auth.user.decoded.userId);
   return (
     <View style={styles.card}>
       <ListItem
         onPress={() =>
           navigation.navigate("ChatMain", {
             agency: agencyId,
-            customer: user,
+            customer: customerId,
           })
         }
         key={id}

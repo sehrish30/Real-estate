@@ -17,6 +17,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { useSocket } from "../../hooks/socketConnect";
 import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
 
 import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
@@ -39,8 +40,6 @@ const AllChats = ({ navigation }) => {
   const socket = socketIOClient(ENDPOINT);
 
   useEffect(() => {
-    dispatch(userOnline());
-
     if (user.email) {
       (async () => {
         const res = await customerRooms(
@@ -63,6 +62,7 @@ const AllChats = ({ navigation }) => {
                 unSeenCount++;
               }
             }
+
             const info = {
               id: r._id,
               name: r.agency?.name,
@@ -72,6 +72,7 @@ const AllChats = ({ navigation }) => {
               unSeenCount,
               agencyId: r.agency.id,
               customerId: r.customer,
+              searchId: r.agency.id,
               users: [
                 {
                   id: r.agency.id,
@@ -95,7 +96,8 @@ const AllChats = ({ navigation }) => {
       })();
     } else if (agency.email) {
       (async () => {
-        const res = await agencyRooms({ agency: agency.decoded.userId }, token);
+        const res = await agencyRooms({ agency: agency.id }, token);
+
         if (!res) {
           setChatRooms([]);
           setLoading(false);
@@ -113,14 +115,14 @@ const AllChats = ({ navigation }) => {
             }
             const info = {
               id: r._id,
-              name: r.customer?.name,
-              message: r?.chats[r.chats?.length - 1].content || "No message",
+              name: r.customer?.email,
+              message: r?.chats[r.chats?.length - 1]?.content || "No message",
               uri: r.customer.dp,
-              createdAt: r?.chats[r.chats?.length - 1].createdAt || null,
+              createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
               unSeenCount,
               agencyId: r.agency,
               customerId: r.customer.id,
-
+              searchId: r.customer.id,
               users: [
                 {
                   id: r.agency,
@@ -132,23 +134,26 @@ const AllChats = ({ navigation }) => {
                 },
               ],
             };
+            console.log(info, "aegncyRooms");
 
             setAllChats((prev) => [...prev, info]);
             fastChats.push(info);
           });
+          // because userid is stored in user.decoded.id
           Promise.all(requests).then(() => {
-            useSocket({ user, allChats: fastChats }, dispatch);
+            let data = {
+              ...agency,
+              decoded: {
+                userId: agency.id,
+              },
+            };
+            useSocket({ user: data, allChats: fastChats }, dispatch);
           });
         }
       })();
     }
-    return () => {
-      // socket.emit("disconnect");
-      dispatch(userOffline());
-      // turn off instance of chat
-      socket.off();
-    };
-  }, [dispatch, ENDPOINT]);
+    return () => {};
+  }, [dispatch]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -179,6 +184,7 @@ const AllChats = ({ navigation }) => {
       createdAt={item.createdAt}
       unSeenCount={item.unSeenCount}
       agencyId={item.agencyId}
+      customerId={item.customerId}
     />
   );
 

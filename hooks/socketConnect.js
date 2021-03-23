@@ -16,10 +16,20 @@ export function useSocket(user, dispatch) {
 
   socket.on("roomData", (data) => {
     console.log(data, "HAYE");
+    dispatch(actions.online(data));
   });
 
-  socket.on("online", (userId) => {
-    console.log("USER STATUS TO UPDATE IN REDUX", userId);
-    dispatch(actions.online(userId));
+  socket.on("offline", (userId) => {
+    console.log(userId);
+    dispatch(actions.userOffline(userId));
+  });
+
+  socket.on("happy", (userId) => {
+    console.log("HAPPY", userId);
+  });
+
+  socket.on("friends", (onlineFriends) => {
+    console.log(onlineFriends, "UFFF");
+    dispatch(actions.onlineFriends(onlineFriends));
   });
 }

@@ -12,9 +12,9 @@ const SocketServer = (server) => {
 
   const getChatters = async (userId, allChats) => {
     let friendchatters = [];
-
+    console.log("ALLCHATS", allChats);
     for (chat of allChats) {
-      friendchatters.push(chat.agencyId);
+      friendchatters.push(chat.searchId);
     }
     return friendchatters;
   };
@@ -24,11 +24,13 @@ const SocketServer = (server) => {
   const userSockets = new Map();
 
   io.on("connection", (socket) => {
-    console.log("REACHED");
+    console.log("SOCKET ON");
     let sockets = [];
+    let allChatsOfUser = [];
     let userId;
     socket.on("join", async (user) => {
-      console.log("THTs why i am showing error", user);
+      allChatsOfUser = user.allChats;
+      console.log("USER DATA I AM GETTING", user);
       // we want to know all users online to inform them about his precense
       userId = user.user.decoded.userId;
 
@@ -61,7 +63,7 @@ const SocketServer = (server) => {
 
       const chatters = await getChatters(userId, user.allChats);
 
-      console.log("ALL ONLINE FRIENDs", chatters);
+      console.log("ALL FRIENDS", chatters);
       for (let i = 0; i < chatters.length; i++) {
         if (users.has(chatters[i])) {
           // get the chatter socket and id
@@ -75,7 +77,7 @@ const SocketServer = (server) => {
           });
           // Now send user all his online friends
           onlineFriends.push(chatter.id);
-          console.log("ONLINEFRINDS", onlineFriends);
+          console.log("ONLINE FRINDS", onlineFriends);
 
           // Now send my sockets all online friends
           sockets.forEach((socket) => {
@@ -94,7 +96,7 @@ const SocketServer = (server) => {
 
       // console.log(user, "OOYE");
       console.log(users.get(userId));
-      console.log(userSockets.get(socket.id));
+      // console.log(userSockets.get(socket.id));
     });
 
     io.to(socket.id).emit("typing", "Usee typing...");
@@ -122,9 +124,12 @@ const SocketServer = (server) => {
     //   console.log("User had left");
     // });
     socket.on("disconnect", async () => {
+      // emit so also delete in frontend
+
       console.log("USER LEFT");
       if (userSockets.has(socket.id)) {
         const user = users.get(userSockets.get(socket.id));
+        console.log("LEFT USER", user);
 
         // checking if user has multiple sockets
         if (user.sockets.length > 1) {
@@ -134,18 +139,24 @@ const SocketServer = (server) => {
             userSockets.delete(sock);
             return false;
           });
-          // update users collection
+          // update users collection now one of sockets is deleted
           users.set(userId, user);
         } else {
           // notify friends that user left
-          const chatters = await getChatters(userId);
+          console.log("THIS IS THE PROPBLEM", userId, allChatsOfUser);
+          const chatters = await getChatters(userId, allChatsOfUser);
+          console.log("I AM GETTING TO REMOVE", chatters);
+
           for (let i = 0; i < chatters.length; i++) {
             if (users.has(chatters[i])) {
               // loop over his sockets
               users.get(chatters[i]).sockets.forEach((socket) => {
                 // send message to all of his friends that he left
                 try {
-                  io.to(socket).emit("offline", user);
+                  // io.to("room").emit("roomData", userSockets.get(socket.id));
+                  // io.to(socket).emit("offline", user.id);
+                  io.to("room").emit("offline", user.id);
+                  console.log("I EMITTED", user.id);
                 } catch (err) {}
               });
             }

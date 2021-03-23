@@ -28,23 +28,43 @@ const chat = (state = initialState, action) => {
       };
 
     case USER_ONLINE:
-      const chats = state.chats?.Users?.map((user) => {
-        if (user.id == payload) {
-          return {
-            ...state.chats,
-            status: "online",
-          };
-        }
+      let chatsBCopy = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (user.id == payload) {
+            return {
+              ...user,
+              online: true,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
       });
       return {
         ...state,
-        chats,
+        chats: chatsBCopy,
       };
 
     case USER_OFFLINE:
+      let chatsACopy = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (String(user.id) == String(payload)) {
+            return {
+              ...user,
+              online: false,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
+      });
       return {
         ...state,
-        online: false,
+        chats: chatsACopy,
       };
     case ALL_CHATS:
       return {
@@ -58,14 +78,43 @@ const chat = (state = initialState, action) => {
         chats: payload,
       };
     case FRIEND_ONLINE:
-      const data = state.chats.users.map((user) => {
-        if (user.id == payload) {
-          user.online = true;
-        }
+      let chatsCopy = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (String(user.id) == String(payload)) {
+            return {
+              ...user,
+              online: true,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
       });
       return {
         ...state,
-        chats: data,
+        chats: chatsCopy,
+      };
+
+    case FRIENDS_ONLINE:
+      let chatsFriendsCopy = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (String(payload).includes(user.id)) {
+            return {
+              ...user,
+              online: true,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
+      });
+      return {
+        ...state,
+        chats: chatsFriendsCopy,
       };
 
     default:

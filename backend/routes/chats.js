@@ -117,6 +117,8 @@ router.get(`/all-chats`, async (req, res) => {
         skip: req.params.pageIndex * 2,
       },
     })
+    .populate("agency", "name")
+    .populate("customer", "email")
     .sort({ createdAt: -1 })
     .exec((err, chatReturn) => {
       if (err) {
@@ -153,6 +155,7 @@ router.get(`/all-agencychatrooms`, async (req, res) => {
   console.error(req.query);
   Chat.find({ agency: req.query.agency })
     .populate("customer")
+    .populate("chats")
     .sort({ createdAt: -1 })
     .exec((err, chatrooms) => {
       if (err) {

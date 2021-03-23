@@ -1,12 +1,18 @@
 import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
+import { Badge } from "react-native-elements";
+import { useSelector, useDispatch } from "react-redux";
+
 const ChatHeader = ({
   showTrash,
   toggleOverlay,
   setShowTrash,
   deleteMessageReceiever,
+  otherChatName,
 }) => {
+  let chats = useSelector((state) => state.chat.chats);
+
   return (
     <View style={styles.header}>
       {showTrash ? (
@@ -36,7 +42,13 @@ const ChatHeader = ({
       ) : (
         <>
           <View style={{ marginLeft: "auto" }}>
-            <Text style={styles.name}>Dignity</Text>
+            <Text style={styles.name}>
+              {otherChatName.name}
+
+              {otherChatName.id && (
+                <Badge status="success" containerStyle={{ marginLeft: 5 }} />
+              )}
+            </Text>
           </View>
           <View
             style={{
