@@ -6,11 +6,8 @@ export const UPDATEAGENCYPROFILE = "UPDATEAGENCYPROFILE";
 
 export const FETCH_CHATS = "FETCH_CHATS";
 export const SET_CURRENT_CHAT = "SET_CURRENT_CHAT";
-
 export const FRIEND_OFFLINE = "FRIEND_OFFLINE";
-export const SET_SOCKET = "SET_SOCKET";
 export const RECEIVED_MESSAGE = "RECEIVED_MESSAGE";
-export const SENDER_TYPING = "SENDER_TYPING";
 export const PAGINATE_MESSAGES = "PAGINATE_MESSAGES";
 export const INCREMENT_SCROLL = "INCREMENT_SCROLL";
 export const CREATE_CHAT = "CREATE_CHAT";
@@ -18,6 +15,7 @@ export const ADD_USER_TO_GROUP = "ADD_USER_TO_GROUP";
 export const LEAVE_CURRENT_CHAT = "LEAVE_CURRENT_CHAT";
 export const DELETE_CHAT = "DELETE_CHAT";
 
+export const SET_SOCKET = "SET_SOCKET";
 export const CHAT_EXISTS = "CHAT_EXISTS";
 export const USER_ONLINE = "USER_ONLINE";
 export const USER_OFFLINE = "USER_OFFLINE";
@@ -25,3 +23,5 @@ export const ALL_CHATS = "ALL_CHATS";
 export const FRIENDS_ONLINE = "FRIENDS_ONLINE";
 export const SET_CHATS = "SET_CHATS";
 export const FRIEND_ONLINE = "FRIEND_ONLINE";
+export const SENDER_TYPING = "SENDER_TYPING";
+export const STOP_TYPING = "STOP_TYPING";

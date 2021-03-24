@@ -104,15 +104,25 @@ const SocketServer = (server) => {
     /*-----------------------------------------
              User typing
     ---------------------------------------- */
-    socket.on("typing", (message) => {
+
+    socket.on("typing", (userId) => {
       // We will see which user is getting the message
-      message.toUserId.forEach((id) => {
-        if (users.has(id)) {
-          users.get(id).sockets.forEach((socket) => {
-            io.to(socket).emit("typing", message);
-          });
-        }
-      });
+      if (users.has(userId)) {
+        console.log("USER ID I AM GETTING FOR TYPING", userId);
+        users.get(userId).sockets.forEach((socket) => {
+          io.to("room").emit("typing", userId);
+        });
+      }
+    });
+
+    socket.on("stoppedTyping", (userId) => {
+      // We will see which user is getting the message
+      if (users.has(userId)) {
+        console.log("USER ID I AM GETTING FOR TYPING", userId);
+        users.get(userId).sockets.forEach((socket) => {
+          io.to("room").emit("stoppedTyping", userId);
+        });
+      }
     });
 
     /*-----------------------------------------

@@ -6,6 +6,9 @@ import {
   FRIENDS_ONLINE,
   FRIEND_ONLINE,
   SET_CHATS,
+  SENDER_TYPING,
+  SET_SOCKET,
+  STOP_TYPING,
 } from "../constants";
 
 const initialState = {
@@ -25,6 +28,11 @@ const chat = (state = initialState, action) => {
       return {
         ...state,
         chatExists: true,
+      };
+    case SET_SOCKET:
+      return {
+        ...state,
+        socket: payload,
       };
 
     case USER_ONLINE:
@@ -116,7 +124,48 @@ const chat = (state = initialState, action) => {
         ...state,
         chats: chatsFriendsCopy,
       };
-
+    case SENDER_TYPING:
+      let sendertyping = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (String(payload).includes(user.id)) {
+            return {
+              ...user,
+              online: true,
+              typing: true,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
+      });
+      return {
+        ...state,
+        chats: sendertyping,
+        senderTyping: { typing: true, id: payload },
+      };
+    case STOP_TYPING:
+      let senderstoptyping = state.chats.map((chat) => {
+        let users = chat?.users.map((user) => {
+          if (String(payload).includes(user.id)) {
+            return {
+              ...user,
+              online: true,
+              typing: false,
+            };
+          }
+          return user;
+        });
+        return {
+          users,
+        };
+      });
+      return {
+        ...state,
+        chats: senderstoptyping,
+        senderTyping: { typing: false, id: payload },
+      };
     default:
       return state;
   }

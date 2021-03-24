@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, TextInput, Dimensions } from "react-native";
 
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { sendChat } from "../../Shared/Services/ChatServices";
+
 var { width, height } = Dimensions.get("window");
 const MessageInput = ({
   setEmojiSelector,
@@ -12,8 +15,39 @@ const MessageInput = ({
   recording,
   stopRecording,
   startRecording,
+  chatSend,
 }) => {
-  const [showSend, setShowSend] = useState(false);
+  let token = useSelector((state) => state.auth.token);
+  let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+  let socket = useSelector((state) => state.chat.socket);
+  let userId;
+  if (agency.id) {
+    userId = chatSend.customer;
+  } else {
+    userId = chatSend.agency;
+  }
+
+  const sendMessageService = () => {
+    let data = {
+      customer: chatSend.customer,
+      agency: chatSend.agency,
+      author: user.decoded.userId,
+      type: "text",
+      content: message,
+    };
+    sendChat(data, token);
+  };
+
+  useEffect(() => {
+    if (message.length > 2) {
+      socket.emit("typing", userId);
+    }
+    if (message.length < 2) {
+      socket.emit("stoppedTyping", userId);
+    }
+    return () => {};
+  }, [message]);
 
   return (
     <>
@@ -39,7 +73,9 @@ const MessageInput = ({
 
           marginBottom: 4,
         }}
-        onChangeText={(text) => setMessage(text)}
+        onChangeText={(text) => {
+          setMessage(text);
+        }}
         value={message}
         placeholder="Type a message"
       />
@@ -71,7 +107,12 @@ const MessageInput = ({
       >
         {message.length > 0 ? (
           <>
-            <Ionicons name="send" size={24} color="#214151" />
+            <Ionicons
+              onPress={sendMessageService}
+              name="send"
+              size={24}
+              color="#214151"
+            />
           </>
         ) : (
           <>

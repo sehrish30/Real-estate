@@ -11,7 +11,16 @@ const ChatHeader = ({
   deleteMessageReceiever,
   otherChatName,
 }) => {
-  let chats = useSelector((state) => state.chat.chats);
+  let senderTyping = useSelector((state) => state.chat.senderTyping);
+  let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+
+  let userId;
+  if (agency.id) {
+    userId = agency.id;
+  } else {
+    userId = user.decoded.userId;
+  }
 
   return (
     <View style={styles.header}>
@@ -44,9 +53,11 @@ const ChatHeader = ({
           <View style={{ marginLeft: "auto" }}>
             <Text style={styles.name}>
               {otherChatName.name}
-
               {otherChatName.id && (
                 <Badge status="success" containerStyle={{ marginLeft: 5 }} />
+              )}{" "}
+              {senderTyping.id === userId && senderTyping.typing && (
+                <Text style={{ marginLeft: 10, color: "grey" }}>....</Text>
               )}
             </Text>
           </View>

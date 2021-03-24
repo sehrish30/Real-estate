@@ -48,15 +48,14 @@ const Chat = ({ navigation, route }) => {
   const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
   const [recording, setRecording] = useState(null);
-  const [sound, setSound] = useState();
+
   const [mainIndex, setMainIndex] = useState(null);
-  const [senderIndex, setSenderIndex] = useState(null);
   const [chatExists, setChatExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [myChats, setMyChats] = useState([]);
   const [otherChatName, setOtherchatName] = useState("");
+  const [chatSend, setChatSend] = useState({});
 
-  console.log(route.params, "Route Params");
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
@@ -75,15 +74,12 @@ const Chat = ({ navigation, route }) => {
   let token = useSelector((state) => state.auth.token);
   let agency = useSelector((state) => state.auth.agency);
   let chats = useSelector((state) => state.chat.chats);
-
-  // useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         console.log("Unloading Sound");
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [sound]);
+  let userId;
+  if (agency) {
+    userId = agency.id;
+  } else {
+    userId = user.decoded.userId;
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -121,23 +117,27 @@ const Chat = ({ navigation, route }) => {
 
       if (agency.id) {
         chats?.map((chat) => {
-          chat.users.map((user) => {
-            if (user.id === res.customer.id && user.online) show = true;
+          chat.users.map((userc) => {
+            if (userc.id === res.customer.id && userc.online) show = true;
           });
         });
-        setOtherchatName({ name: res.customer.email, id: show });
-        console.log("I AM SRTTING HERE", show);
+        setOtherchatName({
+          name: res.customer.email,
+          id: show,
+        });
+        setChatSend({ agency: res.agency.id, customer: res.customer.id });
       } else {
         chats?.map((chat) => {
-          chat.users.map((user) => {
-            if (user.id === res.agency.id && user.online) show = true;
+          chat.users.map((userc) => {
+            if (userc.id === res.agency.id && userc?.online) show = true;
           });
         });
-        setOtherchatName({ name: res.agency.name, id: show });
+        setOtherchatName({
+          name: res.agency.name,
+          id: show,
+        });
+        setChatSend({ agency: res.agency.id, customer: res.customer.id });
       }
-      console.log("ALL CHAT", res);
-      // useSocket(user, dispatch);
-      // dispatch(actions.allChats(res));
     })();
 
     return () => {};
@@ -224,7 +224,7 @@ const Chat = ({ navigation, route }) => {
             {chatExists ? (
               <>
                 {myChats.map((chat) =>
-                  chat.author === user.decoded.userId ? (
+                  chat.author === userId ? (
                     <Pressable
                       onLongPress={() => {
                         setMainIndex(3);
@@ -359,6 +359,7 @@ const Chat = ({ navigation, route }) => {
                   recording={recording}
                   stopRecording={stopRecording}
                   startRecording={startRecording}
+                  chatSend={chatSend}
                 />
               </View>
             </KeyboardAvoidingView>

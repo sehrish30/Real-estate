@@ -100,3 +100,18 @@ export async function fetchAllChats(data, token) {
     console.error(err);
   }
 }
+
+export async function sendChat(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}chats/send`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
