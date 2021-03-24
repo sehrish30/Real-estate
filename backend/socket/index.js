@@ -118,9 +118,37 @@ const SocketServer = (server) => {
     socket.on("stoppedTyping", (userId) => {
       // We will see which user is getting the message
       if (users.has(userId)) {
-        console.log("USER ID I AM GETTING FOR TYPING", userId);
+        // console.log("USER ID I AM GETTING FOR TYPING", userId);
         users.get(userId).sockets.forEach((socket) => {
           io.to("room").emit("stoppedTyping", userId);
+        });
+      }
+    });
+
+    /*-----------------------------------------
+             Message sent
+    ---------------------------------------- */
+
+    socket.on("newMessage", async (message) => {
+      console.log("I AM HELPLESS");
+      console.log(
+        "I AM SENDING TO ORIGINAL USE REXCUSE ME",
+        users.has(message.author),
+        users.has(message.toUserId),
+        message.author,
+        message.toUserId
+      );
+      // send the message to receiver socket
+      if (users.has(message.toUserId)) {
+        console.log("USER ID I AM GETTING FOR CHAT", message);
+        users.get(message.toUserId).sockets.forEach((socket) => {
+          io.to(socket).emit("newMessage", message);
+        });
+      }
+      // send the message to sender socket
+      if (users.has(message.author)) {
+        users.get(message.author).sockets.forEach((socket) => {
+          io.to(socket).emit("newMessage", message);
         });
       }
     });

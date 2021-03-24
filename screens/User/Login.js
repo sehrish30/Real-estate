@@ -66,7 +66,9 @@ const Login = ({ navigation }) => {
     let newEmail = email;
     newEmail = newEmail.toLowerCase().trim();
     // loginUser({ email, password });
-    dispatch(actions.login({ email: newEmail, password }, navigation));
+    dispatch(
+      actions.login({ email: newEmail, password }, navigation, setLoading)
+    );
   }
   return (
     <SafeAreaView>

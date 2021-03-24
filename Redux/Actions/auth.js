@@ -15,16 +15,17 @@ import {
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const login = (data, navigation) => (dispatch) => {
+export const login = (data, navigation, setLoading) => (dispatch) => {
   loginUser(data)
     .then((res) => {
       console.log("RESPONSE ACTION", res);
       dispatch({ type: LOGIN, payload: res });
       navigation.navigate("Home");
+      setLoading(false);
     })
     .catch((err) => {
       console.log(err);
-
+      setLoading(false);
       Toast.show({
         type: "error",
         text1: `Email or password not correct`,
@@ -56,12 +57,13 @@ export const googlelogin = (data, navigation) => (dispatch) => {
     });
 };
 
-export const register = (data, navigation) => async (dispatch) => {
+export const register = (data, navigation, setLoading) => async (dispatch) => {
   try {
     const res = await registerUser(data);
     if (res) {
       dispatch({ type: LOGIN, payload: res });
       navigation.navigate("Home");
+      setLoading(false);
     }
   } catch (e) {
     console.error(e);
@@ -72,6 +74,7 @@ export const register = (data, navigation) => async (dispatch) => {
       visibilityTime: 2000,
       topOffset: 30,
     });
+    setLoading(false);
   }
 };
 

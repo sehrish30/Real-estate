@@ -45,15 +45,15 @@ if (
 }
 
 const Chat = ({ navigation, route }) => {
-  const [message, setMessage] = useState("");
   const [emoji, setEmoji] = useState("");
   const [recording, setRecording] = useState(null);
+  const [chatId, setChatId] = useState("");
 
   const [mainIndex, setMainIndex] = useState(null);
   const [chatExists, setChatExists] = useState(false);
   const [loading, setLoading] = useState(true);
   const [myChats, setMyChats] = useState([]);
-  const [otherChatName, setOtherchatName] = useState("");
+  const [otherChatName, setOtherchatName] = useState({ name: "", id: false });
   const [chatSend, setChatSend] = useState({});
 
   // const location =
@@ -75,7 +75,7 @@ const Chat = ({ navigation, route }) => {
   let agency = useSelector((state) => state.auth.agency);
   let chats = useSelector((state) => state.chat.chats);
   let userId;
-  if (agency) {
+  if (agency.id) {
     userId = agency.id;
   } else {
     userId = user.decoded.userId;
@@ -87,7 +87,8 @@ const Chat = ({ navigation, route }) => {
         console.log(route.params, "TESTING");
         if (route.params) {
           const res = await checkChatExists(route.params, token);
-          console.error("RES", res);
+
+          console.log("RES", res);
 
           if (res.status) {
             setChatExists(true);
@@ -111,8 +112,10 @@ const Chat = ({ navigation, route }) => {
   useEffect(() => {
     (async () => {
       const res = await fetchAllChats(route.params, token);
+      setChatId(res.id);
 
       setMyChats(res.chats);
+      dispatch(actions.setallMessages(res.chats));
       let show = false;
 
       if (agency.id) {
@@ -141,7 +144,7 @@ const Chat = ({ navigation, route }) => {
     })();
 
     return () => {};
-  }, [dispatch, chats]);
+  }, [dispatch]);
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -354,12 +357,11 @@ const Chat = ({ navigation, route }) => {
                 <MessageInput
                   setEmojiSelector={setEmojiSelector}
                   emojiSelector={emojiSelector}
-                  setMessage={setMessage}
-                  message={message}
                   recording={recording}
                   stopRecording={stopRecording}
                   startRecording={startRecording}
                   chatSend={chatSend}
+                  chatId={chatId}
                 />
               </View>
             </KeyboardAvoidingView>

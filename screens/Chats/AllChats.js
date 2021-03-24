@@ -116,7 +116,7 @@ const AllChats = ({ navigation }) => {
             const info = {
               id: r._id,
               name: r.customer?.email,
-              message: r?.chats[r.chats?.length - 1]?.content || "No message",
+              message: r?.chats[r.chats?.length - 1]?.content || null,
               uri: r.customer.dp,
               createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
               unSeenCount,

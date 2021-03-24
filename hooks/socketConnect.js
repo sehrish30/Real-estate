@@ -39,5 +39,10 @@ export function useSocket(user, dispatch) {
     dispatch(actions.stopTyping(userId));
   });
 
+  socket.on("newMessage", (message) => {
+    console.log("WHAT I AM GETTING ON SENDING MESSAGEs", message);
+    dispatch(actions.addToMessages({ ...message }));
+  });
+
   socket.connect;
 }

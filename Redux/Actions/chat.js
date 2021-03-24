@@ -11,6 +11,9 @@ import {
   SENDER_TYPING,
   SET_SOCKET,
   STOP_TYPING,
+  SET_CURRENT_CHAT,
+  SET_MESSAGE,
+  SET_ALL_MESSAGES,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -59,4 +62,16 @@ export const setSocket = (socket) => (dispatch) => {
 
 export const stopTyping = (userId) => (dispatch) => {
   dispatch({ type: STOP_TYPING, payload: userId });
+};
+
+export const currentChat = (chatId) => (dispatch) => {
+  dispatch({ type: SET_CURRENT_CHAT, payload: chatId });
+};
+
+export const addToMessages = (chat) => (dispatch) => {
+  dispatch({ type: SET_MESSAGE, payload: chat });
+};
+
+export const setallMessages = (messages) => (dispatch) => {
+  dispatch({ type: SET_ALL_MESSAGES, payload: messages });
 };

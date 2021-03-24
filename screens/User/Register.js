@@ -27,7 +27,7 @@ const Register = ({ navigation }) => {
         let newEmail = email;
         newEmail = newEmail.toLowerCase().trim();
         setEmail(newEmail);
-        dispatch(actions.register({ email, password }, navigation));
+        dispatch(actions.register({ email, password }, navigation, setLoading));
       } else {
         Toast.show({
           type: "error",
@@ -36,6 +36,7 @@ const Register = ({ navigation }) => {
           visibilityTime: 4000,
           topOffset: 30,
         });
+        setLoading(false);
       }
     } else {
       Toast.show({
@@ -45,6 +46,7 @@ const Register = ({ navigation }) => {
         visibilityTime: 4000,
         topOffset: 30,
       });
+      setLoading(false);
     }
   }
 

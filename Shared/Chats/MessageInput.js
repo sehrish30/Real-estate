@@ -5,22 +5,24 @@ import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { sendChat } from "../../Shared/Services/ChatServices";
-
+import * as actions from "../../Redux/Actions/chat";
 var { width, height } = Dimensions.get("window");
 const MessageInput = ({
   setEmojiSelector,
   emojiSelector,
-  setMessage,
-  message,
+
   recording,
   stopRecording,
   startRecording,
   chatSend,
+  chatId,
 }) => {
+  const [message, setMessage] = useState("");
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let socket = useSelector((state) => state.chat.socket);
+  let dispatch = useDispatch();
   let userId;
   if (agency.id) {
     userId = chatSend.customer;
@@ -29,14 +31,38 @@ const MessageInput = ({
   }
 
   const sendMessageService = () => {
-    let data = {
-      customer: chatSend.customer,
-      agency: chatSend.agency,
-      author: user.decoded.userId,
-      type: "text",
-      content: message,
-    };
-    sendChat(data, token);
+    let data = {};
+    if (agency.id) {
+      data = {
+        customer: chatSend.customer,
+        agency: chatSend.agency,
+        author: agency.id,
+        type: "text",
+        content: message,
+        seen: false,
+        chatId: chatId,
+        time: Date.now(),
+      };
+    } else {
+      data = {
+        customer: chatSend.customer,
+        agency: chatSend.agency,
+        author: user.decoded.userId,
+        type: "text",
+        content: message,
+        seen: false,
+        chatId: chatId,
+        time: Date.now(),
+      };
+    }
+    // sendChat(data, token);
+    if (agency.id) {
+      socket.emit("newMessage", { toUserId: chatSend.customer, ...data });
+    } else {
+      socket.emit("newMessage", { toUserId: chatSend.agency, ...data });
+    }
+
+    setMessage("");
   };
 
   useEffect(() => {

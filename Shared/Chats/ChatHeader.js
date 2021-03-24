@@ -53,11 +53,11 @@ const ChatHeader = ({
           <View style={{ marginLeft: "auto" }}>
             <Text style={styles.name}>
               {otherChatName.name}
-              {otherChatName.id && (
+              {otherChatName?.id && (
                 <Badge status="success" containerStyle={{ marginLeft: 5 }} />
               )}{" "}
               {senderTyping.id === userId && senderTyping.typing && (
-                <Text style={{ marginLeft: 10, color: "grey" }}>....</Text>
+                <Text style={{ marginLeft: 10, color: "#839b97" }}>....</Text>
               )}
             </Text>
           </View>

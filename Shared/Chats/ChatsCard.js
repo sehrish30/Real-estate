@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem, Avatar, Badge } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import * as actions from "../../Redux/Actions/chat";
 // import TouchableScale from "react-native-touchable-scale";
 
 const ChatsCard = ({
@@ -16,16 +17,23 @@ const ChatsCard = ({
   agencyId,
   customerId,
 }) => {
-  // let user = useSelector((state) => state.auth.user.decoded.userId);
+  let dispatch = useDispatch();
+  const [showBadge, setShowBadge] = useState(false);
+
+  let newmsgchats = useSelector((state) => state.chat.newMessageChats);
+  let senderTyping = useSelector((state) => state.chat.senderTyping);
+  const [newmsg, setNewMsg] = useState([]);
+
   return (
     <View style={styles.card}>
       <ListItem
-        onPress={() =>
+        onPress={() => {
           navigation.navigate("ChatMain", {
             agency: agencyId,
             customer: customerId,
-          })
-        }
+          });
+          dispatch(actions.currentChat(id));
+        }}
         key={id}
         bottomDivider
         // Component={TouchableScale}
@@ -51,17 +59,20 @@ const ChatsCard = ({
           </ListItem.Subtitle>
         </ListItem.Content>
         <View>
-          <Badge
-            value={unSeenCount}
-            badgeStyle={{
-              backgroundColor: "#f8dc81",
-              paddingVertical: 10,
-            }}
-            containerStyle={{
-              borderRadius: 100,
-            }}
-            textStyle={{ color: "#214151" }}
-          />
+          {newmsgchats.chatId == id && (
+            <Badge
+              value="New"
+              badgeStyle={{
+                backgroundColor: "#f8dc81",
+                paddingVertical: 10,
+              }}
+              containerStyle={{
+                borderRadius: 100,
+              }}
+              textStyle={{ color: "#214151" }}
+            />
+          )}
+
           <Text style={{ fontSize: 8, marginTop: 5, color: "#839b97" }}>
             {createdAt}
           </Text>

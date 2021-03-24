@@ -9,16 +9,20 @@ import {
   SENDER_TYPING,
   SET_SOCKET,
   STOP_TYPING,
+  SET_CURRENT_CHAT,
+  SET_MESSAGE,
+  SET_ALL_MESSAGES,
 } from "../constants";
 
 const initialState = {
   chats: [],
-  currentChat: {},
+  currentChat: "",
   socket: {},
-  newMessage: { chatId: null, seen: null },
+  newMessageChats: [{ chatId: null, seen: null }],
   scrollBottom: 0,
   senderTyping: { typing: false },
   chatExists: false,
+  messages: [],
 };
 
 const chat = (state = initialState, action) => {
@@ -165,6 +169,38 @@ const chat = (state = initialState, action) => {
         ...state,
         chats: senderstoptyping,
         senderTyping: { typing: false, id: payload },
+      };
+
+    case SET_CURRENT_CHAT:
+      return {
+        ...state,
+        currentChat: payload,
+        scrollBottom: state.scrollBottom + 1,
+      };
+
+    case SET_MESSAGE:
+      console.log(state.currentChat);
+      if (state.currentChat == payload.chatId) {
+        let allmessages = state.messages;
+        allmessages.push(payload);
+        // allmessages = payload;
+        return {
+          ...state,
+          messages: allmessages,
+        };
+      } else {
+        let sendChats = state.newMessageChats;
+        sendChats = { chatId: payload.chatId, seen: false };
+        return {
+          ...state,
+          newMessageChats: sendChats,
+        };
+      }
+
+    case SET_ALL_MESSAGES:
+      return {
+        ...state,
+        messages: payload,
       };
     default:
       return state;

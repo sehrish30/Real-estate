@@ -51,18 +51,20 @@ const Main = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Chat"
-        component={ChatNavigator}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <View>
-              <Icon name="wechat" color={color} size={25} />
-              {/* <CartIcon /> */}
-            </View>
-          ),
-        }}
-      />
+      {token ? (
+        <Tab.Screen
+          name="Chat"
+          component={ChatNavigator}
+          options={{
+            tabBarIcon: ({ color }) => (
+              <View>
+                <Icon name="wechat" color={color} size={25} />
+                {/* <CartIcon /> */}
+              </View>
+            ),
+          }}
+        />
+      ) : null}
       <Tab.Screen
         name="Search"
         component={UserAuthNavigator}
