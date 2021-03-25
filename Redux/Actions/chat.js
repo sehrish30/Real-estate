@@ -14,6 +14,8 @@ import {
   SET_CURRENT_CHAT,
   SET_MESSAGE,
   SET_ALL_MESSAGES,
+  SET_SEEN_MESSAGE,
+  DELETE_CHAT,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -74,4 +76,12 @@ export const addToMessages = (chat) => (dispatch) => {
 
 export const setallMessages = (messages) => (dispatch) => {
   dispatch({ type: SET_ALL_MESSAGES, payload: messages });
+};
+
+export const setseenMessage = (chat) => (dispatch) => {
+  dispatch({ type: SET_SEEN_MESSAGE, payload: chat });
+};
+
+export const deletechat = (chat) => (dispatch) => {
+  dispatch({ type: DELETE_CHAT, payload: chat });
 };

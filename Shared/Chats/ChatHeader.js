@@ -3,17 +3,21 @@ import { StyleSheet, Text, View } from "react-native";
 import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
 import { Badge } from "react-native-elements";
 import { useSelector, useDispatch } from "react-redux";
-
+import { deleteChat } from "../../Shared/Services/ChatServices";
 const ChatHeader = ({
   showTrash,
   toggleOverlay,
   setShowTrash,
   deleteMessageReceiever,
   otherChatName,
+  mainIndex,
+  deluser,
+  chatId,
 }) => {
   let senderTyping = useSelector((state) => state.chat.senderTyping);
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
+  let token = useSelector((state) => state.auth.token);
 
   let userId;
   if (agency.id) {
@@ -38,7 +42,10 @@ const ChatHeader = ({
             size={30}
             color="#214151"
             onPress={() => {
-              deleteMessageReceiever(mainIndex);
+              if (deluser == userId) {
+                deleteChat(mainIndex, chatId, token);
+                deleteMessageReceiever(mainIndex);
+              }
             }}
           />
           <EvilIcons

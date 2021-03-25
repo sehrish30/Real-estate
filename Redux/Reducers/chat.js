@@ -12,6 +12,8 @@ import {
   SET_CURRENT_CHAT,
   SET_MESSAGE,
   SET_ALL_MESSAGES,
+  SET_SEEN_MESSAGE,
+  DELETE_CHAT,
 } from "../constants";
 
 const initialState = {
@@ -23,6 +25,7 @@ const initialState = {
   senderTyping: { typing: false },
   chatExists: false,
   messages: [],
+  unseenCount: [],
 };
 
 const chat = (state = initialState, action) => {
@@ -179,18 +182,27 @@ const chat = (state = initialState, action) => {
       };
 
     case SET_MESSAGE:
-      console.log(state.currentChat);
+      // if (state.currentChat == payload.chatId) {
+      console.log("HERE ONLY");
+      return state.currentChat == payload.chatId
+        ? {
+            ...state,
+            messages: [...state.messages, payload],
+          }
+        : state.messages;
+    // } else {
+    //   let sendChats = state.newMessageChats;
+    //   sendChats = { chatId: payload.chatId, seen: false };
+    //   return {
+    //     ...state,
+    //     newMessageChats: sendChats,
+    //   };
+    // }
+
+    case SET_SEEN_MESSAGE:
       if (state.currentChat == payload.chatId) {
-        let allmessages = state.messages;
-        allmessages.push(payload);
-        // allmessages = payload;
-        return {
-          ...state,
-          messages: allmessages,
-        };
-      } else {
         let sendChats = state.newMessageChats;
-        sendChats = { chatId: payload.chatId, seen: false };
+        sendChats = { chatId: payload.chatId, seen: true };
         return {
           ...state,
           newMessageChats: sendChats,
@@ -202,6 +214,16 @@ const chat = (state = initialState, action) => {
         ...state,
         messages: payload,
       };
+    case DELETE_CHAT:
+      return {
+        ...state,
+        messages:
+          state.currentChat == payload.chatId
+            ? state.messages.filter((msg) => msg._id != payload.msgId)
+            : state.messages,
+      };
+    // }
+
     default:
       return state;
   }

@@ -1,9 +1,10 @@
-import React, { useLayoutEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ListItem, Avatar, Badge } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSelector, useDispatch } from "react-redux";
-import * as actions from "../../Redux/Actions/chat";
+import { useSelector } from "react-redux";
+import { useFocusEffect } from "@react-navigation/core";
+
 // import TouchableScale from "react-native-touchable-scale";
 
 const ChatsCard = ({
@@ -13,16 +14,35 @@ const ChatsCard = ({
   message,
   navigation,
   createdAt,
-  unSeenCount,
   agencyId,
   customerId,
+  seen,
+  lastchatauthor,
+  unseencount,
+  setUnseencount,
 }) => {
-  let dispatch = useDispatch();
-  const [showBadge, setShowBadge] = useState(false);
-
   let newmsgchats = useSelector((state) => state.chat.newMessageChats);
-  let senderTyping = useSelector((state) => state.chat.senderTyping);
-  const [newmsg, setNewMsg] = useState([]);
+
+  let userId;
+  let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+  if (agency.id) {
+    userId = agency.id;
+  } else {
+    userId = user.decoded.userId;
+  }
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     return () => {
+  //       setUnseencount(
+  //         unseencount.filter((count) => {
+  //           return count.id != id;
+  //         })
+  //       );
+  //     };
+  //   }, [unseencount, setUnseencount])
+  // );
 
   return (
     <View style={styles.card}>
@@ -31,8 +51,8 @@ const ChatsCard = ({
           navigation.navigate("ChatMain", {
             agency: agencyId,
             customer: customerId,
+            chatId: id,
           });
-          dispatch(actions.currentChat(id));
         }}
         key={id}
         bottomDivider
@@ -59,7 +79,7 @@ const ChatsCard = ({
           </ListItem.Subtitle>
         </ListItem.Content>
         <View>
-          {newmsgchats.chatId == id && (
+          {newmsgchats.chatId == id && !newmsgchats.seen ? (
             <Badge
               value="New"
               badgeStyle={{
@@ -71,6 +91,27 @@ const ChatsCard = ({
               }}
               textStyle={{ color: "#214151" }}
             />
+          ) : (
+            <>
+              {unseencount.map((count, index) => (
+                <View key={count.id}>
+                  {lastchatauthor != userId && !seen && (
+                    <Badge
+                      key={count.id}
+                      value={count.count}
+                      badgeStyle={{
+                        backgroundColor: "#f8dc81",
+                        // paddingVertical: 10,
+                      }}
+                      containerStyle={{
+                        borderRadius: 100,
+                      }}
+                      textStyle={{ color: "#214151" }}
+                    />
+                  )}
+                </View>
+              ))}
+            </>
           )}
 
           <Text style={{ fontSize: 8, marginTop: 5, color: "#839b97" }}>

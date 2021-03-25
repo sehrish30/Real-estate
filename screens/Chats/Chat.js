@@ -16,7 +16,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { Badge } from "react-native-elements";
-import { useSocket } from "../../hooks/socketConnect";
+
 import { useSelector, useDispatch } from "react-redux";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
@@ -31,9 +31,11 @@ import CreateChat from "../../Shared/Chats/CreateChat";
 import {
   checkChatExists,
   fetchAllChats,
+  seenChat,
 } from "../../Shared/Services/ChatServices";
 import * as actions from "../../Redux/Actions/chat";
 import Loading from "../../Shared/Loading";
+import store from "../../Redux/store";
 
 var { width, height } = Dimensions.get("window");
 
@@ -55,6 +57,7 @@ const Chat = ({ navigation, route }) => {
   const [myChats, setMyChats] = useState([]);
   const [otherChatName, setOtherchatName] = useState({ name: "", id: false });
   const [chatSend, setChatSend] = useState({});
+  const [chatBlocked, setChatBlocked] = useState(false);
 
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
@@ -63,6 +66,7 @@ const Chat = ({ navigation, route }) => {
   const [emojiSelector, setEmojiSelector] = useState(false);
   const [visible, setVisible] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
+  const [deluser, setDeluser] = useState("");
 
   // animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -74,6 +78,9 @@ const Chat = ({ navigation, route }) => {
   let token = useSelector((state) => state.auth.token);
   let agency = useSelector((state) => state.auth.agency);
   let chats = useSelector((state) => state.chat.chats);
+  let socket = useSelector((state) => state.chat.socket);
+  let messages = useSelector((state) => state.chat.messages);
+
   let userId;
   if (agency.id) {
     userId = agency.id;
@@ -84,16 +91,15 @@ const Chat = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       (async () => {
-        console.log(route.params, "TESTING");
+        console.log(route.params, "ROUTE PARAMS");
         if (route.params) {
           const res = await checkChatExists(route.params, token);
-
+          dispatch(actions.currentChat(route.params?.chatId));
           console.log("RES", res);
 
           if (res.status) {
             setChatExists(true);
             setLoading(false);
-            // fetchChats()
           }
         } else {
           setChatExists(true);
@@ -109,42 +115,77 @@ const Chat = ({ navigation, route }) => {
     }, [])
   );
 
-  useEffect(() => {
-    (async () => {
-      const res = await fetchAllChats(route.params, token);
-      setChatId(res.id);
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        const res = await fetchAllChats(route.params, token);
+        console.error("IMPORTANT", res.chats);
+        setMyChats(res.chats.reverse());
 
-      setMyChats(res.chats);
-      dispatch(actions.setallMessages(res.chats));
-      let show = false;
+        // const unsubscribe = store.subscribe(() => {
+        //   console.log("STORE CHANGES", store.getState().chat.messages);
+        // });
 
-      if (agency.id) {
-        chats?.map((chat) => {
-          chat.users.map((userc) => {
-            if (userc.id === res.customer.id && userc.online) show = true;
+        if (agency.id) {
+          await seenChat(
+            { chatId: route.params?.chatId, person: agency.id },
+            token
+          );
+        } else {
+          await seenChat(
+            { chatId: route.params?.chatId, person: user.decoded.userId },
+            token
+          );
+        }
+
+        setChatId(res.id);
+
+        dispatch(actions.setallMessages(res.chats));
+        let show = false;
+
+        if (agency.id) {
+          chats?.map((chat) => {
+            chat.users.map((userc) => {
+              if (userc.id === res.customer.id && userc.online) show = true;
+            });
           });
-        });
-        setOtherchatName({
-          name: res.customer.email,
-          id: show,
-        });
-        setChatSend({ agency: res.agency.id, customer: res.customer.id });
-      } else {
-        chats?.map((chat) => {
-          chat.users.map((userc) => {
-            if (userc.id === res.agency.id && userc?.online) show = true;
+          setOtherchatName({
+            name: res.customer.email,
+            id: show,
           });
-        });
-        setOtherchatName({
-          name: res.agency.name,
-          id: show,
-        });
-        setChatSend({ agency: res.agency.id, customer: res.customer.id });
-      }
-    })();
+          setChatSend({ agency: res.agency.id, customer: res.customer.id });
+        } else {
+          chats?.map((chat) => {
+            chat.users.map((userc) => {
+              if (userc.id === res.agency.id && userc?.online) show = true;
+            });
+          });
+          setOtherchatName({
+            name: res.agency.name,
+            id: show,
+          });
+          setChatSend({ agency: res.agency.id, customer: res.customer.id });
+        }
+      })();
 
-    return () => {};
-  }, [dispatch]);
+      return () => {
+        (async () => {
+          if (agency.id) {
+            await seenChat(
+              { chatId: route.params?.chatId, person: agency.id },
+              token
+            );
+          } else {
+            await seenChat(
+              { chatId: route.params?.chatId, person: user.decoded.userId },
+              token
+            );
+          }
+        })();
+        // unsubscribe();
+      };
+    }, [socket, dispatch])
+  );
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -158,8 +199,24 @@ const Chat = ({ navigation, route }) => {
     }).start(() => {
       LayoutAnimation.spring();
     });
-    console.error(mainIndex, indexToAnimate);
+
+    console.log("INDEX TO ANIMATR", mainIndex, indexToAnimate);
     setShowTrash(false);
+    if (userId == chatSend.customer) {
+      socket.emit("delMessage", {
+        toUserId: chatSend.agency,
+        chatId: route.params?.chatId,
+        msgId: mainIndex,
+        fromUserId: userId,
+      });
+    } else {
+      socket.emit("delMessage", {
+        toUserId: chatSend.customer,
+        chatId: route.params?.chatId,
+        msgId: mainIndex,
+        fromUserId: userId,
+      });
+    }
   };
 
   const constDeleteAllMessages = () => {
@@ -208,14 +265,17 @@ const Chat = ({ navigation, route }) => {
     <SafeAreaView
       style={{ flex: 1, marginTop: 20, backgroundColor: "#98ded9" }}
     >
-      {!loading ? (
-        <View>
+      {!loading && !chatBlocked ? (
+        <View style={{ flex: 1 }}>
           <ChatHeader
             showTrash={showTrash}
             toggleOverlay={toggleOverlay}
             setShowTrash={setShowTrash}
             deleteMessageReceiever={deleteMessageReceiever}
             otherChatName={otherChatName}
+            mainIndex={mainIndex}
+            deluser={deluser}
+            chatId={route.params?.chatId}
           />
           <KeyboardAwareScrollView style={styles.content}>
             <View style={styles.badge}>
@@ -226,12 +286,15 @@ const Chat = ({ navigation, route }) => {
             </View>
             {chatExists ? (
               <>
-                {myChats.map((chat) =>
+                {messages.map((chat) =>
                   chat.author === userId ? (
                     <Pressable
+                      key={chat.id}
                       onLongPress={() => {
-                        setMainIndex(3);
-                        deleteMessageReceiever(3);
+                        console.log("------------", chat);
+                        setMainIndex(chat?.id || chat.chatId);
+                        setShowTrash(true);
+                        setDeluser(chat.author);
                       }}
                     >
                       <Animated.View
@@ -240,7 +303,8 @@ const Chat = ({ navigation, route }) => {
                           {
                             transform: [
                               {
-                                translateX: 3 == mainIndex ? receiverRef.x : 0,
+                                translateX:
+                                  chat.id == mainIndex ? receiverRef.x : 0,
                               },
                               {
                                 translateY: receiverRef.y,
@@ -262,18 +326,21 @@ const Chat = ({ navigation, route }) => {
                               fontSize: 10,
                             }}
                           >
-                            {chat.createdAt}
+                            {chat.time || chat.createdAt}
                           </Text>
                         </View>
                       </Animated.View>
                     </Pressable>
                   ) : (
                     <Pressable
-                      onLongPress={() => {
-                        setMainIndex(2);
-                        console.error(mainIndex);
-                        setShowTrash(true);
-                      }}
+                      key={chat.id}
+                      // onLongPress={() => {
+                      //   console.log("------------", chat);
+                      //   setMainIndex(chat?.id || chat.chatId);
+                      //   console.error(mainIndex);
+                      //   setShowTrash(true);
+                      //   setDeluser(chat.author);
+                      // }}
                     >
                       <Animated.View
                         key={2}
@@ -283,7 +350,8 @@ const Chat = ({ navigation, route }) => {
                           {
                             transform: [
                               {
-                                translateX: mainIndex === 2 ? receiverRef.x : 0,
+                                translateX:
+                                  chat.id === mainIndex ? receiverRef.x : 0,
                               },
                               {
                                 translateY: receiverRef.y,
@@ -305,7 +373,7 @@ const Chat = ({ navigation, route }) => {
                               fontSize: 10,
                             }}
                           >
-                            {chat.createdAt}
+                            {chat.time || chat.createdAt}
                           </Text>
                         </View>
                       </Animated.View>
@@ -374,7 +442,20 @@ const Chat = ({ navigation, route }) => {
           />
         </View>
       ) : (
-        <Loading />
+        <>{!chatBlocked && <Loading />}</>
+      )}
+      {chatBlocked && (
+        <View
+          style={{
+            marginTop: 30,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ fontFamily: "EBGaramond-Bold", color: "#214151" }}>
+            You cannot send messages to this user
+          </Text>
+        </View>
       )}
     </SafeAreaView>
   );

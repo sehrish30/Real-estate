@@ -5,12 +5,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { sendChat } from "../../Shared/Services/ChatServices";
-import * as actions from "../../Redux/Actions/chat";
 var { width, height } = Dimensions.get("window");
 const MessageInput = ({
   setEmojiSelector,
   emojiSelector,
-
   recording,
   stopRecording,
   startRecording,
@@ -55,7 +53,7 @@ const MessageInput = ({
         time: Date.now(),
       };
     }
-    // sendChat(data, token);
+    sendChat(data, token);
     if (agency.id) {
       socket.emit("newMessage", { toUserId: chatSend.customer, ...data });
     } else {

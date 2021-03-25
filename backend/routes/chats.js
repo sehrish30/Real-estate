@@ -262,4 +262,50 @@ router.post(`/unblock-chat`, async (req, res) => {
   }
 });
 
+/*----------------------------------------
+    Mark all chats seen
+---------------------------------------- */
+router.get(`/all-agencychatrooms`, async (req, res) => {
+  console.error(req.query);
+  Chat.find({ agency: req.query.agency })
+    .populate("customer")
+    .populate("chats")
+    .sort({ createdAt: -1 })
+    .exec((err, chatrooms) => {
+      if (err) {
+        return res.status(402).send(err);
+      }
+      return res.send(chatrooms);
+    });
+});
+
+/*----------------------------------------
+    Mark all chats seen
+---------------------------------------- */
+
+router.put(`/all-chatsSeen`, async (req, res) => {
+  try {
+    const data = await Chat.findById(req.body.chatId).populate(
+      "chats",
+      "seen id author"
+    );
+    console.log(req.body);
+    for (chat of data.chats) {
+      if (!chat.seen && chat.author != req.body.person) {
+        await ChatMsg.findByIdAndUpdate(
+          chat.id,
+          {
+            seen: true,
+          },
+          { new: true }
+        );
+      }
+    }
+
+    return res.status(200).send(true);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router;

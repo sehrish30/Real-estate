@@ -12,7 +12,6 @@ export const INCREMENT_SCROLL = "INCREMENT_SCROLL";
 export const CREATE_CHAT = "CREATE_CHAT";
 export const ADD_USER_TO_GROUP = "ADD_USER_TO_GROUP";
 export const LEAVE_CURRENT_CHAT = "LEAVE_CURRENT_CHAT";
-export const DELETE_CHAT = "DELETE_CHAT";
 
 export const SET_SOCKET = "SET_SOCKET";
 export const CHAT_EXISTS = "CHAT_EXISTS";
@@ -27,3 +26,5 @@ export const STOP_TYPING = "STOP_TYPING";
 export const SET_CURRENT_CHAT = "SET_CURRENT_CHAT";
 export const SET_MESSAGE = "SET_MESSAGE";
 export const SET_ALL_MESSAGES = "SET_ALL_MESSAGES";
+export const SET_SEEN_MESSAGE = "SET_SEEN_MESSAGE";
+export const DELETE_CHAT = "DELETE_CHAT";

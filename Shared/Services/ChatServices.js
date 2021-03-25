@@ -84,7 +84,7 @@ export async function customerRooms(data, token) {
 }
 
 export async function fetchAllChats(data, token) {
-  console.log("TOKEN I AM GETTING", token);
+  console.log("TOKEN I AM GETTING", data);
   try {
     const res = await axios.get(`${baseURL}chats/all-chats`, {
       params: data,
@@ -94,6 +94,7 @@ export async function fetchAllChats(data, token) {
     });
     if (res.status == 200 || res.status == 304) {
       console.log("REPONSE HERE", res.data);
+
       return res.data;
     }
   } catch (err) {
@@ -108,6 +109,81 @@ export async function sendChat(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function seenChat(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}chats/all-chatsSeen`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function deleteChat(chatMsgId, chatId, token) {
+  try {
+    const res = await axios.delete(
+      `${baseURL}chats/delete-chat/${chatMsgId}/${chatId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function blockChat(id, token) {
+  try {
+    const res = await axios.delete(
+      `${baseURL}chats/block-chatroom/${id}`,
+      {
+        params: {
+          id,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function unblockChat(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}chats/unblock-chat`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     if (res.status == 200 || res.status == 201) {
       return res.data;
     }

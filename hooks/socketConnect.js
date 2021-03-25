@@ -44,5 +44,8 @@ export function useSocket(user, dispatch) {
     dispatch(actions.addToMessages({ ...message }));
   });
 
+  socket.on("delMessage", (message) => {
+    dispatch(actions.deletechat(message));
+  });
   socket.connect;
 }

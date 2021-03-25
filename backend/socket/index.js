@@ -130,14 +130,6 @@ const SocketServer = (server) => {
     ---------------------------------------- */
 
     socket.on("newMessage", async (message) => {
-      console.log("I AM HELPLESS");
-      console.log(
-        "I AM SENDING TO ORIGINAL USE REXCUSE ME",
-        users.has(message.author),
-        users.has(message.toUserId),
-        message.author,
-        message.toUserId
-      );
       // send the message to receiver socket
       if (users.has(message.toUserId)) {
         console.log("USER ID I AM GETTING FOR CHAT", message);
@@ -149,6 +141,26 @@ const SocketServer = (server) => {
       if (users.has(message.author)) {
         users.get(message.author).sockets.forEach((socket) => {
           io.to(socket).emit("newMessage", message);
+        });
+      }
+    });
+
+    /*-----------------------------------------
+             Message deleted
+    ---------------------------------------- */
+
+    socket.on("delMessage", async (message) => {
+      console.log("USER NOT ONLINE ID I AM GETTING FOR DELETED", message);
+      // send the message to receiver socket
+      if (users.has(message.toUserId)) {
+        console.log("USER ID I AM GETTING FOR DELETED", message);
+        users.get(message.toUserId).sockets.forEach((socket) => {
+          io.to(socket).emit("delMessage", message);
+        });
+      }
+      if (users.has(message.fromUserId)) {
+        users.get(message.fromUserId).sockets.forEach((socket) => {
+          io.to(socket).emit("delMessage", message);
         });
       }
     });

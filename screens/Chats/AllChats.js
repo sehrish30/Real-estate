@@ -1,159 +1,183 @@
-import React, {
-  useLayoutEffect,
-  useState,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   FlatList,
   ScrollView,
   StatusBar,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useSocket } from "../../hooks/socketConnect";
 import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-
+import baseURL from "../../assets/common/baseUrl";
 import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
-import { userOnline, userOffline } from "../../Redux/Actions/chat";
+import * as actions from "../../Redux/Actions/chat";
 import { agencyRooms, customerRooms } from "../../Shared/Services/ChatServices";
 import CreateChat from "../../Shared/Chats/CreateChat";
+import ChatsContent from "../../Shared/Chats/ChatsContent";
+import { Button } from "react-native-elements";
 
+var { width, height } = Dimensions.get("window");
 const AllChats = ({ navigation }) => {
-  const [chatRooms, setChatRooms] = useState([]);
   const [allChats, setAllChats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [unseencount, setUnseencount] = useState([]);
   const dispatch = useDispatch();
 
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
 
-  const ENDPOINT = "localhost:3000";
+  // const ENDPOINT = "localhost:3000";
+
+  const ENDPOINT = baseURL;
 
   const socket = socketIOClient(ENDPOINT);
 
-  useEffect(() => {
-    if (user.email) {
-      (async () => {
-        const res = await customerRooms(
-          { customer: user.decoded.userId },
-          token
-        );
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user.email) {
+        (async () => {
+          const res = await customerRooms(
+            { customer: user.decoded.userId },
+            token
+          );
 
-        if (!res) {
-          setChatRooms([]);
-          setLoading(false);
-        } else {
-          setChatRooms(res);
-          setLoading(false);
+          if (!res) {
+            setLoading(false);
+          } else {
+            setLoading(false);
 
-          let unSeenCount = 0;
-          let fastChats = [];
-          const requests = res.map((r) => {
-            for (const i of r.chats) {
-              if ((i.seen = false)) {
-                unSeenCount++;
+            let unSeenCount = 0;
+            let fastChats = [];
+            const requests = res.map((r) => {
+              for (let i = 0; i < r.chats.length; i++) {
+                if (r.chats[i].seen == false) {
+                  unSeenCount += 1;
+                }
               }
-            }
+              // for (const i of r.chats) {
+              //   if (i.seen == false) {
+              //     unSeenCount += 1;
+              //   }
+              // }
 
-            const info = {
-              id: r._id,
-              name: r.agency?.name,
-              message: r?.chats[r.chats?.length - 1]?.content || "No message",
-              uri: r.agency.logo.url,
-              createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
-              unSeenCount,
-              agencyId: r.agency.id,
-              customerId: r.customer,
-              searchId: r.agency.id,
-              users: [
-                {
-                  id: r.agency.id,
-                  online: false,
-                },
-                {
-                  id: r.customer,
-                  online: false,
-                },
-              ],
-            };
+              setUnseencount((prev) => [
+                ...unseencount,
+                { count: unSeenCount, id: r._id },
+              ]);
 
-            setAllChats((prev) => [...prev, info]);
-            fastChats.push(info);
-          });
-          Promise.all(requests).then(() => {
-            useSocket({ user, allChats: fastChats }, dispatch);
-          });
-        }
-        setLoading(false);
-      })();
-    } else if (agency.email) {
-      (async () => {
-        const res = await agencyRooms({ agency: agency.id }, token);
+              const info = {
+                key: r.id,
+                id: r.id,
+                name: r.agency?.name,
+                message: r?.chats[r.chats?.length - 1]?.content || "No message",
+                uri: r.agency.logo.url,
+                createdAt: r?.chats[r.chats?.length - 1]?.createdAt,
+                unSeenCount,
+                agencyId: r.agency.id,
+                customerId: r.customer,
+                searchId: r.agency.id,
+                seen: r?.chats[r.chats?.length - 1]?.seen,
+                lastchatauthor: r?.chats[r.chats?.length - 1]?.author,
+                users: [
+                  {
+                    id: r.agency.id,
+                    online: false,
+                  },
+                  {
+                    id: r.customer,
+                    online: false,
+                  },
+                ],
+              };
 
-        if (!res) {
-          setChatRooms([]);
+              setAllChats((prev) => [...prev, info]);
+              fastChats.push(info);
+            });
+            Promise.all(requests).then(() => {
+              useSocket({ user, allChats: fastChats }, dispatch);
+            });
+          }
           setLoading(false);
-        } else {
-          setChatRooms(res);
-          setLoading(false);
+        })();
+      } else if (agency.email) {
+        (async () => {
+          const res = await agencyRooms({ agency: agency.id }, token);
 
-          let unSeenCount = 0;
-          let fastChats = [];
-          const requests = res.map((r) => {
-            for (const i of r.chats) {
-              if ((i.seen = false)) {
-                unSeenCount++;
+          if (!res) {
+            setLoading(false);
+          } else {
+            setLoading(false);
+            let unSeenCount = 0;
+            let fastChats = [];
+            const requests = res.map((r) => {
+              // for (const i of r.chats) {
+              //   if (i.seen == false) {
+              //     unSeenCount += 1;
+              //   }
+              // }
+              for (let i = 0; i < r.chats.length; i++) {
+                if (r.chats[i].seen == false) {
+                  unSeenCount += 1;
+                }
               }
-            }
-            const info = {
-              id: r._id,
-              name: r.customer?.email,
-              message: r?.chats[r.chats?.length - 1]?.content || null,
-              uri: r.customer.dp,
-              createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
-              unSeenCount,
-              agencyId: r.agency,
-              customerId: r.customer.id,
-              searchId: r.customer.id,
-              users: [
-                {
-                  id: r.agency,
-                  online: false,
-                },
-                {
-                  id: r.customer.id,
-                  online: false,
-                },
-              ],
-            };
-            console.log(info, "aegncyRooms");
+              setUnseencount((prev) => [
+                ...prev,
+                { count: unSeenCount, id: r._id },
+              ]);
 
-            setAllChats((prev) => [...prev, info]);
-            fastChats.push(info);
-          });
-          // because userid is stored in user.decoded.id
-          Promise.all(requests).then(() => {
-            let data = {
-              ...agency,
-              decoded: {
-                userId: agency.id,
-              },
-            };
-            useSocket({ user: data, allChats: fastChats }, dispatch);
-          });
-        }
-      })();
-    }
-    return () => {};
-  }, [dispatch]);
+              const info = {
+                key: r.id,
+                id: r.id,
+                name: r.customer?.email,
+                message: r?.chats[r.chats?.length - 1]?.content || null,
+                uri: r.customer.dp,
+                createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
+                unSeenCount,
+                agencyId: r.agency,
+                customerId: r.customer.id,
+                searchId: r.customer.id,
+                seen: r?.chats[r.chats?.length - 1]?.seen || null,
+                lastchatauthor: r?.chats[r.chats?.length - 1]?.author,
+                users: [
+                  {
+                    id: r.agency,
+                    online: false,
+                  },
+                  {
+                    id: r.customer.id,
+                    online: false,
+                  },
+                ],
+              };
+              setAllChats((prev) => [...prev, info]);
+              fastChats.push(info);
+            });
+            // because userid is stored in user.decoded.id
+            Promise.all(requests).then(() => {
+              let data = {
+                ...agency,
+                decoded: {
+                  userId: agency.id,
+                },
+              };
+              useSocket({ user: data, allChats: fastChats }, dispatch);
+            });
+          }
+        })();
+      }
+      return () => {
+        setAllChats([]);
+        setUnseencount([]);
+      };
+    }, [])
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -172,10 +196,16 @@ const AllChats = ({ navigation }) => {
         </TouchableOpacity>
       ),
     });
+    return () => {
+      setAllChats([]);
+
+      setUnseencount([]);
+    };
   }, [navigation]);
 
   const renderItem = ({ item }) => (
     <ChatsCard
+      key={item.id}
       name={item.name}
       uri={item.uri}
       id={item.id}
@@ -185,23 +215,29 @@ const AllChats = ({ navigation }) => {
       unSeenCount={item.unSeenCount}
       agencyId={item.agencyId}
       customerId={item.customerId}
+      seen={item.seen}
+      unSeenCount={item.unSeenCount}
+      lastchatauthor={item.lastchatauthor}
+      unseencount={unseencount}
+      setUnseencount={setUnseencount}
     />
   );
 
   return (
     <View style={{ flex: 1 }}>
       {allChats.length !== 0 && !loading ? (
-        <ScrollView
-          style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}
-        >
+        <View style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
           <FlatList
             data={allChats}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => {
+              console.log("I AM CRYING", item.id);
+              return item.id;
+            }}
           />
-        </ScrollView>
+        </View>
       ) : (
-        <View>
+        <View style={{ marginTop: height / 6 }}>
           {!loading ? (
             <CreateChat
               navigation={navigation}
