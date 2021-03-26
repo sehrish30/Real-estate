@@ -94,11 +94,11 @@ router.post("/send", async (req, res) => {
       if (err || !chat) {
         return res.status(422).json({ error: "No chat found" });
       } else {
-        res.json(chat);
+        res.json(msgId);
       }
     });
   } catch (err) {
-    return res.status(500).json({ error: e });
+    return res.status(500).json({ error: err });
   }
 });
 

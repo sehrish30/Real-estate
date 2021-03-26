@@ -15,7 +15,6 @@ import {
   Platform,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { Badge } from "react-native-elements";
 
 import { useSelector, useDispatch } from "react-redux";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -24,10 +23,10 @@ import EmojiSelector, { Categories } from "react-native-emoji-selector";
 // import AudioRecorderPlayer from "react-native-audio-recorder-player";
 import { Audio } from "expo-av";
 import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
-import { Pressable } from "react-native";
+
 import MessageInput from "../../Shared/Chats/MessageInput";
 import ChatHeader from "../../Shared/Chats/ChatHeader";
-import CreateChat from "../../Shared/Chats/CreateChat";
+
 import {
   checkChatExists,
   fetchAllChats,
@@ -36,6 +35,7 @@ import {
 import * as actions from "../../Redux/Actions/chat";
 import Loading from "../../Shared/Loading";
 import store from "../../Redux/store";
+import ChatsContent from "../../Shared/Chats/ChatsContent";
 
 var { width, height } = Dimensions.get("window");
 
@@ -117,14 +117,11 @@ const Chat = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      let unsubscribe = (() => {})();
       (async () => {
         const res = await fetchAllChats(route.params, token);
         console.error("IMPORTANT", res.chats);
         setMyChats(res.chats.reverse());
-
-        // const unsubscribe = store.subscribe(() => {
-        //   console.log("STORE CHANGES", store.getState().chat.messages);
-        // });
 
         if (agency.id) {
           await seenChat(
@@ -143,29 +140,43 @@ const Chat = ({ navigation, route }) => {
         dispatch(actions.setallMessages(res.chats));
         let show = false;
 
-        if (agency.id) {
-          chats?.map((chat) => {
-            chat.users.map((userc) => {
-              if (userc.id === res.customer.id && userc.online) show = true;
+        /*------------------------------------------------
+                    CHAT ONLINE TYPING STATUS
+         ------------------------------------------------*/
+        const comparingOnlineStates = (chats) => {
+          if (agency.id) {
+            chats?.map((chat) => {
+              chat.users.map((userc) => {
+                if (userc.id === res.customer.id && userc.online) show = true;
+              });
             });
-          });
-          setOtherchatName({
-            name: res.customer.email,
-            id: show,
-          });
-          setChatSend({ agency: res.agency.id, customer: res.customer.id });
-        } else {
-          chats?.map((chat) => {
-            chat.users.map((userc) => {
-              if (userc.id === res.agency.id && userc?.online) show = true;
+            setOtherchatName({
+              name: res.customer.email,
+              id: show,
             });
-          });
-          setOtherchatName({
-            name: res.agency.name,
-            id: show,
-          });
-          setChatSend({ agency: res.agency.id, customer: res.customer.id });
-        }
+            setChatSend({ agency: res.agency.id, customer: res.customer.id });
+          } else {
+            chats?.map((chat) => {
+              chat.users.map((userc) => {
+                if (userc.id === res.agency.id && userc?.online) show = true;
+              });
+            });
+            setOtherchatName({
+              name: res.agency.name,
+              id: show,
+            });
+            setChatSend({ agency: res.agency.id, customer: res.customer.id });
+          }
+        };
+        comparingOnlineStates(chats);
+
+        unsubscribe = store.subscribe(() => {
+          console.log("STORE", store.getState());
+
+          const chatterInfo = store.getState().chat.chats;
+          console.log(chatterInfo);
+          comparingOnlineStates(chatterInfo);
+        });
       })();
 
       return () => {
@@ -182,7 +193,8 @@ const Chat = ({ navigation, route }) => {
             );
           }
         })();
-        // unsubscribe();
+        unsubscribe();
+        setLoading(true);
       };
     }, [socket, dispatch])
   );
@@ -196,9 +208,18 @@ const Chat = ({ navigation, route }) => {
       toValue: { x: 500, y: 0 },
       duration: 500,
       useNativeDriver: true,
-    }).start(() => {
-      LayoutAnimation.spring();
-    });
+    })
+      .start(() => {
+        LayoutAnimation.spring();
+      })
+      .start(() => {
+        LayoutAnimation.spring();
+        Animated.timing(receiverRef, {
+          toValue: { x: 0, y: 0 },
+          duration: 2000,
+          useNativeDriver: true,
+        });
+      });
 
     console.log("INDEX TO ANIMATR", mainIndex, indexToAnimate);
     setShowTrash(false);
@@ -278,125 +299,19 @@ const Chat = ({ navigation, route }) => {
             chatId={route.params?.chatId}
           />
           <KeyboardAwareScrollView style={styles.content}>
-            <View style={styles.badge}>
-              <Badge
-                badgeStyle={styles.badgeText}
-                value={<Text style={{ color: "#a2d0c1" }}>Sept 30, 2020</Text>}
-              />
-            </View>
-            {chatExists ? (
-              <>
-                {messages.map((chat) =>
-                  chat.author === userId ? (
-                    <Pressable
-                      key={chat.id}
-                      onLongPress={() => {
-                        console.log("------------", chat);
-                        setMainIndex(chat?.id || chat.chatId);
-                        setShowTrash(true);
-                        setDeluser(chat.author);
-                      }}
-                    >
-                      <Animated.View
-                        style={[
-                          styles.receiver,
-                          {
-                            transform: [
-                              {
-                                translateX:
-                                  chat.id == mainIndex ? receiverRef.x : 0,
-                              },
-                              {
-                                translateY: receiverRef.y,
-                              },
-                            ],
-                          },
-                        ]}
-                      >
-                        <View>
-                          <Text style={[styles.receiverText]}>
-                            {chat.content}
-                          </Text>
-                          <Text
-                            style={{
-                              color: "#8dadb3",
-                              marginTop: "auto",
-                              marginLeft: "auto",
-                              paddingRight: 5,
-                              fontSize: 10,
-                            }}
-                          >
-                            {chat.time || chat.createdAt}
-                          </Text>
-                        </View>
-                      </Animated.View>
-                    </Pressable>
-                  ) : (
-                    <Pressable
-                      key={chat.id}
-                      // onLongPress={() => {
-                      //   console.log("------------", chat);
-                      //   setMainIndex(chat?.id || chat.chatId);
-                      //   console.error(mainIndex);
-                      //   setShowTrash(true);
-                      //   setDeluser(chat.author);
-                      // }}
-                    >
-                      <Animated.View
-                        key={2}
-                        style={[
-                          styles.sender,
-                          { opacity: fadeAnim },
-                          {
-                            transform: [
-                              {
-                                translateX:
-                                  chat.id === mainIndex ? receiverRef.x : 0,
-                              },
-                              {
-                                translateY: receiverRef.y,
-                              },
-                            ],
-                          },
-                        ]}
-                      >
-                        <View>
-                          <Text style={[styles.senderText]}>
-                            {chat.content}
-                          </Text>
-                          <Text
-                            style={{
-                              marginLeft: "auto",
-                              color: "#8dadb3",
-                              marginTop: "auto",
-                              paddingRight: 5,
-                              fontSize: 10,
-                            }}
-                          >
-                            {chat.time || chat.createdAt}
-                          </Text>
-                        </View>
-                      </Animated.View>
-                    </Pressable>
-                  )
-                )}
-              </>
-            ) : (
-              <View
-                style={{
-                  marginTop: height / 6,
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <CreateChat
-                  data={route.params}
-                  message="You don't have any conversation with this agency"
-                  navigation={navigation}
-                />
-              </View>
-            )}
+            <ChatsContent
+              chatExists={chatExists}
+              messages={messages}
+              setMainIndex={setMainIndex}
+              setShowTrash={setShowTrash}
+              setDeluser={setDeluser}
+              route={route}
+              navigation={navigation}
+              receiverRef={receiverRef}
+              userId={userId}
+              fadeAnim={fadeAnim}
+              mainIndex={mainIndex}
+            />
           </KeyboardAwareScrollView>
 
           {chatExists && (
@@ -479,43 +394,11 @@ const styles = StyleSheet.create({
     shadowRadius: 7.49,
     elevation: 12,
   },
-  badge: {
-    marginTop: 10,
-  },
-  badgeText: { borderRadius: 5, padding: 10, backgroundColor: "#e4fbff" },
-  receiver: {
-    padding: 5,
-    justifyContent: "flex-end",
 
-    marginLeft: 35,
-    flexDirection: "row",
-  },
-  sender: {
-    padding: 5,
-
-    marginRight: 45,
-    justifyContent: "flex-start",
-    flexDirection: "row",
-  },
   chatArea: {
     paddingTop: 5,
     flexDirection: "row",
     width: width,
     backgroundColor: "#fff",
-  },
-
-  senderText: {
-    color: "#e4fbff",
-    backgroundColor: "#214151",
-    padding: 10,
-    borderRadius: 10,
-    borderBottomLeftRadius: 0,
-  },
-  receiverText: {
-    color: "#214151",
-    backgroundColor: "#e4fbff",
-    padding: 10,
-    borderRadius: 10,
-    borderBottomRightRadius: 0,
   },
 });

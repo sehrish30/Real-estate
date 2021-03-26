@@ -28,7 +28,7 @@ const MessageInput = ({
     userId = chatSend.agency;
   }
 
-  const sendMessageService = () => {
+  const sendMessageService = async () => {
     let data = {};
     if (agency.id) {
       data = {
@@ -53,11 +53,20 @@ const MessageInput = ({
         time: Date.now(),
       };
     }
-    sendChat(data, token);
+    const chatSendReponse = await sendChat(data, token);
+
     if (agency.id) {
-      socket.emit("newMessage", { toUserId: chatSend.customer, ...data });
+      socket.emit("newMessage", {
+        toUserId: chatSend.customer,
+        ...data,
+        id: chatSendReponse,
+      });
     } else {
-      socket.emit("newMessage", { toUserId: chatSend.agency, ...data });
+      socket.emit("newMessage", {
+        toUserId: chatSend.agency,
+        ...data,
+        id: chatSendReponse,
+      });
     }
 
     setMessage("");
@@ -140,11 +149,11 @@ const MessageInput = ({
           </>
         ) : (
           <>
-            {recording ? (
+            {/* {recording ? (
               <FontAwesome name="microphone" size={24} color="#fff" />
             ) : (
               <FontAwesome name="microphone" size={24} color="#214151" />
-            )}
+            )} */}
           </>
         )}
       </TouchableOpacity>

@@ -4,6 +4,8 @@ import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
 import { Badge } from "react-native-elements";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteChat } from "../../Shared/Services/ChatServices";
+import { CHAT_EXISTS } from "../../Redux/constants";
+import chat from "../../Redux/Reducers/chat";
 const ChatHeader = ({
   showTrash,
   toggleOverlay,
@@ -18,6 +20,7 @@ const ChatHeader = ({
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
+  let chats = useSelector((state) => state.chat.chats);
 
   let userId;
   if (agency.id) {
@@ -59,6 +62,16 @@ const ChatHeader = ({
         <>
           <View style={{ marginLeft: "auto" }}>
             <Text style={styles.name}>
+              {/* {chats.map((chat) => {
+                chat.users.map((onlineperson) => {
+                  onlineperson.id == userId && (
+                    <Badge
+                      status="success"
+                      containerStyle={{ marginLeft: 5 }}
+                    />
+                  );
+                });
+              })} */}
               {otherChatName.name}
               {otherChatName?.id && (
                 <Badge status="success" containerStyle={{ marginLeft: 5 }} />
