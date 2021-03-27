@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -18,14 +18,20 @@ import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
 import { agencyRooms, customerRooms } from "../../Shared/Services/ChatServices";
 import CreateChat from "../../Shared/Chats/CreateChat";
+import { SearchBar } from "react-native-elements";
 
 var { width, height } = Dimensions.get("window");
 const AllChats = ({ navigation }) => {
   const [allChats, setAllChats] = useState([]);
+  const [safetyChats, setSafetyChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unseencount, setUnseencount] = useState([]);
   const [showNoagency, setShowNoAgency] = useState(false);
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [search, setSearch] = useState("");
   const dispatch = useDispatch();
+  const searchField = useRef();
+  const [debounceValue, setDebounceValue] = useState("");
 
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
@@ -62,7 +68,7 @@ const AllChats = ({ navigation }) => {
             }
             let unSeenCount = 0;
             let fastChats = [];
-            console.error(res);
+
             const requests = res.map((r) => {
               for (let i = 0; i < r.chats.length; i++) {
                 if (r.chats[i].seen == false) {
@@ -103,6 +109,7 @@ const AllChats = ({ navigation }) => {
               };
 
               setAllChats((prev) => [...prev, info]);
+              setSafetyChats((prev) => [...prev, info]);
               fastChats.push(info);
             });
             Promise.all(requests).then(() => {
@@ -161,6 +168,7 @@ const AllChats = ({ navigation }) => {
                 ],
               };
               setAllChats((prev) => [...prev, info]);
+              setSafetyChats((prev) => [...prev, info]);
               fastChats.push(info);
             });
             // because userid is stored in user.decoded.id
@@ -180,10 +188,46 @@ const AllChats = ({ navigation }) => {
       }
       return () => {
         setAllChats([]);
+        setSafetyChats([]);
         setUnseencount([]);
       };
     }, [useSocket, dispatch])
   );
+
+  /*-----------------------------------------------
+          SEARCHING AGENCY CHATS
+  ---------------------------------------------- */
+  let timer;
+  const useDebounce = (value, delay = 2000) => {
+    timer = setTimeout(() => {
+      setDebounceValue(value);
+    }, delay);
+    return debounceValue;
+  };
+
+  const searchedAgency = async (value) => {
+    if (value.length > 0) {
+      allChats.map((chat) => {
+        if (chat.name.toLowerCase().includes(search.toLowerCase())) {
+          let index = allChats.findIndex(
+            (indexChat) => indexChat.id === chat.id
+          );
+
+          setAllChats(allChats.slice(index, index + 1));
+        }
+      });
+      if (search.length === 0) {
+        setAllChats(safetyChats);
+      }
+    }
+  };
+
+  useEffect(() => {
+    searchedAgency(useDebounce(search));
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search, debounceValue]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,18 +236,19 @@ const AllChats = ({ navigation }) => {
       headerTintColor: "#a2d0c1",
       title: "Messages",
       headerRight: () => (
-        <TouchableOpacity>
-          <AntDesign
-            style={{ marginRight: 15 }}
-            name="logout"
-            color={"#a2d0c1"}
-            size={30}
-          />
+        <TouchableOpacity
+          style={{ marginRight: 15 }}
+          onPress={() => {
+            setShowSearchBar(true);
+          }}
+        >
+          <AntDesign name="search1" color={"#a2d0c1"} size={30} />
         </TouchableOpacity>
       ),
     });
     return () => {
       setAllChats([]);
+      setSafetyChats([]);
       setUnseencount([]);
     };
   }, [navigation]);
@@ -232,13 +277,25 @@ const AllChats = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      {showSearchBar && (
+        <SearchBar
+          ref={searchField}
+          placeholder="Search..."
+          onChangeText={(text) => setSearch(text)}
+          value={search}
+          leftIconContainerStyle={{ color: "#eff7e1" }}
+          containerStyle={styles.searchBar}
+          inputContainerStyle={styles.searchbarInput}
+          inputStyle={styles.input}
+          placeholderTextColor="#eff7e1"
+        />
+      )}
       {allChats.length !== 0 && !loading ? (
         <View style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
           <FlatList
             data={allChats}
             renderItem={renderItem}
             keyExtractor={(item) => {
-              console.log("I AM CRYING", item.id);
               return item.id;
             }}
           />
@@ -272,5 +329,20 @@ const AllChats = ({ navigation }) => {
 export default AllChats;
 
 const styles = StyleSheet.create({
-  card: {},
+  searchBar: {
+    backgroundColor: "#8dadb3",
+    color: "#eff7e1",
+    // borderColor: "transparent",
+    marginVertical: 0,
+    borderEndColor: "red",
+    paddingVertical: 0,
+  },
+  searchbarInput: {
+    backgroundColor: "#8dadb3",
+    borderColor: "transparent",
+  },
+  input: {
+    color: "#eff7e1",
+    fontFamily: "EBGaramond-Regular",
+  },
 });

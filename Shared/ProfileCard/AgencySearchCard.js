@@ -2,8 +2,7 @@ import React from "react";
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import { Avatar } from "react-native-elements";
-import { Card, Text, Button } from "react-native-elements";
-import { Feather } from "@expo/vector-icons";
+import { Card, Text } from "react-native-elements";
 
 const AgencySearchCard = ({ index, agency, navigation }) => {
   return (
