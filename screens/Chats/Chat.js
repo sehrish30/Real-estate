@@ -68,6 +68,7 @@ const Chat = ({ navigation, route }) => {
   const [visible, setVisible] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
   const [deluser, setDeluser] = useState("");
+  const [showNoMessages, setShowNoMessages] = useState(false);
 
   // animations
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -122,6 +123,9 @@ const Chat = ({ navigation, route }) => {
       (async () => {
         const res = await fetchAllChats(route.params, token);
         console.error("IMPORTANT", res.chats);
+        if (res.chats.length === 0) {
+          setShowNoMessages(true);
+        }
         setMyChats(res.chats.reverse());
 
         if (agency.id) {
@@ -323,6 +327,7 @@ const Chat = ({ navigation, route }) => {
               userId={userId}
               fadeAnim={fadeAnim}
               mainIndex={mainIndex}
+              showNoMessages={showNoMessages}
             />
           </KeyboardAvoidingView>
 

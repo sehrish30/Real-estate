@@ -35,13 +35,6 @@ const CreateChat = ({
         alignItems: "center",
       }}
     >
-      <View style={styles.bg}>
-        <Image
-          style={styles.stretch}
-          source={require("../../assets/begin-chat.png")}
-          alt="bg"
-        />
-      </View>
       <View
         style={{
           justifyContent: "center",
@@ -61,6 +54,15 @@ const CreateChat = ({
           {message}
         </Text>
       </View>
+
+      <View style={styles.bg}>
+        <Image
+          style={styles.stretch}
+          source={require("../../assets/begin-chat.png")}
+          alt="bg"
+        />
+      </View>
+
       {!dontshowBtn && (
         <Button
           onPress={createChatServiceCall}
@@ -93,5 +95,6 @@ const styles = StyleSheet.create({
     display: "flex",
     margin: "auto",
     alignItems: "center",
+    marginBottom: 30,
   },
 });

@@ -16,17 +16,15 @@ import { useFocusEffect } from "@react-navigation/native";
 import baseURL from "../../assets/common/baseUrl";
 import socketIOClient from "socket.io-client";
 import ChatsCard from "../../Shared/Chats/ChatsCard";
-import * as actions from "../../Redux/Actions/chat";
 import { agencyRooms, customerRooms } from "../../Shared/Services/ChatServices";
 import CreateChat from "../../Shared/Chats/CreateChat";
-import ChatsContent from "../../Shared/Chats/ChatsContent";
-import { Button } from "react-native-elements";
 
 var { width, height } = Dimensions.get("window");
 const AllChats = ({ navigation }) => {
   const [allChats, setAllChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unseencount, setUnseencount] = useState([]);
+  const [showNoagency, setShowNoAgency] = useState(false);
   const dispatch = useDispatch();
 
   let user = useSelector((state) => state.auth.user);
@@ -58,21 +56,19 @@ const AllChats = ({ navigation }) => {
           if (!res) {
             setLoading(false);
           } else {
-            setLoading(false);
-
+            setLoading(true);
+            if (res.length === 0) {
+              setShowNoAgency(true);
+            }
             let unSeenCount = 0;
             let fastChats = [];
+            console.error(res);
             const requests = res.map((r) => {
               for (let i = 0; i < r.chats.length; i++) {
                 if (r.chats[i].seen == false) {
                   unSeenCount += 1;
                 }
               }
-              // for (const i of r.chats) {
-              //   if (i.seen == false) {
-              //     unSeenCount += 1;
-              //   }
-              // }
 
               setUnseencount((prev) => [
                 ...unseencount,
@@ -111,9 +107,9 @@ const AllChats = ({ navigation }) => {
             });
             Promise.all(requests).then(() => {
               useSocket({ user, allChats: fastChats }, dispatch);
+              setLoading(false);
             });
           }
-          setLoading(false);
         })();
       } else if (agency.email) {
         (async () => {
@@ -122,7 +118,10 @@ const AllChats = ({ navigation }) => {
           if (!res) {
             setLoading(false);
           } else {
-            setLoading(false);
+            setLoading(true);
+            if (res.length === 0) {
+              setShowNoAgency(true);
+            }
             let unSeenCount = 0;
             let fastChats = [];
             const requests = res.map((r) => {
@@ -174,6 +173,7 @@ const AllChats = ({ navigation }) => {
               };
 
               useSocket({ user: data, allChats: fastChats }, dispatch);
+              setLoading(false);
             });
           }
         })();
@@ -245,7 +245,7 @@ const AllChats = ({ navigation }) => {
         </View>
       ) : (
         <View style={{ marginTop: height / 6 }}>
-          {!loading ? (
+          {!loading && showNoagency ? (
             <CreateChat
               navigation={navigation}
               searchAgency={true}

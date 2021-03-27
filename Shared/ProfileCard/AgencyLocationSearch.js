@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import SelectBox from "react-native-multi-selectbox";
 import { items } from "../Cities";
 
-const AgencyLocationSearch = ({ onChange, location }) => {
+const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
   return (
     <View style={{ marginHorizontal: 15, marginTop: 5 }}>
       <SelectBox
@@ -37,6 +37,19 @@ const AgencyLocationSearch = ({ onChange, location }) => {
           paddingHorizontal: 5,
         }}
       />
+      <Text
+        onPress={() => {
+          setLocation("");
+        }}
+        style={{
+          fontFamily: "EBGaramond-Regular",
+          color: "#8dadb3",
+          marginLeft: "auto",
+          marginTop: 5,
+        }}
+      >
+        Clear location
+      </Text>
     </View>
   );
 };

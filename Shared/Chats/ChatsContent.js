@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,7 @@ import { Pressable } from "react-native";
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "react-native-elements";
 import { ActivityIndicator } from "react-native";
-import { PickerIOSItem } from "react-native";
+import SingleImageOverlay from "../Overlays/SingleImageOverlay";
 
 var { width, height } = Dimensions.get("window");
 const ChatsContent = ({
@@ -28,16 +28,32 @@ const ChatsContent = ({
   setDeluser,
   mainIndex,
   fadeAnim,
+  showNoMessages,
 }) => {
   let scrollViewRef = useRef(null);
 
   // scrollViewRef.scrollToOffset({offset: 0, animated: true})
 
+  const [visible, setVisible] = useState(false);
+  const [showFullScreenImage, setShowFullScreenImage] = useState("");
+
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
+
   const scrollY = useRef(new Animated.Value(0)).current;
-  const ITEM_SIZE = height / 10;
+  const ITEM_SIZE = height / 9.3;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {visible && (
+        <SingleImageOverlay
+          toggleOverlay={toggleOverlay}
+          setVisible={setVisible}
+          visible={visible}
+          showFullScreenImage={showFullScreenImage}
+        />
+      )}
       {chatExists && !route.params.notsure ? (
         <>
           <View style={styles.badge}>
@@ -132,9 +148,15 @@ const ChatsContent = ({
                             </Text>
                           ) : (
                             <Image
+                              onPress={() => {
+                                setShowFullScreenImage(item.content);
+                                toggleOverlay();
+                              }}
                               source={{ uri: item.content }}
                               style={styles.image}
-                              PlaceholderContent={<ActivityIndicator />}
+                              PlaceholderContent={
+                                <ActivityIndicator color="#f8dc81" />
+                              }
                             />
                           )}
                           <Text
@@ -180,9 +202,15 @@ const ChatsContent = ({
                             </Text>
                           ) : (
                             <Image
+                              onPress={() => {
+                                setShowFullScreenImage(item.content);
+                                toggleOverlay();
+                              }}
                               source={{ uri: item.content }}
                               style={styles.image}
-                              PlaceholderContent={<ActivityIndicator />}
+                              PlaceholderContent={
+                                <ActivityIndicator color="#f8dc81" />
+                              }
                             />
                           )}
                           <Text
@@ -224,11 +252,13 @@ const ChatsContent = ({
               dontshowBtn={true}
             />
           ) : (
-            <CreateChat
-              data={route.params}
-              message="You don't have any conversation with this agency"
-              navigation={navigation}
-            />
+            showNoMessages && (
+              <CreateChat
+                data={route.params}
+                message="You don't have any conversation with this agency"
+                navigation={navigation}
+              />
+            )
           )}
         </View>
       )}

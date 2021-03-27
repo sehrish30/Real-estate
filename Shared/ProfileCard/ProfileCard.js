@@ -33,6 +33,13 @@ const ProfileCard = ({
 }) => {
   console.log(residential);
   let customer = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+  let userId = null;
+  if (agency.id) {
+    userId = agency.id;
+  } else if (customer.decoded) {
+    userId = customer?.decoded.userId;
+  }
 
   const DATA = [
     {
@@ -176,17 +183,17 @@ const ProfileCard = ({
         <View style={{ marginTop: 30, flexDirection: "row" }}>
           <Button
             onPress={() => {
-              if (customer) {
+              if (userId) {
                 navigation.navigate("Chat", {
                   screen: "ChatMain",
                   params: {
                     agency: id,
-                    customer: customer.decoded.userId,
+                    customer: customer?.decoded.userId,
                     notsure: true,
                   },
                 });
               } else {
-                navigation.navigate("Login");
+                navigation.navigate("User");
               }
             }}
             buttonStyle={{ width: width / 2.5, backgroundColor: "#f8dc81" }}

@@ -86,7 +86,11 @@ const SearchAgency = ({ navigation }) => {
           color: "#eff7e1",
         }}
       />
-      <AgencyLocationSearch onChange={onChange} location={location} />
+      <AgencyLocationSearch
+        setLocation={setLocation}
+        onChange={onChange}
+        location={location}
+      />
 
       {agencies?.length > 0 ? (
         !loading ? (

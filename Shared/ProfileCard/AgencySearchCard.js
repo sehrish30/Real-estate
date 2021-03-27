@@ -34,7 +34,7 @@ const AgencySearchCard = ({ index, agency, navigation }) => {
             </Text>
             <Text style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}>
               Commercial {agency.commercial?.length || 0} | Residential{" "}
-              {agency.residential?.length || 0} | industrial{" "}
+              {agency.residential?.length || 0} | Industrial{" "}
               {agency.industrial?.length || 0}
             </Text>
           </View>
