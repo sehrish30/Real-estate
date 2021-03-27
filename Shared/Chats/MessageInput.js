@@ -1,14 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, TextInput, Dimensions } from "react-native";
-
+import React, { useState, useEffect, useRef } from "react";
+import {
+  StyleSheet,
+  TextInput,
+  Dimensions,
+  View,
+  Platform,
+  Alert,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { sendChat } from "../../Shared/Services/ChatServices";
+import { SafeAreaView } from "react-native";
+import { uploadToCloudinary } from "../../Shared/services";
+
+import EmojiSelector, { Categories } from "react-native-emoji-selector";
+
 var { width, height } = Dimensions.get("window");
 const MessageInput = ({
-  setEmojiSelector,
-  emojiSelector,
   recording,
   stopRecording,
   startRecording,
@@ -16,6 +26,8 @@ const MessageInput = ({
   chatId,
 }) => {
   const [message, setMessage] = useState("");
+  const [image, setImage] = useState(null);
+
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
@@ -27,8 +39,89 @@ const MessageInput = ({
   } else {
     userId = chatSend.agency;
   }
+  let loggedInuser;
+  if (agency.id) {
+    loggedInuser = agency.id;
+  } else {
+    loggedInuser = user.decoded.userId;
+  }
+
+  const sendMessageImageService = async (image) => {
+    console.log("DATE", Date.now());
+    let data = {};
+
+    data = {
+      customer: chatSend.customer,
+      agency: chatSend.agency,
+      author: loggedInuser,
+      type: "image",
+      content: image.url,
+      seen: false,
+      chatId: chatId,
+      timesent: new Date().toISOString(),
+      contentImgPublicId: image.public_id,
+    };
+
+    console.log("DATA I AM SENDING", data);
+    const chatSendReponse = await sendChat(data, token);
+
+    if (agency.id) {
+      socket.emit("newMessage", {
+        toUserId: chatSend.customer,
+        ...data,
+        id: chatSendReponse,
+      });
+    } else {
+      socket.emit("newMessage", {
+        toUserId: chatSend.agency,
+        ...data,
+        id: chatSendReponse,
+      });
+    }
+
+    setMessage("");
+  };
+
+  const uploadImage = async () => {
+    if (Platform.OS !== "web") {
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("To upload image we need access to your gallery");
+      } else {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+
+        console.log("RESULT", result);
+
+        if (!result.cancelled) {
+          console.log("FROM PHONE URI", result.uri);
+
+          // Infer the type of the image
+          // split url by dot
+          let filename = result.uri.split("/").pop();
+          let match = /\.(\w+)$/.exec(filename);
+          let type = match ? `image/${match[1]}` : `image`;
+          let newfile = {
+            uri: result.uri,
+            type: `test/${result.uri.split(".")[1]}`,
+            name: filename,
+          };
+          uploadToCloudinary(newfile).then((image) => {
+            sendMessageImageService(image);
+          });
+        }
+      }
+    }
+  };
 
   const sendMessageService = async () => {
+    console.log("DATE", Date.now());
     let data = {};
     if (agency.id) {
       data = {
@@ -39,7 +132,7 @@ const MessageInput = ({
         content: message,
         seen: false,
         chatId: chatId,
-        time: Date.now(),
+        timesent: new Date().toISOString(),
       };
     } else {
       data = {
@@ -50,9 +143,10 @@ const MessageInput = ({
         content: message,
         seen: false,
         chatId: chatId,
-        time: Date.now(),
+        timesent: new Date().toISOString(),
       };
     }
+    console.log("DATA I AM SENDING", data);
     const chatSendReponse = await sendChat(data, token);
 
     if (agency.id) {
@@ -83,62 +177,87 @@ const MessageInput = ({
   }, [message]);
 
   return (
-    <>
-      <TouchableOpacity
-        onPress={() => setEmojiSelector(!emojiSelector)}
-        style={{ marginTop: 15, marginLeft: 10 }}
-      >
-        <FontAwesome name="smile-o" size={24} color="#8dadb3" />
-      </TouchableOpacity>
-      <TextInput
-        autoCorrect={false}
-        autoFocus={true}
-        multiline
-        numberOfLines={20}
-        style={{
-          backgroundColor: "#fff",
-          width: width / 1.43,
-          paddingHorizontal: 5,
-          paddingVertical: 5,
-          color: "#214151",
-          borderRadius: 5,
-          height: 50,
+    <View style={{ flexDirection: "column" }}>
+      <SafeAreaView style={{ flexDirection: "row" }}>
+        {/* <TouchableOpacity
+          onPress={() => setEmojiSelector(!emojiSelector)}
+          style={{ marginTop: 15, marginLeft: 10 }}
+        >
+          <FontAwesome name="smile-o" size={24} color="#8dadb3" />
+        </TouchableOpacity> */}
+        <TextInput
+          autoCorrect={false}
+          autoFocus={false}
+          multiline
+          numberOfLines={20}
+          style={{
+            backgroundColor: "#fff",
+            width: width / 1.3,
+            paddingHorizontal: 0,
+            paddingLeft: 10,
+            paddingVertical: 5,
+            color: "#214151",
+            borderRadius: 5,
+            height: 50,
 
-          marginBottom: 4,
-        }}
-        onChangeText={(text) => {
-          setMessage(text);
-        }}
-        value={message}
-        placeholder="Type a message"
-      />
+            marginBottom: 4,
+          }}
+          onChangeText={(text) => {
+            setMessage(text);
+          }}
+          value={message}
+          placeholder="Type a message"
+        />
 
-      <TouchableOpacity style={{ marginTop: 15, marginRight: 8 }}>
-        <Ionicons name="ios-camera-outline" size={26} color="#8dadb3" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[
-          {
-            marginTop: 10,
-            marginRight: 3,
-          },
-          recording
-            ? {
-                backgroundColor: "#214151",
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 100,
-              }
-            : {
-                backgroundColor: "#fff",
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-                borderRadius: 100,
-              },
-        ]}
-        onPress={recording ? stopRecording : startRecording}
-      >
+        <TouchableOpacity style={{ marginTop: 12, marginRight: 5 }}>
+          <Ionicons
+            onPress={() => {
+              uploadImage();
+            }}
+            name="ios-camera-outline"
+            size={26}
+            color="#8dadb3"
+          />
+        </TouchableOpacity>
+
         {message.length > 0 ? (
+          <TouchableOpacity style={{ marginTop: 15, marginLeft: 12 }}>
+            <Ionicons
+              onPress={sendMessageService}
+              name="send"
+              size={24}
+              color="#214151"
+            />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ marginTop: 15, marginLeft: 12 }}>
+            <Ionicons name="send" size={24} color="#839b97" />
+          </View>
+        )}
+
+        {/* <TouchableOpacity
+          style={[
+            {
+              marginTop: 10,
+              marginRight: 3,
+            },
+            recording
+              ? {
+                  backgroundColor: "#214151",
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 100,
+                }
+              : {
+                  backgroundColor: "#fff",
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 100,
+                },
+          ]}
+          onPress={recording ? stopRecording : startRecording}
+        > */}
+        {/* {message.length > 0 ? (
           <>
             <Ionicons
               onPress={sendMessageService}
@@ -149,15 +268,41 @@ const MessageInput = ({
           </>
         ) : (
           <>
-            {/* {recording ? (
+            {recording ? (
               <FontAwesome name="microphone" size={24} color="#fff" />
             ) : (
               <FontAwesome name="microphone" size={24} color="#214151" />
-            )} */}
+            )}
           </>
-        )}
-      </TouchableOpacity>
-    </>
+        )} */}
+        {/* </TouchableOpacity> */}
+      </SafeAreaView>
+      {/* {emojiSelector && (
+        <View
+          style={{
+            height: height,
+            width: width,
+            backgroundColor: "#fff",
+            flex: 1,
+          }}
+        >
+          <EmojiSelector
+            columns={8}
+            theme="#f8dc81"
+            category={Categories.all}
+            shouldInclude={(e) =>
+              parseFloat(e["added_in"]) <= 11 && e["has_img_apple"] === true
+            }
+            onEmojiSelected={(emoji) => {
+              setEmoji(emoji);
+              setEmojiSelector(!emojiSelector);
+              setMessage(emoji);
+              console.error(emoji);
+            }}
+          />
+        </View>
+      )} */}
+    </View>
   );
 };
 

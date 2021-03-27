@@ -1,12 +1,18 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+
 import { Button } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import { createChat } from "../../Shared/Services/ChatServices";
 import { useSelector } from "react-redux";
 
-const CreateChat = ({ data, searchAgency = false, navigation, message }) => {
+const CreateChat = ({
+  data,
+  searchAgency = false,
+  navigation,
+  message,
+  dontshowBtn = false,
+}) => {
   let token = useSelector((state) => state.auth.token);
 
   const createChatServiceCall = () => {
@@ -36,29 +42,41 @@ const CreateChat = ({ data, searchAgency = false, navigation, message }) => {
           alt="bg"
         />
       </View>
-      <Text
+      <View
         style={{
-          fontFamily: "EBGaramond-Bold",
-          color: "#214151",
-          marginBottom: 10,
+          justifyContent: "center",
+          textAlign: "center",
+          marginTop: 20,
+          marginBottom: 20,
         }}
       >
-        {message}
-      </Text>
-      <Button
-        onPress={createChatServiceCall}
-        buttonStyle={{ backgroundColor: "#f8dc81" }}
-        titleStyle={{ color: "#214151", fontFamily: "EBGaramond-Regular" }}
-        icon={
-          <Ionicons
-            style={{ marginRight: 10 }}
-            name="ios-chatbox-ellipses"
-            size={15}
-            color="#214151"
-          />
-        }
-        title="Let's start"
-      />
+        <Text
+          style={{
+            fontFamily: "EBGaramond-Bold",
+            color: "#214151",
+            marginBottom: 10,
+            textAlign: "center",
+          }}
+        >
+          {message}
+        </Text>
+      </View>
+      {!dontshowBtn && (
+        <Button
+          onPress={createChatServiceCall}
+          buttonStyle={{ backgroundColor: "#f8dc81" }}
+          titleStyle={{ color: "#214151", fontFamily: "EBGaramond-Regular" }}
+          icon={
+            <Ionicons
+              style={{ marginRight: 10 }}
+              name="ios-chatbox-ellipses"
+              size={15}
+              color="#214151"
+            />
+          }
+          title="Let's start"
+        />
+      )}
     </View>
   );
 };

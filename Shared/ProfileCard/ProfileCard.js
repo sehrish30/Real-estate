@@ -182,6 +182,7 @@ const ProfileCard = ({
                   params: {
                     agency: id,
                     customer: customer.decoded.userId,
+                    notsure: true,
                   },
                 });
               } else {

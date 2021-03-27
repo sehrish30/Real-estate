@@ -13,6 +13,7 @@ export async function uploadToCloudinary(image) {
     body: data,
     mode: "cors",
   });
+
   const final = await res.json();
   // console.error(final);
 

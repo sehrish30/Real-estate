@@ -1,14 +1,15 @@
 const { Chat } = require("../models/chat");
 const { ChatMsg } = require("../models/chatMsg");
 const express = require("express");
-const { User } = require("../models/user");
-const router = express.Router();
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
-const hbs = require("nodemailer-express-handlebars");
-const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
+
+const router = express.Router();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API,
+  api_secret: process.env.CLOUD_SECRET,
+});
 
 /*----------------------------------------
          CHECK CHAT EXISTS
@@ -64,14 +65,28 @@ router.post("/send", async (req, res) => {
     // Save message in ChatMsg table and get the object id back
     const getmsgId = async () => {
       const { content, type } = req.body;
-      let msg = new ChatMsg({
-        content,
-        type,
-        author: req.body.author,
-        // user: req.body.user,
-      });
-      msg = await msg.save();
-      return msg._id;
+      if (req.body.contentImgPublicId) {
+        let msg = new ChatMsg({
+          content,
+          type,
+          author: req.body.author,
+          timesent: req.body.timesent,
+          contentImgPublicId: req.body.contentImgPublicId,
+          // user: req.body.user,
+        });
+        msg = await msg.save();
+        return msg._id;
+      } else {
+        let msg = new ChatMsg({
+          content,
+          type,
+          author: req.body.author,
+          timesent: req.body.timesent,
+          // user: req.body.user,
+        });
+        msg = await msg.save();
+        return msg._id;
+      }
     };
     const msgId = await getmsgId();
     console.error(msgId);
@@ -112,7 +127,7 @@ router.get(`/all-chats`, async (req, res) => {
     .populate({
       path: "chats",
       options: {
-        limit: 20,
+        limit: 50,
         sort: { createdAt: -1 },
         skip: req.params.pageIndex * 2,
       },
@@ -137,7 +152,7 @@ router.get(`/all-chatrooms`, async (req, res) => {
   Chat.find({ customer: req.query.customer })
     .populate("agency")
     .populate("chats")
-    .sort({ createdAt: -1 })
+    .sort({ updatedAt: -1 })
     .exec((err, chatrooms) => {
       if (err) {
         return res.status(402).send(err);
@@ -171,8 +186,16 @@ router.get(`/all-agencychatrooms`, async (req, res) => {
 
 router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
   try {
-    console.error(req.params);
+    console.log(req.params);
     const chat = await ChatMsg.findByIdAndRemove(req.params.chatMsgId);
+
+    if (chat.contentImgPublicId) {
+      cloudinary.uploader.destroy(chat.contentImgPublicId, async (result) => {
+        if (result.result == "ok") {
+          console.log("DONE");
+        }
+      });
+    }
     if (chat) {
       await Chat.findOneAndUpdate(
         { _id: req.params.chatId },

@@ -5,6 +5,7 @@ import {
   Animated,
   LayoutAnimation,
   UIManager,
+  Button,
 } from "react-native";
 import {
   SafeAreaView,
@@ -15,13 +16,13 @@ import {
   Platform,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { Audio } from "expo-av";
 
 import { useSelector, useDispatch } from "react-redux";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import EmojiSelector, { Categories } from "react-native-emoji-selector";
 // import AudioRecorderPlayer from "react-native-audio-recorder-player";
-import { Audio } from "expo-av";
+
 import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
 
 import MessageInput from "../../Shared/Chats/MessageInput";
@@ -47,7 +48,6 @@ if (
 }
 
 const Chat = ({ navigation, route }) => {
-  const [emoji, setEmoji] = useState("");
   const [recording, setRecording] = useState(null);
   const [chatId, setChatId] = useState("");
 
@@ -58,12 +58,13 @@ const Chat = ({ navigation, route }) => {
   const [otherChatName, setOtherchatName] = useState({ name: "", id: false });
   const [chatSend, setChatSend] = useState({});
   const [chatBlocked, setChatBlocked] = useState(false);
+  const [sound, setSound] = useState("");
 
   // const location =
   //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
   // showStates
-  const [emojiSelector, setEmojiSelector] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const [showTrash, setShowTrash] = useState(false);
   const [deluser, setDeluser] = useState("");
@@ -117,7 +118,7 @@ const Chat = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      let unsubscribe = (() => {})();
+      let unsubscribe = () => {};
       (async () => {
         const res = await fetchAllChats(route.params, token);
         console.error("IMPORTANT", res.chats);
@@ -145,9 +146,12 @@ const Chat = ({ navigation, route }) => {
          ------------------------------------------------*/
         const comparingOnlineStates = (chats) => {
           if (agency.id) {
+            show = false;
             chats?.map((chat) => {
               chat.users.map((userc) => {
-                if (userc.id === res.customer.id && userc.online) show = true;
+                if (userc.id == res.customer.id && userc.online == true) {
+                  show = true;
+                }
               });
             });
             setOtherchatName({
@@ -156,9 +160,12 @@ const Chat = ({ navigation, route }) => {
             });
             setChatSend({ agency: res.agency.id, customer: res.customer.id });
           } else {
+            show = false;
             chats?.map((chat) => {
               chat.users.map((userc) => {
-                if (userc.id === res.agency.id && userc?.online) show = true;
+                if (userc.id == res.agency.id && userc?.online == true) {
+                  show = true;
+                }
               });
             });
             setOtherchatName({
@@ -168,12 +175,16 @@ const Chat = ({ navigation, route }) => {
             setChatSend({ agency: res.agency.id, customer: res.customer.id });
           }
         };
+
         comparingOnlineStates(chats);
 
         unsubscribe = store.subscribe(() => {
           console.log("STORE", store.getState());
+          console.error("SUB");
+          // console.log("MESSAGEs", store.getState().chat.messages);
 
           const chatterInfo = store.getState().chat.chats;
+
           console.log(chatterInfo);
           comparingOnlineStates(chatterInfo);
         });
@@ -193,10 +204,13 @@ const Chat = ({ navigation, route }) => {
             );
           }
         })();
+
+        console.log("UNSUB");
         unsubscribe();
+        console.error("UNSUB");
         setLoading(true);
       };
-    }, [socket, dispatch])
+    }, [])
   );
 
   const toggleOverlay = () => {
@@ -208,18 +222,16 @@ const Chat = ({ navigation, route }) => {
       toValue: { x: 500, y: 0 },
       duration: 500,
       useNativeDriver: true,
-    })
-      .start(() => {
+    }).start(() => {
+      LayoutAnimation.spring();
+      Animated.timing(receiverRef, {
+        toValue: { x: 0, y: 0 },
+        duration: 2000,
+        useNativeDriver: true,
+      }).start(() => {
         LayoutAnimation.spring();
-      })
-      .start(() => {
-        LayoutAnimation.spring();
-        Animated.timing(receiverRef, {
-          toValue: { x: 0, y: 0 },
-          duration: 2000,
-          useNativeDriver: true,
-        });
       });
+    });
 
     console.log("INDEX TO ANIMATR", mainIndex, indexToAnimate);
     setShowTrash(false);
@@ -298,7 +310,7 @@ const Chat = ({ navigation, route }) => {
             deluser={deluser}
             chatId={route.params?.chatId}
           />
-          <KeyboardAwareScrollView style={styles.content}>
+          <KeyboardAvoidingView style={styles.content}>
             <ChatsContent
               chatExists={chatExists}
               messages={messages}
@@ -312,34 +324,12 @@ const Chat = ({ navigation, route }) => {
               fadeAnim={fadeAnim}
               mainIndex={mainIndex}
             />
-          </KeyboardAwareScrollView>
+          </KeyboardAvoidingView>
 
-          {chatExists && (
+          {chatExists && !route.params.notsure && (
             <KeyboardAvoidingView>
-              {emojiSelector && (
-                <View style={{ height: height / 2, backgroundColor: "#fff" }}>
-                  <EmojiSelector
-                    columns={8}
-                    theme="#f8dc81"
-                    category={Categories.all}
-                    shouldInclude={(e) =>
-                      parseFloat(e["added_in"]) <= 11 &&
-                      e["has_img_apple"] === true
-                    }
-                    onEmojiSelected={(emoji) => {
-                      setEmoji(emoji);
-                      setEmojiSelector(false);
-
-                      console.error(emoji);
-                    }}
-                  />
-                </View>
-              )}
-
               <View style={styles.chatArea}>
                 <MessageInput
-                  setEmojiSelector={setEmojiSelector}
-                  emojiSelector={emojiSelector}
                   recording={recording}
                   stopRecording={stopRecording}
                   startRecording={startRecording}

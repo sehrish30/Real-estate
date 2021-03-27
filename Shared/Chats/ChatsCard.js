@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from "react-native";
 import { ListItem, Avatar, Badge } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
-import { useFocusEffect } from "@react-navigation/core";
+import { formatDistanceToNow } from "date-fns";
+import { Ionicons } from "@expo/vector-icons";
 
 // import TouchableScale from "react-native-touchable-scale";
 
@@ -19,7 +20,8 @@ const ChatsCard = ({
   seen,
   lastchatauthor,
   unseencount,
-  setUnseencount,
+  timesent,
+  type,
 }) => {
   let newmsgchats = useSelector((state) => state.chat.newMessageChats);
 
@@ -52,6 +54,7 @@ const ChatsCard = ({
             agency: agencyId,
             customer: customerId,
             chatId: id,
+            notsure: false,
           });
         }}
         key={id}
@@ -67,7 +70,7 @@ const ChatsCard = ({
         }}
         ViewComponent={LinearGradient}
       >
-        <Avatar source={{ uri }} />
+        <Avatar rounded source={{ uri }} />
         <ListItem.Content>
           <ListItem.Title
             style={{ color: "#214151", fontFamily: "EBGaramond-Bold" }}
@@ -75,7 +78,11 @@ const ChatsCard = ({
             {name}
           </ListItem.Title>
           <ListItem.Subtitle style={{ color: "#214151" }}>
-            {message}
+            {type === "image" ? (
+              <Ionicons name="image-outline" size={17} color="#8dadb3" />
+            ) : (
+              message
+            )}
           </ListItem.Subtitle>
         </ListItem.Content>
         <View>
@@ -114,8 +121,8 @@ const ChatsCard = ({
             </>
           )}
 
-          <Text style={{ fontSize: 8, marginTop: 5, color: "#839b97" }}>
-            {createdAt}
+          <Text style={{ fontSize: 9, marginTop: 5, color: "#839b97" }}>
+            {timesent ? formatDistanceToNow(Date.parse(timesent)) : createdAt}
           </Text>
         </View>
         <ListItem.Chevron color="white" />

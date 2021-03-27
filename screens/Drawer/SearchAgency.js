@@ -33,7 +33,7 @@ const SearchAgency = ({ navigation }) => {
   };
 
   const searchTypedAgency = async (value) => {
-    if (value?.length > 2 || location) {
+    if (value?.length > 0 || location) {
       setLoading(true);
       const res = await searchAgencies(value, location.item);
       setAgencies(res);

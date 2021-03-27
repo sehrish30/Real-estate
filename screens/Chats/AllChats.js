@@ -33,6 +33,13 @@ const AllChats = ({ navigation }) => {
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
 
+  let userId;
+  if (agency.id) {
+    userId = agency.id;
+  } else {
+    userId: user.decoded.userId;
+  }
+
   // const ENDPOINT = "localhost:3000";
 
   const ENDPOINT = baseURL;
@@ -85,6 +92,8 @@ const AllChats = ({ navigation }) => {
                 searchId: r.agency.id,
                 seen: r?.chats[r.chats?.length - 1]?.seen,
                 lastchatauthor: r?.chats[r.chats?.length - 1]?.author,
+                timesent: r?.chats[r.chats?.length - 1]?.timesent,
+                type: r?.chats[r.chats?.length - 1]?.type,
                 users: [
                   {
                     id: r.agency.id,
@@ -117,11 +126,6 @@ const AllChats = ({ navigation }) => {
             let unSeenCount = 0;
             let fastChats = [];
             const requests = res.map((r) => {
-              // for (const i of r.chats) {
-              //   if (i.seen == false) {
-              //     unSeenCount += 1;
-              //   }
-              // }
               for (let i = 0; i < r.chats.length; i++) {
                 if (r.chats[i].seen == false) {
                   unSeenCount += 1;
@@ -145,6 +149,7 @@ const AllChats = ({ navigation }) => {
                 searchId: r.customer.id,
                 seen: r?.chats[r.chats?.length - 1]?.seen || null,
                 lastchatauthor: r?.chats[r.chats?.length - 1]?.author,
+                type: r?.chats[r.chats?.length - 1]?.type,
                 users: [
                   {
                     id: r.agency,
@@ -167,6 +172,7 @@ const AllChats = ({ navigation }) => {
                   userId: agency.id,
                 },
               };
+
               useSocket({ user: data, allChats: fastChats }, dispatch);
             });
           }
@@ -176,7 +182,7 @@ const AllChats = ({ navigation }) => {
         setAllChats([]);
         setUnseencount([]);
       };
-    }, [])
+    }, [useSocket, dispatch])
   );
 
   useLayoutEffect(() => {
@@ -198,7 +204,6 @@ const AllChats = ({ navigation }) => {
     });
     return () => {
       setAllChats([]);
-
       setUnseencount([]);
     };
   }, [navigation]);
@@ -220,6 +225,8 @@ const AllChats = ({ navigation }) => {
       lastchatauthor={item.lastchatauthor}
       unseencount={unseencount}
       setUnseencount={setUnseencount}
+      timesent={item.timesent}
+      type={item.type}
     />
   );
 

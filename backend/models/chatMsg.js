@@ -15,9 +15,11 @@ const chatMsgSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    time: {
+    timesent: {
       type: String,
+      default: new Date().toISOString(),
     },
+    contentImgPublicId: String,
   },
   {
     timestamps: true,

@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-
+import baseURL from "../assets/common/baseUrl";
 import socketIOClient from "socket.io-client";
 import * as actions from "../Redux/Actions/chat";
 
 export function useSocket(user, dispatch) {
-  const ENDPOINT = "localhost:3000";
+  const ENDPOINT = baseURL;
 
   const socket = socketIOClient(ENDPOINT);
   dispatch(actions.getChats(user.allChats));
@@ -18,7 +18,6 @@ export function useSocket(user, dispatch) {
   });
 
   socket.on("offline", (userId) => {
-    console.log(userId);
     dispatch(actions.userOffline(userId));
   });
 
