@@ -21,6 +21,7 @@ const chatSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    personWhoBlocked: String,
   },
   {
     timestamps: true,

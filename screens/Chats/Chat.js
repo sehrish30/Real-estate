@@ -5,9 +5,6 @@ import {
   Animated,
   LayoutAnimation,
   UIManager,
-  Button,
-} from "react-native";
-import {
   SafeAreaView,
   Dimensions,
   StyleSheet,
@@ -15,12 +12,13 @@ import {
   View,
   Platform,
 } from "react-native";
+
 import { useFocusEffect } from "@react-navigation/native";
 import { Audio } from "expo-av";
 
 import { useSelector, useDispatch } from "react-redux";
+import { Icon } from "react-native-elements";
 
-import EmojiSelector, { Categories } from "react-native-emoji-selector";
 // import AudioRecorderPlayer from "react-native-audio-recorder-player";
 
 import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
@@ -58,6 +56,7 @@ const Chat = ({ navigation, route }) => {
   const [otherChatName, setOtherchatName] = useState({ name: "", id: false });
   const [chatSend, setChatSend] = useState({});
   const [chatBlocked, setChatBlocked] = useState(false);
+  const [personWhoBlocked, setPersonWhoBlocked] = useState("");
   const [sound, setSound] = useState("");
 
   // const location =
@@ -82,6 +81,7 @@ const Chat = ({ navigation, route }) => {
   let chats = useSelector((state) => state.chat.chats);
   let socket = useSelector((state) => state.chat.socket);
   let messages = useSelector((state) => state.chat.messages);
+  let blockstatus = useSelector((state) => state.chat.currentChatBlocked);
 
   let userId;
   if (agency.id) {
@@ -102,6 +102,8 @@ const Chat = ({ navigation, route }) => {
           if (res.status) {
             setChatExists(true);
             setLoading(false);
+            setChatBlocked(res.isblocked);
+            setPersonWhoBlocked(res?.personWhoBlocked);
           }
         } else {
           setChatExists(true);
@@ -234,6 +236,7 @@ const Chat = ({ navigation, route }) => {
         useNativeDriver: true,
       }).start(() => {
         LayoutAnimation.spring();
+        setMainIndex("");
       });
     });
 
@@ -302,7 +305,7 @@ const Chat = ({ navigation, route }) => {
     <SafeAreaView
       style={{ flex: 1, marginTop: 20, backgroundColor: "#98ded9" }}
     >
-      {!loading && !chatBlocked ? (
+      {!loading && (!chatBlocked || personWhoBlocked === userId) ? (
         <View style={{ flex: 1 }}>
           <ChatHeader
             showTrash={showTrash}
@@ -313,6 +316,7 @@ const Chat = ({ navigation, route }) => {
             mainIndex={mainIndex}
             deluser={deluser}
             chatId={route.params?.chatId}
+            setMainIndex={setMainIndex}
           />
           <KeyboardAvoidingView style={styles.content}>
             <ChatsContent
@@ -349,21 +353,49 @@ const Chat = ({ navigation, route }) => {
             setVisible={setVisible}
             toggleOverlay={toggleOverlay}
             constDeleteAllMessages={constDeleteAllMessages}
+            chatData={route.params}
+            chatBlocked={chatBlocked}
+            personWhoBlocked={personWhoBlocked}
+            setPersonWhoBlocked={setPersonWhoBlocked}
           />
         </View>
       ) : (
         <>{!chatBlocked && <Loading />}</>
       )}
-      {chatBlocked && (
+      {(chatBlocked || blockstatus) && personWhoBlocked !== userId && (
         <View
           style={{
-            marginTop: 30,
-            justifyContent: "center",
-            alignItems: "center",
+            // marginTop: 30,
+            // justifyContent: "center",
+            // alignItems: "center",
+            backgroundColor: "#fff",
+            borderRadius: 20,
+            padding: 20,
+            height: height,
           }}
         >
-          <Text style={{ fontFamily: "EBGaramond-Bold", color: "#214151" }}>
-            You cannot send messages to this user
+          <View style={{ marginBottom: 20, marginRight: "auto" }}>
+            <Icon
+              // raised
+              onPress={() => navigation.navigate("AllChats")}
+              name="ios-arrow-back-circle"
+              type="ionicon"
+              color="#214151"
+              size={30}
+            />
+          </View>
+          <Text
+            style={{
+              fontFamily: "EBGaramond-Bold",
+              color: "#214151",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: height / 3,
+              textAlign: "center",
+              fontSize: 20,
+            }}
+          >
+            You can't send messages to this user
           </Text>
         </View>
       )}

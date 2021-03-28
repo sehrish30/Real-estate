@@ -14,6 +14,8 @@ import {
   SET_ALL_MESSAGES,
   SET_SEEN_MESSAGE,
   DELETE_CHAT,
+  BLOCK_CHAT,
+  UNBLOCK_CHAT,
 } from "../constants";
 
 const initialState = {
@@ -21,7 +23,7 @@ const initialState = {
   currentChat: "",
   socket: {},
   newMessageChats: [{ chatId: null, seen: null }],
-  scrollBottom: 0,
+  currentChatBlocked: false,
   senderTyping: { typing: false },
   chatExists: false,
   messages: [],
@@ -178,7 +180,6 @@ const chat = (state = initialState, action) => {
       return {
         ...state,
         currentChat: payload,
-        scrollBottom: state.scrollBottom + 1,
       };
 
     case SET_MESSAGE:
@@ -221,7 +222,21 @@ const chat = (state = initialState, action) => {
             ? state.messages.filter((msg) => msg.id != payload.msgId)
             : state.messages,
       };
-    // }
+    case BLOCK_CHAT:
+      if (state.currentChat == payload.chatId) {
+        return {
+          ...state,
+          currentChatBlocked: true,
+        };
+      }
+
+    case UNBLOCK_CHAT:
+      if (state.currentChat == payload.chatId) {
+        return {
+          ...state,
+          currentChatBlocked: false,
+        };
+      }
 
     default:
       return state;

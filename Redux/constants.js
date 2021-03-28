@@ -28,3 +28,5 @@ export const SET_MESSAGE = "SET_MESSAGE";
 export const SET_ALL_MESSAGES = "SET_ALL_MESSAGES";
 export const SET_SEEN_MESSAGE = "SET_SEEN_MESSAGE";
 export const DELETE_CHAT = "DELETE_CHAT";
+export const BLOCK_CHAT = "BLOCK_CHAT";
+export const UNBLOCK_CHAT = "UNBLOCK_CHAT";

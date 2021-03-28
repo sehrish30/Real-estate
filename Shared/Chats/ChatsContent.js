@@ -143,7 +143,14 @@ const ChatsContent = ({
                       >
                         <View>
                           {item.type === "text" ? (
-                            <Text style={[styles.receiverText]}>
+                            <Text
+                              style={[
+                                styles.receiverText,
+                                mainIndex === item?.id
+                                  ? { backgroundColor: "#f8dc81" }
+                                  : null,
+                              ]}
+                            >
                               {item.content}
                             </Text>
                           ) : (
@@ -152,8 +159,18 @@ const ChatsContent = ({
                                 setShowFullScreenImage(item.content);
                                 toggleOverlay();
                               }}
+                              onLongPress={() => {
+                                setMainIndex(item?.id || item?.msgId);
+                                setShowTrash(true);
+                                setDeluser(item.author);
+                              }}
                               source={{ uri: item.content }}
-                              style={styles.image}
+                              style={[
+                                styles.image,
+                                mainIndex === item?.id
+                                  ? { borderColor: "#f8dc81" }
+                                  : null,
+                              ]}
                               PlaceholderContent={
                                 <ActivityIndicator color="#f8dc81" />
                               }

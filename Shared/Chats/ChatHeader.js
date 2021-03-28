@@ -15,6 +15,7 @@ const ChatHeader = ({
   mainIndex,
   deluser,
   chatId,
+  setMainIndex,
 }) => {
   let senderTyping = useSelector((state) => state.chat.senderTyping);
   let user = useSelector((state) => state.auth.user);
@@ -55,7 +56,10 @@ const ChatHeader = ({
             name="close"
             size={30}
             color="#214151"
-            onPress={() => setShowTrash(!showTrash)}
+            onPress={() => {
+              setShowTrash(!showTrash);
+              setMainIndex("");
+            }}
           />
         </View>
       ) : (
@@ -72,12 +76,12 @@ const ChatHeader = ({
                   );
                 });
               })} */}
-              {otherChatName.name}
+              {otherChatName.name}{" "}
               {otherChatName?.id && (
-                <Badge status="success" containerStyle={{ marginLeft: 5 }} />
+                <Badge status="success" containerStyle={{ marginLeft: 10 }} />
               )}{" "}
               {senderTyping.id === userId && senderTyping.typing && (
-                <Text style={{ marginLeft: 10, color: "#839b97" }}>....</Text>
+                <Text style={{ paddingLeft: 10, color: "#839b97" }}>....</Text>
               )}
             </Text>
           </View>
@@ -85,7 +89,7 @@ const ChatHeader = ({
             style={{
               justifyContent: "flex-end",
               marginLeft: "auto",
-              marginRight: 5,
+              marginRight: 10,
             }}
           >
             <MaterialCommunityIcons

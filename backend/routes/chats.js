@@ -27,8 +27,15 @@ router.get("/check-chat", async (req, res) => {
       if (!chat) {
         return res.status(200).json({ status: false });
       }
+      if (chat.isblocked) {
+        return res.status(200).json({
+          status: true,
+          isblocked: true,
+          personWhoBlocked: chat.personWhoBlocked,
+        });
+      }
 
-      return res.status(200).json({ status: true });
+      return res.status(200).json({ status: true, isblocked: false });
     });
   } catch (err) {
     return res.status(500).send(err);
@@ -226,22 +233,38 @@ router.delete(`/delete-chat/:chatMsgId/:chatId`, async (req, res) => {
 /*----------------------------------------
           BLOCK CHAT ROOM
 ---------------------------------------- */
-router.delete(`/block-chatroom/:chatId`, async (req, res) => {
+router.delete(`/block-chatroom/:chatId/:personId`, async (req, res) => {
   console.error(req.params);
   try {
     // get all the chatMsgs from chatRoom
     Chat.findById(req.params.chatId)
-      .then((chatroom) => {
+      .then(async (chatroom) => {
         // loop through chat msgs ids and delete them in Chat Msg table
-        const requests = chatroom.chats.map(async (chatmessage) => {
-          await ChatMsg.findByIdAndDelete(chatmessage);
-        });
-        Promise.all(requests).then(async () => {
+        const requests = await Promise.all(
+          chatroom.chats.map(async (chatmessage) => {
+            const delChat = await ChatMsg.findByIdAndDelete(chatmessage);
+
+            if (delChat?.contentImgPublicId) {
+              cloudinary.uploader.destroy(
+                delChat.contentImgPublicId,
+                async (result) => {
+                  if (result.result == "ok") {
+                    console.log("DONE");
+                  }
+                }
+              );
+            }
+            return chatmessage;
+          })
+        );
+
+        if (requests) {
           // delete chatroom
           const deletedChatMsgs = await Chat.findByIdAndUpdate(
             req.params.chatId,
             {
               isblocked: true,
+              personWhoBlocked: req.params.personId,
               chats: [],
             },
             {
@@ -252,7 +275,7 @@ router.delete(`/block-chatroom/:chatId`, async (req, res) => {
           if (deletedChatMsgs) {
             return res.status(200).send(deletedChatMsgs);
           }
-        });
+        }
       })
       .catch((err) => res.status(422).send(err));
   } catch (err) {
@@ -271,6 +294,7 @@ router.post(`/unblock-chat`, async (req, res) => {
       req.body.chatId,
       {
         isblocked: false,
+        personWhoBlocked: null,
       },
       {
         new: true,

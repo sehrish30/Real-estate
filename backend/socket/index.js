@@ -166,6 +166,42 @@ const SocketServer = (server) => {
     });
 
     /*-----------------------------------------
+             Chat blocked
+    ---------------------------------------- */
+    socket.on("chatBlocked", async (chatdata) => {
+      console.log("USER DATA I AM GETTING TO BLOCK", chatdata);
+
+      if (users.has(chatdata.agency)) {
+        users.get(chatdata.agency).sockets.forEach((socket) => {
+          io.to(socket).emit("chatBlocked", chatdata);
+        });
+      }
+      if (users.has(chatdata.customer)) {
+        users.get(chatdata.customer).sockets.forEach((socket) => {
+          io.to(socket).emit("chatBlocked", chatdata);
+        });
+      }
+    });
+
+    /*-----------------------------------------
+             Chat blocked
+    ---------------------------------------- */
+    socket.on("chatunblock", async (chatdata) => {
+      console.log("USER DATA I AM GETTING TO BLOCK", chatdata);
+
+      if (users.has(chatdata.agency)) {
+        users.get(chatdata.agency).sockets.forEach((socket) => {
+          io.to(socket).emit("chatunblock", chatdata);
+        });
+      }
+      if (users.has(chatdata.customer)) {
+        users.get(chatdata.customer).sockets.forEach((socket) => {
+          io.to(socket).emit("chatunblock", chatdata);
+        });
+      }
+    });
+
+    /*-----------------------------------------
              User Disconnected
     ---------------------------------------- */
 

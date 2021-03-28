@@ -22,6 +22,7 @@ const ChatsCard = ({
   unseencount,
   timesent,
   type,
+  unSeenCount,
 }) => {
   let newmsgchats = useSelector((state) => state.chat.newMessageChats);
 
@@ -102,10 +103,10 @@ const ChatsCard = ({
             <>
               {unseencount.map((count, index) => (
                 <View key={count.id}>
-                  {lastchatauthor != userId && !seen && (
+                  {lastchatauthor != userId && !seen && unSeenCount !== 0 && (
                     <Badge
                       key={count.id}
-                      value={count.count}
+                      value={unSeenCount}
                       badgeStyle={{
                         backgroundColor: "#f8dc81",
                         // paddingVertical: 10,

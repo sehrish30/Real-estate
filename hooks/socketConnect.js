@@ -46,5 +46,13 @@ export function useSocket(user, dispatch) {
   socket.on("delMessage", (message) => {
     dispatch(actions.deletechat(message));
   });
+
+  socket.on("chatBlocked", (chat) => {
+    dispatch(actions.blockChat(chat));
+  });
+
+  socket.on("chatunblock", (chat) => {
+    dispatch(actions.chatunblock(chat));
+  });
   socket.connect;
 }

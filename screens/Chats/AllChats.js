@@ -66,10 +66,11 @@ const AllChats = ({ navigation }) => {
             if (res.length === 0) {
               setShowNoAgency(true);
             }
-            let unSeenCount = 0;
+
             let fastChats = [];
 
             const requests = res.map((r) => {
+              let unSeenCount = 0;
               for (let i = 0; i < r.chats.length; i++) {
                 if (r.chats[i].seen == false) {
                   unSeenCount += 1;
@@ -129,9 +130,11 @@ const AllChats = ({ navigation }) => {
             if (res.length === 0) {
               setShowNoAgency(true);
             }
-            let unSeenCount = 0;
+
             let fastChats = [];
+
             const requests = res.map((r) => {
+              let unSeenCount = 0;
               for (let i = 0; i < r.chats.length; i++) {
                 if (r.chats[i].seen == false) {
                   unSeenCount += 1;
@@ -151,6 +154,7 @@ const AllChats = ({ navigation }) => {
                 createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
                 unSeenCount,
                 agencyId: r.agency,
+                timesent: r?.chats[r.chats?.length - 1]?.timesent,
                 customerId: r.customer.id,
                 searchId: r.customer.id,
                 seen: r?.chats[r.chats?.length - 1]?.seen || null,

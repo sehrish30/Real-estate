@@ -16,6 +16,8 @@ import {
   SET_ALL_MESSAGES,
   SET_SEEN_MESSAGE,
   DELETE_CHAT,
+  BLOCK_CHAT,
+  UNBLOCK_CHAT,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -84,4 +86,12 @@ export const setseenMessage = (chat) => (dispatch) => {
 
 export const deletechat = (chat) => (dispatch) => {
   dispatch({ type: DELETE_CHAT, payload: chat });
+};
+
+export const blockChat = (chat) => (dispatch) => {
+  dispatch({ type: BLOCK_CHAT, payload: chat });
+};
+
+export const chatunblock = (chat) => (dispatch) => {
+  dispatch({ type: UNBLOCK_CHAT, payload: chat });
 };

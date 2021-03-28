@@ -152,15 +152,10 @@ export async function deleteChat(chatMsgId, chatId, token) {
   }
 }
 
-export async function blockChat(id, token) {
+export async function blockChat(id, personWhoBlocked, token) {
   try {
     const res = await axios.delete(
-      `${baseURL}chats/block-chatroom/${id}`,
-      {
-        params: {
-          id,
-        },
-      },
+      `${baseURL}chats/block-chatroom/${id}/${personWhoBlocked}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
