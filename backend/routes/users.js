@@ -227,7 +227,7 @@ router.post("/enter-password", (req, res) => {
           return res.status(401).send("Try again Session expired");
         }
 
-        // has password and save it
+        // hash password and save it
         const hashedPassword = bcrypt.hashSync(req.body.password, 14);
 
         user.password = hashedPassword;
@@ -262,7 +262,7 @@ router.post("/check-code", async (req, res) => {
     const { code } = decoded;
     console.log(code, req.body.code);
     if (Number(code) == Number(req.body.code)) {
-      res.status(200).send(true);
+      return res.status(200).send(true);
     } else {
       return res.status(401).send(false);
     }

@@ -487,7 +487,132 @@ router.put(`/change-password`, async (req, res) => {
 });
 
 /*----------------------------------------
-        Agency Forgot Password
+        CHECK AGENCY EXISTS
+----------------------------------------- */
+router.get("/:email", async (req, res) => {
+  try {
+    const agency = await Agency.findOne({ email: req.body.email });
+    if (!agency) {
+      return res
+        .status(400)
+        .send("Sorry, we have no agency registered with this email");
+    }
+    res.status(200).send(true);
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+/*----------------------------------------
+        Agency FORGOT PASSWORD
 ---------------------------------------- */
+
+router.post("/reset-password", async (req, res) => {
+  try {
+    const agency = Agency.findOne({ email: req.body.email });
+    const secret = process.env.SECRET;
+    if (!agency) {
+      return res
+        .status(404)
+        .send("Sorry, we have no agency registered with this email");
+    }
+    // genearet secret code of 6 characters
+    const code = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+
+    // Generate token for user after user email exists
+    const token = jwt.sign(
+      {
+        agencId: agency.id,
+        code,
+      },
+      secret,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    agency.resetToken = token;
+    agency.expireToken = Date.now() + 3600000;
+
+    agency.save().then((result) => {
+      let mailOptions = {
+        from: process.env.EMAIL,
+        to: req.body.email,
+        subject: "Iconic Real Estate ✔",
+        template: "index",
+        context: {
+          code: code,
+        },
+      };
+
+      transporter.sendMail(mailOptions, (err, data) => {
+        if (err) {
+          return res.status(401).send(err);
+        }
+        return res.status(200).send({ code, token });
+      });
+    });
+  } catch (err) {
+    res.status(404).json({ error: err });
+  }
+});
+
+/*----------------------------------------
+           CHECK AGENCY CODE
+----------------------------------------- */
+router.post("/check-code", async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(` `)[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Missing token" });
+  }
+
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: err });
+    }
+    const { code } = decoded;
+    console.log(code, req.body.code);
+    if (Number(code) == Number(req.body.code)) {
+      return res.status(200).send(true);
+    } else {
+      return res.status(401).send(false);
+    }
+  });
+});
+
+/*----------------------------------------
+      AGENCY ENTER NEW PASSWORD
+----------------------------------------- */
+router.post("/enter-password", (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+
+    const token = authHeader && authHeader.split(` `)[1];
+
+    Agency.findOne({
+      email: req.body.email,
+      resetToken: token,
+      expireToken: { $gt: Date.now() },
+    }).then((agency) => {
+      if (!agency) {
+        return res.status(401).send("Try again session expired");
+      }
+
+      // hash password then save it
+      const hashedPassword = bcrypt.hashSync(req.body.password, 14);
+
+      agency.password = hashedPassword;
+      agency.resetToken = undefined;
+      agency.expireToken = undefined;
+      agency.save().then((savedAgency) => {
+        res.status(200).send("Agency password updated");
+      });
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
 
 module.exports = router;
