@@ -95,12 +95,12 @@ const AgencyLogin = ({ navigation }) => {
           navigation={navigation}
           btnAction={loginAgency}
         />
-        {/* <Text
+        <Text
           style={styles.extra}
-          onPress={() => navigation.navigate("Forgot")}
+          onPress={() => navigation.navigate("Forgot", { agencyForgot: true })}
         >
           Forgot Password
-        </Text> */}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -118,7 +118,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   stretch: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 180,
+  },
+  extra: {
+    color: "#214151",
+    textAlign: "center",
+    fontSize: 14,
+    fontFamily: "EBGaramond-Regular",
   },
 });

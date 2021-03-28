@@ -59,6 +59,8 @@ const agencySchema = mongoose.Schema(
     land: [mongoose.ObjectId],
     residential: [mongoose.ObjectId],
     industrial: [mongoose.ObjectId],
+    resetToken: String,
+    expireToken: Date,
   },
 
   {
@@ -73,5 +75,13 @@ agencySchema.set("toJSON", {
     delete ret.__v;
   },
 });
+
+// agencySchema.virtual("id").get(function () {
+//   return this._id.toHexString();
+// });
+
+// agencySchema.set("toJSON", {
+//   virtuals: true,
+// });
 
 exports.Agency = mongoose.model("Agent", agencySchema);

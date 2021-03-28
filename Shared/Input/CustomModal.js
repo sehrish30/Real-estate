@@ -87,12 +87,14 @@ const CustomModal = ({
                 onPress={uploadLogoFromPhone}
               />
             </View>
+
             <TextInput
               style={styles.texInput}
               multiline
               numberOfLines={6}
               onChangeText={(text) => setEditBio(text)}
               value={editBio}
+              placeholder="Type bio..."
             />
 
             <View style={{ marginTop: 10 }}>

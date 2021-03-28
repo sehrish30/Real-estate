@@ -16,8 +16,14 @@ import {
 } from "react-native-confirmation-code-field";
 import { useFocusEffect } from "@react-navigation/native";
 var { width, height } = Dimensions.get("window");
+import {
+  checkIfEmailExists,
+  resetPasswordAgency,
+  checkCodeAgency,
+  enterpassword,
+} from "../../Shared/Services/AgencyServices";
 
-const Forgot = ({ navigation }) => {
+const Forgot = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [showForm, setShowForm] = useState(true);
@@ -33,6 +39,8 @@ const Forgot = ({ navigation }) => {
     value,
     setValue,
   });
+
+  const { agencyForgot } = route.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -69,18 +77,38 @@ const Forgot = ({ navigation }) => {
   );
 
   const validateEmail = async () => {
+    let copyemail = email;
     console.log(email);
-    setEmail(email.toLowerCase());
-    setEmail(email.trim());
+    setEmail(copyemail.toLowerCase().trim());
+
     // let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (email !== "" && /\S+@\S+\.\S+/.test(email)) {
-      const res = await forgotUser({ email });
-      console.log(res);
-      if (res) {
-        setPin(res.data.code);
-        setToken(res.data.token);
-        setShowForm(false);
-        setShowCode(true);
+      if (agencyForgot) {
+        const res = await checkIfEmailExists(email);
+        if (res) {
+          const response = await resetPasswordAgency({ email });
+          setPin(response.code);
+          setToken(response.token);
+          setShowForm(false);
+          setShowCode(true);
+        } else {
+          Toast.show({
+            type: "error",
+            text1: `Email is not registered in Ionic`,
+            text2: `Try again`,
+            visibilityTime: 2000,
+            topOffset: 30,
+          });
+        }
+      } else {
+        const res = await forgotUser({ email });
+        console.log(res);
+        if (res) {
+          setPin(res.data.code);
+          setToken(res.data.token);
+          setShowForm(false);
+          setShowCode(true);
+        }
       }
     } else {
       Toast.show({
@@ -93,12 +121,50 @@ const Forgot = ({ navigation }) => {
   };
 
   const resetPassword = async () => {
-    let regex = "/(?=.*d)(?=.*[a-z]).{6,}/";
     let agencyRegex = "/(?=.*d)(?=.*[a-z])(?=.*[A-Z]).{6,}/";
-    if (password.length >= 6 && regex.test(password)) {
+
+    if (
+      password.length >= 6 &&
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(password)
+    ) {
       setLoading(true);
-      await resetUserPassword({ email: email.toLowerCase(), password }, token);
-      navigation.navigate("Home");
+      let notcasesensitiveEmail = email;
+      if (agencyForgot) {
+        const reply = await enterpassword(
+          { email: notcasesensitiveEmail.toLowerCase(), password },
+          token
+        );
+
+        navigation.reset({
+          routes: [{ name: "Home" }],
+        });
+        if (reply) {
+          Toast.show({
+            type: "success",
+            text1: `Password updated`,
+            visibilityTime: 4000,
+            topOffset: 30,
+          });
+        }
+      } else {
+        const reply = await resetUserPassword(
+          { email: notcasesensitiveEmail.toLowerCase(), password },
+          token
+        );
+        navigation.reset({
+          routes: [{ name: "Home" }],
+        });
+        if (reply) {
+          Toast.show({
+            type: "success",
+            text1: `Password updated`,
+            visibilityTime: 4000,
+            topOffset: 30,
+          });
+        }
+      }
+
+      // navigation.navigate("Home");
     } else {
       Toast.show({
         type: "error",

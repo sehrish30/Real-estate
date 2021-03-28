@@ -114,7 +114,7 @@ const Login = ({ navigation }) => {
         />
         <Text
           style={styles.extra}
-          onPress={() => navigation.navigate("Forgot")}
+          onPress={() => navigation.navigate("Forgot", { agencyForgot: false })}
         >
           Forgot Password
         </Text>

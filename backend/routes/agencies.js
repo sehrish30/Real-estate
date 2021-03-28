@@ -8,6 +8,23 @@ const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
+
+const sendtransporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key: process.env.SENDGRID_API,
+    },
+  })
+);
+
+sendtransporter.use(
+  "compile",
+  hbs({
+    viewEngine: "express-handlebars",
+    viewPath: "./views/",
+  })
+);
 
 const transporter = nodemailer.createTransport({
   service: "SendinBlue", // no need to set host or port etc.
@@ -489,9 +506,9 @@ router.put(`/change-password`, async (req, res) => {
 /*----------------------------------------
         CHECK AGENCY EXISTS
 ----------------------------------------- */
-router.get("/:email", async (req, res) => {
+router.get("/email-exists/:email", async (req, res) => {
   try {
-    const agency = await Agency.findOne({ email: req.body.email });
+    const agency = await Agency.findOne({ email: req.params.email });
     if (!agency) {
       return res
         .status(400)
@@ -509,20 +526,16 @@ router.get("/:email", async (req, res) => {
 
 router.post("/reset-password", async (req, res) => {
   try {
-    const agency = Agency.findOne({ email: req.body.email });
+    const agency = await Agency.findOne({ email: req.body.email });
     const secret = process.env.SECRET;
     if (!agency) {
-      return res
-        .status(404)
-        .send("Sorry, we have no agency registered with this email");
+      return res.status(400).send("No user with this email");
     }
-    // genearet secret code of 6 characters
     const code = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-
-    // Generate token for user after user email exists
+    // Generate token for user after user email exists and password matches
     const token = jwt.sign(
       {
-        agencId: agency.id,
+        userId: agency.id,
         code,
       },
       secret,
@@ -532,12 +545,13 @@ router.post("/reset-password", async (req, res) => {
     );
 
     agency.resetToken = token;
+    // Valid for 1 hr
     agency.expireToken = Date.now() + 3600000;
 
     agency.save().then((result) => {
       let mailOptions = {
-        from: process.env.EMAIL,
-        to: req.body.email,
+        from: process.env.SENDGRI_EMAIL,
+        to: agency.email,
         subject: "Iconic Real Estate ✔",
         template: "index",
         context: {
@@ -545,12 +559,14 @@ router.post("/reset-password", async (req, res) => {
         },
       };
 
-      transporter.sendMail(mailOptions, (err, data) => {
+      sendtransporter.sendMail(mailOptions, (err, data) => {
+        console.log(err, data);
         if (err) {
-          return res.status(401).send(err);
+          return res.status(500).send(err);
         }
         return res.status(200).send({ code, token });
       });
+      console.log(agency.email, "EMAIL");
     });
   } catch (err) {
     res.status(404).json({ error: err });
@@ -562,18 +578,17 @@ router.post("/reset-password", async (req, res) => {
 ----------------------------------------- */
 router.post("/check-code", async (req, res) => {
   const authHeader = req.headers["authorization"];
+
   const token = authHeader && authHeader.split(` `)[1];
 
   if (!token) {
     return res.status(401).json({ error: "Missing token" });
   }
-
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({ error: err });
     }
     const { code } = decoded;
-    console.log(code, req.body.code);
     if (Number(code) == Number(req.body.code)) {
       return res.status(200).send(true);
     } else {

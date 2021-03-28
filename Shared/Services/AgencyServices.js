@@ -110,3 +110,78 @@ export async function acceptAgency(data, token) {
     });
   }
 }
+
+export async function checkIfEmailExists(email) {
+  try {
+    const res = await axios.get(
+      `${baseURL}agencies/email-exists/${email}`,
+      config
+    );
+
+    if (res.status == 200) {
+      return res.data;
+    } else {
+      Toast.show({
+        type: "error",
+        text1: `Sorry, we have no agency registered with this email`,
+        text2: `Try again!`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Our servers are down`,
+      text2: `Try again!`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+  }
+}
+
+export async function resetPasswordAgency(data) {
+  try {
+    const res = await axios.post(
+      `${baseURL}agencies/reset-password`,
+      data,
+      config
+    );
+    if (res.status == 200) {
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function checkCodeAgency(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}agencies/check-code`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function enterpassword(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}agencies/enter-password`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
