@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -7,15 +7,18 @@ import {
   Dimensions,
 } from "react-native";
 import { Image, Card, Text, Badge } from "react-native-elements";
-import FontIcon from "react-native-vector-icons/FontAwesome";
+import * as Linking from "expo-linking";
+
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Button } from "react-native-elements";
 import { useSelector } from "react-redux";
+import { SimpleLineIcons } from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
 
 import { Feather } from "@expo/vector-icons";
+import CustomOptionsOverlay from "../Overlays/CustomOptionsOverlay";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -30,16 +33,23 @@ const ProfileCard = ({
   changePassword,
   navigation,
   id,
+  phoneNumber,
 }) => {
   console.log(residential);
+  const [visible, setVisible] = useState(false);
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let userId = null;
-  if (agency.id) {
+
+  if (agency?.id) {
     userId = agency.id;
-  } else if (customer.decoded) {
-    userId = customer?.decoded.userId;
+  } else if (customer?.decoded) {
+    userId = customer?.decoded?.userId;
   }
+
+  const toggleOverlay = () => {
+    setVisible(!visible);
+  };
 
   const DATA = [
     {
@@ -80,54 +90,39 @@ const ProfileCard = ({
   return (
     <>
       <Card containerStyle={styles.bg}>
+        <CustomOptionsOverlay
+          changePassword={changePassword}
+          editAgency={editAgency}
+          visible={visible}
+          toggleOverlay={toggleOverlay}
+        />
         {showEditbutton && (
-          <View style={{ marginRight: "auto", flexDirection: "row" }}>
+          <View style={{ marginLeft: "auto", flexDirection: "row" }}>
             <Pressable
               onPressOut={() => {
                 editAgency();
               }}
             >
-              <FontIcon
+              <SimpleLineIcons
                 style={{ verticalAlign: "middle", marginRight: 15 }}
-                name="pencil-square"
+                name="options-vertical"
                 color={"#a2d0c1"}
                 size={30}
-              />
-            </Pressable>
-            <Pressable
-              onPressOut={() => {
-                changePassword();
-              }}
-            >
-              <FontAwesome5
-                style={{
-                  verticalAlign: "middle",
-                  marginRight: 15,
-                  marginTop: 2,
-                  padding: 5,
-                  borderRadius: 4,
-                  backgroundColor: "#a2d0c1",
-                }}
-                name="key"
-                color={"#e4fbff"}
-                size={15}
+                onPress={toggleOverlay}
               />
             </Pressable>
           </View>
         )}
 
-        <Card.Title style={styles.font}>
-          <View stye={styles.imgSection}>
-            <View style={styles.imageBlock}>
-              <Image
-                style={styles.image}
-                resizeMode="cover"
-                source={{ uri: logo?.url }}
-              />
-            </View>
-            <Text style={[styles.font, styles.userText]}>{user}</Text>
-          </View>
-        </Card.Title>
+        <View style={[styles.font, styles.imgSection]}>
+          <Image
+            style={styles.image}
+            resizeMode="cover"
+            source={{ uri: logo?.url }}
+          />
+
+          <Text style={[styles.font, styles.userText]}>{user}</Text>
+        </View>
         <Card.Divider />
         <Text style={styles.bio}>{bio}</Text>
         <Card.Divider />
@@ -181,48 +176,56 @@ const ProfileCard = ({
           />
         </View>
         <View style={{ marginTop: 30, flexDirection: "row" }}>
-          <Button
-            onPress={() => {
-              if (userId) {
-                navigation.navigate("Chat", {
-                  screen: "ChatMain",
-                  params: {
-                    agency: id,
-                    customer: customer?.decoded.userId,
-                    notsure: true,
-                  },
-                });
-              } else {
-                navigation.navigate("User");
-              }
-            }}
-            buttonStyle={{ width: width / 2.5, backgroundColor: "#f8dc81" }}
-            // containerStyle={{ backgroundColor: "red" }}
-            titleStyle={{ color: "#214151" }}
-            icon={
-              <Feather
-                style={{ marginRight: 5 }}
-                name="message-square"
-                size={15}
-                color="#214151"
+          {console.error(customer.decoded.userId)}
+          {customer?.decoded?.userId && (
+            <>
+              <Button
+                type="outline"
+                buttonStyle={{ width: width / 2.5, borderColor: "#f8dc81" }}
+                titleStyle={{ color: "#214151" }}
+                icon={
+                  <Feather
+                    style={{ marginRight: 5 }}
+                    name="phone-call"
+                    size={15}
+                    color="#214151"
+                  />
+                }
+                title="Call"
+                onPress={() => {
+                  Linking.openURL(`tel:${phoneNumber}`);
+                }}
               />
-            }
-            title="Contact"
-          />
-          <Button
-            type="outline"
-            buttonStyle={{ width: width / 2.5, borderColor: "#f8dc81" }}
-            titleStyle={{ color: "#214151" }}
-            icon={
-              <Feather
-                style={{ marginRight: 5 }}
-                name="phone-call"
-                size={15}
-                color="#214151"
+              <Button
+                onPress={() => {
+                  if (userId) {
+                    navigation.navigate("Chat", {
+                      screen: "ChatMain",
+                      params: {
+                        agency: id,
+                        customer: customer?.decoded.userId,
+                        notsure: true,
+                      },
+                    });
+                  } else {
+                    navigation.navigate("User");
+                  }
+                }}
+                buttonStyle={{ width: width / 2.5, backgroundColor: "#f8dc81" }}
+                // containerStyle={{ backgroundColor: "red" }}
+                titleStyle={{ color: "#214151" }}
+                icon={
+                  <Feather
+                    style={{ marginRight: 5 }}
+                    name="message-square"
+                    size={15}
+                    color="#214151"
+                  />
+                }
+                title="Contact"
               />
-            }
-            title="Call"
-          />
+            </>
+          )}
         </View>
       </Card>
     </>
@@ -233,34 +236,36 @@ export default ProfileCard;
 
 const styles = StyleSheet.create({
   bg: {
-    // backDropFilter: "blur(6px)",
     backgroundColor: "#e4fbff",
     textAlign: "center",
   },
   imgSection: {
     display: "flex",
-    flexDirection: "row",
-    padding: 0,
+
+    flexDirection: "column",
+    alignItems: "center",
+    marginHorizontal: "auto",
+    marginBottom: 15,
   },
-  imageBlock: {
-    marginLeft: 25,
-  },
+
   image: {
     width: 75,
     height: 75,
     borderRadius: 50,
-    marginLeft: 10,
   },
   userText: {
     marginTop: 10,
+    fontWeight: "bold",
+    // paddingRight: "auto",
   },
   bio: {
-    fontFamily: "EBGaramond-Italic",
+    fontFamily: "EBGaramond-Regular",
     color: "#306968",
     textAlign: "center",
     fontSize: 16,
     marginBottom: 16,
-    letterSpacing: 0.5,
+    textAlign: "center",
+    // letterSpacing: 0.5,
   },
   locationSection: {
     display: "flex",

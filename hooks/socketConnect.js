@@ -2,15 +2,22 @@ import React, { useEffect } from "react";
 import baseURL from "../assets/common/baseUrl";
 import socketIOClient from "socket.io-client";
 import * as actions from "../Redux/Actions/chat";
+import store from "../Redux/store";
 
 export function useSocket(user, dispatch) {
   const ENDPOINT = baseURL;
 
   const socket = socketIOClient(ENDPOINT);
-  dispatch(actions.getChats(user.allChats));
-  dispatch(actions.setSocket(socket));
 
-  socket.emit("join", user);
+  let socketStored = store.getState().chat.socket;
+  console.log("MAR TO", socketStored);
+  if (Object.keys(socketStored).length === 0) {
+    socket.emit("join", user);
+  }
+
+  dispatch(actions.getChats(user.allChats));
+
+  dispatch(actions.setSocket(socket));
 
   socket.on("roomData", (data) => {
     console.log(data, "HAYE");

@@ -12,7 +12,7 @@ const SocketServer = (server) => {
 
   const getChatters = async (userId, allChats) => {
     let friendchatters = [];
-    console.log("ALLCHATS", allChats);
+    // console.log("ALLCHATS", allChats);
     for (chat of allChats) {
       friendchatters.push(chat.searchId);
     }
@@ -30,14 +30,17 @@ const SocketServer = (server) => {
     let userId;
     socket.on("join", async (user) => {
       allChatsOfUser = user.allChats;
-      console.log("USER DATA I AM GETTING", user);
+      console.log("USER DATA I AM GETTING", user.user.decoded.userId);
+
       // we want to know all users online to inform them about his precense
       userId = user.user.decoded.userId;
 
       /*-----------------------------------------
             SETTING USER AND HIS SOCKETS
         ---------------------------------------- */
+
       if (users.has(userId)) {
+        console.log("USER HAS");
         // get list of all users sockets
         const existingUser = users.get(userId);
 
@@ -45,13 +48,17 @@ const SocketServer = (server) => {
         existingUser.sockets = [...existingUser.sockets, ...[socket.id]];
         users.set(userId, existingUser);
         sockets = [...existingUser.sockets, ...[socket.id]];
+
         userSockets.set(socket.id, userId);
       } else {
+        console.log("USER DOESNOT HAS");
         // no user so set new user
         // sockets array to know user can have multiple sockets if he opens app from multiple browsers etc
         users.set(userId, { id: userId, sockets: [socket.id] });
         sockets.push(socket.id);
+
         userSockets.set(socket.id, userId);
+        console.log("SOCKETS I AM PUSHING", sockets, users.has(userId));
       }
 
       /*-----------------------------------------
@@ -95,7 +102,7 @@ const SocketServer = (server) => {
       io.to("room").emit("roomData", userSockets.get(socket.id));
 
       // console.log(user, "OOYE");
-      console.log(users.get(userId));
+      console.log("SOCKET USERS", users.get(userId), socket.id);
       // console.log(userSockets.get(socket.id));
     });
 
@@ -132,14 +139,17 @@ const SocketServer = (server) => {
     socket.on("newMessage", async (message) => {
       // send the message to receiver socket
       if (users.has(message.toUserId)) {
-        console.log("USER ID I AM GETTING FOR CHAT", message);
+        console.log("CULPRIT");
+        console.log("USER ID I AM GETTING FOR CHATNEW ", message);
         users.get(message.toUserId).sockets.forEach((socket) => {
           io.to(socket).emit("newMessage", message);
         });
       }
       // send the message to sender socket
       if (users.has(message.author)) {
+        console.log("USER ID I AM GETTING FOR CHATNEW ", message);
         users.get(message.author).sockets.forEach((socket) => {
+          console.log("CULPRIT");
           io.to(socket).emit("newMessage", message);
         });
       }
@@ -212,7 +222,9 @@ const SocketServer = (server) => {
     socket.on("disconnect", async () => {
       // emit so also delete in frontend
 
-      console.log("USER LEFT");
+      console.log("USER LEFT", socket.id, userSockets.has(socket.id));
+
+      console.log("ALL THE SOCKETS", sockets);
       if (userSockets.has(socket.id)) {
         const user = users.get(userSockets.get(socket.id));
         console.log("LEFT USER", user);

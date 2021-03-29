@@ -23,7 +23,9 @@ const CreateChat = ({
       navigation.navigate("SearchAgency");
     } else {
       createChat(data, token);
-      navigation.navigate("AllChats");
+      navigation.reset({
+        routes: [{ name: "AllChats" }],
+      });
     }
   };
 

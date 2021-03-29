@@ -93,7 +93,7 @@ export async function fetchAllChats(data, token) {
       },
     });
     if (res.status == 200 || res.status == 304) {
-      console.log("REPONSE HERE", res.data);
+      console.error("REPONSE HERE", res.data);
 
       return res.data;
     }

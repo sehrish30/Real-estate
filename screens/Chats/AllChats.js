@@ -36,6 +36,8 @@ const AllChats = ({ navigation }) => {
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
+  let sockets = useSelector((state) => state.chat.socket);
+  console.log(sockets, "SEHRISH CRYING");
 
   let userId;
   if (agency.id) {
@@ -115,6 +117,7 @@ const AllChats = ({ navigation }) => {
             });
             Promise.all(requests).then(() => {
               useSocket({ user, allChats: fastChats }, dispatch);
+
               setLoading(false);
             });
           }
@@ -185,6 +188,7 @@ const AllChats = ({ navigation }) => {
               };
 
               useSocket({ user: data, allChats: fastChats }, dispatch);
+
               setLoading(false);
             });
           }
@@ -194,6 +198,8 @@ const AllChats = ({ navigation }) => {
         setAllChats([]);
         setSafetyChats([]);
         setUnseencount([]);
+        socket.disconnect(true);
+        socket.off();
       };
     }, [useSocket, dispatch])
   );

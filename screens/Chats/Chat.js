@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 
 import {
   KeyboardAvoidingView,
@@ -18,8 +18,6 @@ import { Audio } from "expo-av";
 
 import { useSelector, useDispatch } from "react-redux";
 import { Icon } from "react-native-elements";
-
-// import AudioRecorderPlayer from "react-native-audio-recorder-player";
 
 import MenuOverlay from "../../Shared/Overlays/MenuOverlay";
 
@@ -46,7 +44,6 @@ if (
 }
 
 const Chat = ({ navigation, route }) => {
-  const [recording, setRecording] = useState(null);
   const [chatId, setChatId] = useState("");
 
   const [mainIndex, setMainIndex] = useState(null);
@@ -57,10 +54,6 @@ const Chat = ({ navigation, route }) => {
   const [chatSend, setChatSend] = useState({});
   const [chatBlocked, setChatBlocked] = useState(false);
   const [personWhoBlocked, setPersonWhoBlocked] = useState("");
-  const [sound, setSound] = useState("");
-
-  // const location =
-  //   "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540sehrish%252FRealestate/Audio/recording-827930e5-7c25-4d0a-bb39-b30c392753e4.m4a";
 
   // showStates
 
@@ -92,44 +85,132 @@ const Chat = ({ navigation, route }) => {
 
   useFocusEffect(
     useCallback(() => {
+      let unsubscribe = () => {};
+      let chatExistence = false;
       (async () => {
         console.log(route.params, "ROUTE PARAMS");
         if (route.params) {
-          const res = await checkChatExists(route.params, token);
-          dispatch(actions.currentChat(route.params?.chatId));
-          console.log("RES", res);
+          const res = await checkChatExists(
+            { agency: route.params.agency, customer: route.params.customer },
+            token
+          );
 
+          // Storing current chat ID in redux
+          dispatch(actions.currentChat(route.params?.chatId));
+
+          // Checking if chat exists
           if (res.status) {
             setChatExists(true);
+            chatExistence = res.status;
+
             setLoading(false);
+
+            // Checking if the chat is blocked or not
             setChatBlocked(res.isblocked);
             setPersonWhoBlocked(res?.personWhoBlocked);
           }
         } else {
           setChatExists(true);
+          chatExistence = res.status;
           setLoading(false);
+        }
+
+        /*--------------------------------------
+                 FETCH CHATS
+      --------------------------------------*/
+
+        if (chatExistence) {
+          (async () => {
+            const res = await fetchAllChats(
+              { agency: route.params.agency, customer: route.params.customer },
+              token
+            );
+
+            if (res.chats?.length === 0) {
+              setShowNoMessages(true);
+            }
+            setMyChats(res.chats?.reverse());
+
+            if (agency.id) {
+              await seenChat(
+                { chatId: route.params?.chatId, person: agency.id },
+                token
+              );
+            } else {
+              await seenChat(
+                { chatId: route.params?.chatId, person: user.decoded.userId },
+                token
+              );
+            }
+
+            setChatId(res.id);
+
+            // SAve all the messages in redux
+            dispatch(actions.setallMessages(res.chats));
+            let show = false;
+
+            /*------------------------------------------------
+                      CHAT ONLINE TYPING STATUS
+           ------------------------------------------------*/
+            const comparingOnlineStates = (chats) => {
+              if (agency.id) {
+                show = false;
+                chats?.map((chat) => {
+                  chat.users.map((userc) => {
+                    if (userc.id == res.customer.id && userc.online == true) {
+                      show = true;
+                    }
+                  });
+                });
+
+                setOtherchatName({
+                  name: res.customer.email,
+                  id: show,
+                });
+                setChatSend({
+                  agency: res.agency.id,
+                  customer: res.customer.id,
+                });
+              } else {
+                show = false;
+                chats?.map((chat) => {
+                  chat.users.map((userc) => {
+                    if (userc.id == res.agency.id && userc?.online == true) {
+                      show = true;
+                    }
+                  });
+                });
+
+                setOtherchatName({
+                  name: res.agency.name,
+                  id: show,
+                });
+
+                setChatSend({
+                  agency: res.agency.id,
+                  customer: res.customer.id,
+                });
+              }
+            };
+
+            comparingOnlineStates(chats);
+
+            unsubscribe = store.subscribe(() => {
+              console.log("STORE", store.getState().chat.chats);
+
+              const chatterInfo = store.getState().chat.chats;
+
+              // console.log(chatterInfo);
+              comparingOnlineStates(chatterInfo);
+            });
+          })();
+
+          // return () => {};
         }
       })();
       setLoading(false);
-      return () => {
-        setChatExists(false);
-        setLoading(true);
-        navigation.navigate("AllChats");
-      };
-    }, [])
-  );
 
-  useFocusEffect(
-    React.useCallback(() => {
-      let unsubscribe = () => {};
       (async () => {
-        const res = await fetchAllChats(route.params, token);
-        console.error("IMPORTANT", res.chats);
-        if (res.chats.length === 0) {
-          setShowNoMessages(true);
-        }
-        setMyChats(res.chats.reverse());
-
         if (agency.id) {
           await seenChat(
             { chatId: route.params?.chatId, person: agency.id },
@@ -141,80 +222,17 @@ const Chat = ({ navigation, route }) => {
             token
           );
         }
-
-        setChatId(res.id);
-
-        dispatch(actions.setallMessages(res.chats));
-        let show = false;
-
-        /*------------------------------------------------
-                    CHAT ONLINE TYPING STATUS
-         ------------------------------------------------*/
-        const comparingOnlineStates = (chats) => {
-          if (agency.id) {
-            show = false;
-            chats?.map((chat) => {
-              chat.users.map((userc) => {
-                if (userc.id == res.customer.id && userc.online == true) {
-                  show = true;
-                }
-              });
-            });
-            setOtherchatName({
-              name: res.customer.email,
-              id: show,
-            });
-            setChatSend({ agency: res.agency.id, customer: res.customer.id });
-          } else {
-            show = false;
-            chats?.map((chat) => {
-              chat.users.map((userc) => {
-                if (userc.id == res.agency.id && userc?.online == true) {
-                  show = true;
-                }
-              });
-            });
-            setOtherchatName({
-              name: res.agency.name,
-              id: show,
-            });
-            setChatSend({ agency: res.agency.id, customer: res.customer.id });
-          }
-        };
-
-        comparingOnlineStates(chats);
-
-        unsubscribe = store.subscribe(() => {
-          console.log("STORE", store.getState());
-          console.error("SUB");
-          // console.log("MESSAGEs", store.getState().chat.messages);
-
-          const chatterInfo = store.getState().chat.chats;
-
-          console.log(chatterInfo);
-          comparingOnlineStates(chatterInfo);
-        });
       })();
 
       return () => {
-        (async () => {
-          if (agency.id) {
-            await seenChat(
-              { chatId: route.params?.chatId, person: agency.id },
-              token
-            );
-          } else {
-            await seenChat(
-              { chatId: route.params?.chatId, person: user.decoded.userId },
-              token
-            );
-          }
-        })();
-
-        console.log("UNSUB");
         unsubscribe();
-        console.error("UNSUB");
+
         setLoading(true);
+
+        setChatExists(false);
+        chatExistence = false;
+        setLoading(true);
+        navigation.navigate("AllChats");
       };
     }, [])
   );
@@ -230,9 +248,10 @@ const Chat = ({ navigation, route }) => {
       useNativeDriver: true,
     }).start(() => {
       LayoutAnimation.spring();
+
       Animated.timing(receiverRef, {
         toValue: { x: 0, y: 0 },
-        duration: 2000,
+        duration: 500,
         useNativeDriver: true,
       }).start(() => {
         LayoutAnimation.spring();
@@ -266,40 +285,6 @@ const Chat = ({ navigation, route }) => {
       useNativeDriver: true,
     }).start();
   };
-
-  async function startRecording() {
-    try {
-      console.log("Requesting permissions..");
-      await Audio.requestPermissionsAsync();
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-      });
-      console.log("Starting recording..");
-      const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
-      await recording.startAsync();
-      setRecording(recording);
-      console.error("RECORDING", recording);
-      console.log("Recording started");
-    } catch (err) {
-      console.error("Failed to start recording", err);
-    }
-  }
-
-  async function stopRecording() {
-    console.log("Stopping recording..");
-    setRecording(undefined);
-    await recording.stopAndUnloadAsync();
-    const uri = recording.getURI();
-    handleStoringFilesInPhone(uri);
-    console.log("Recording stopped and stored at", uri);
-    console.error("URI", uri);
-  }
-
-  const handleStoringFilesInPhone = async () => {};
 
   return (
     <SafeAreaView
@@ -338,13 +323,7 @@ const Chat = ({ navigation, route }) => {
           {chatExists && !route.params.notsure && (
             <KeyboardAvoidingView>
               <View style={styles.chatArea}>
-                <MessageInput
-                  recording={recording}
-                  stopRecording={stopRecording}
-                  startRecording={startRecording}
-                  chatSend={chatSend}
-                  chatId={chatId}
-                />
+                <MessageInput chatSend={chatSend} chatId={chatId} />
               </View>
             </KeyboardAvoidingView>
           )}

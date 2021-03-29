@@ -269,7 +269,7 @@ const ChatsContent = ({
               dontshowBtn={true}
             />
           ) : (
-            showNoMessages && (
+            !chatExists && (
               <CreateChat
                 data={route.params}
                 message="You don't have any conversation with this agency"

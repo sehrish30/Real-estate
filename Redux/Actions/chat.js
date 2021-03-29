@@ -1,5 +1,5 @@
 import { checkChatExists } from "../../Shared/Services/ChatServices";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   CHAT_EXISTS,
   USER_ONLINE,
@@ -60,7 +60,7 @@ export const userTyping = (userId) => (dispatch) => {
   dispatch({ type: SENDER_TYPING, payload: userId });
 };
 
-export const setSocket = (socket) => (dispatch) => {
+export const setSocket = (socket) => async (dispatch) => {
   dispatch({ type: SET_SOCKET, payload: socket });
 };
 

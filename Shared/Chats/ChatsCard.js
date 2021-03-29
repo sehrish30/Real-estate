@@ -101,24 +101,21 @@ const ChatsCard = ({
             />
           ) : (
             <>
-              {unseencount.map((count, index) => (
-                <View key={count.id}>
-                  {lastchatauthor != userId && !seen && unSeenCount !== 0 && (
-                    <Badge
-                      key={count.id}
-                      value={unSeenCount}
-                      badgeStyle={{
-                        backgroundColor: "#f8dc81",
-                        // paddingVertical: 10,
-                      }}
-                      containerStyle={{
-                        borderRadius: 100,
-                      }}
-                      textStyle={{ color: "#214151" }}
-                    />
-                  )}
-                </View>
-              ))}
+              <View>
+                {lastchatauthor != userId && !seen && unSeenCount !== 0 && (
+                  <Badge
+                    value={unSeenCount}
+                    badgeStyle={{
+                      backgroundColor: "#f8dc81",
+                      // paddingVertical: 10,
+                    }}
+                    containerStyle={{
+                      borderRadius: 100,
+                    }}
+                    textStyle={{ color: "#214151" }}
+                  />
+                )}
+              </View>
             </>
           )}
 

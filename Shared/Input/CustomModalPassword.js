@@ -44,6 +44,10 @@ const CustomModalPassword = ({
             setShowPasswordModal(false);
             setShowSuccess(true);
             console.error(res);
+            setOldPassword("");
+            setConfirmNewPassword("");
+            setNewPassword("");
+
             dispatch(
               actions.loginAgencyAction({
                 agency: res.newAgency,
