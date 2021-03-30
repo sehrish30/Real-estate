@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const agencySchema = mongoose.Schema(
   {
@@ -50,9 +51,24 @@ const agencySchema = mongoose.Schema(
     },
     reviews: [
       {
-        user: String,
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
         text: String,
-        time: String,
+        time: {
+          type: String,
+          default: new Date().toISOString(),
+        },
+        replies: [
+          {
+            text: String,
+            time: {
+              type: String,
+              default: new Date().toISOString(),
+            },
+          },
+        ],
       },
     ],
     commercial: [String],

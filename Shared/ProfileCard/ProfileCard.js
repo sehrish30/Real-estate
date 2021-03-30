@@ -13,12 +13,13 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Button } from "react-native-elements";
 import { useSelector } from "react-redux";
-import { SimpleLineIcons } from "@expo/vector-icons";
+import { SimpleLineIcons, EvilIcons } from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
 
 import { Feather } from "@expo/vector-icons";
 import CustomOptionsOverlay from "../Overlays/CustomOptionsOverlay";
+import RatingsReviews from "./RatingsReviews";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -131,7 +132,7 @@ const ProfileCard = ({
             <View style={{ verticalAlign: "middle" }}>
               <IonIcons
                 style={{ marginRight: 8 }}
-                name="ios-location-sharp"
+                name="ios-location-outline"
                 color={"#214151"}
                 size={20}
               />
@@ -176,7 +177,6 @@ const ProfileCard = ({
           />
         </View>
         <View style={{ marginTop: 30, flexDirection: "row" }}>
-          {console.error(customer.decoded.userId)}
           {customer?.decoded?.userId && (
             <>
               <Button
@@ -227,6 +227,8 @@ const ProfileCard = ({
             </>
           )}
         </View>
+        <Card.Divider />
+        <RatingsReviews />
       </Card>
     </>
   );
