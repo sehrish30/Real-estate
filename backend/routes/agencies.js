@@ -633,29 +633,6 @@ router.post("/enter-password", (req, res) => {
 /*----------------------------------------
       REVIEWS FOR AGENCY
 ----------------------------------------- */
-// router.post(`/review`, async (req, res) => {
-//   try {
-//     await Agency.findByIdAndUpdate(
-//       req.body.id,
-//       {
-//         $push: {
-//           reviews: {
-//             user: req.body.userId,
-//             text: req.body.content,
-//           },
-//         },
-//       },
-//       { new: true }
-//     ).exec((err, result) => {
-//       if (err) {
-//         return res.status(422).send("Agency couldn't be updated");
-//       }
-//       return res.status(200).send(result);
-//     });
-//   } catch (err) {
-//     return res.status(500).send(err);
-//   }
-// });
 
 router.post(`/review`, async (req, res) => {
   try {
@@ -676,8 +653,37 @@ router.post(`/review`, async (req, res) => {
           user: req.body.userId,
           text: req.body.content,
           time: new Date().toISOString(),
-          replies: [],
+          replies: {},
         });
+
+        result.save().then((response) => {
+          return res.status(200).send(response);
+        });
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+      AGENCY REPLY TO REVIEW
+----------------------------------------- */
+router.post(`/reply-review`, async (req, res) => {
+  try {
+    await Agency.findById(req.body.id, (err, result) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      if (result) {
+        for (let i = 0; i < result.reviews.length; i++) {
+          if (result.reviews[i].user == req.body.userId) {
+            result.reviews[i].replies = {
+              text: req.body.content,
+              time: new Date().toISOString(),
+            };
+          }
+        }
 
         result.save().then((response) => {
           return res.status(200).send(response);

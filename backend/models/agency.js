@@ -69,15 +69,14 @@ const agencySchema = mongoose.Schema(
           type: String,
           default: new Date().toISOString(),
         },
-        replies: [
-          {
-            text: String,
-            time: {
-              type: String,
-              default: new Date().toISOString(),
-            },
+        replies: {
+          type: Object,
+          text: String,
+          time: {
+            type: String,
+            default: new Date().toISOString(),
           },
-        ],
+        },
       },
     ],
     commercial: [String],
