@@ -70,6 +70,11 @@ const RatingsReviews = () => {
           <ListItem.Subtitle style={{ color: "#214151" }}>
             {item.text}
           </ListItem.Subtitle>
+          <Text
+            style={{ color: "#839b97", fontSize: 10, alignSelf: "flex-end" }}
+          >
+            1 month ago
+          </Text>
         </ListItem.Content>
         <Pressable
           onPressOut={() => {

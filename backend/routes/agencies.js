@@ -630,4 +630,110 @@ router.post("/enter-password", (req, res) => {
   }
 });
 
+/*----------------------------------------
+      REVIEWS FOR AGENCY
+----------------------------------------- */
+// router.post(`/review`, async (req, res) => {
+//   try {
+//     await Agency.findByIdAndUpdate(
+//       req.body.id,
+//       {
+//         $push: {
+//           reviews: {
+//             user: req.body.userId,
+//             text: req.body.content,
+//           },
+//         },
+//       },
+//       { new: true }
+//     ).exec((err, result) => {
+//       if (err) {
+//         return res.status(422).send("Agency couldn't be updated");
+//       }
+//       return res.status(200).send(result);
+//     });
+//   } catch (err) {
+//     return res.status(500).send(err);
+//   }
+// });
+
+router.post(`/review`, async (req, res) => {
+  try {
+    await Agency.findById(req.body.id, (err, result) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      if (result) {
+        let index = result.reviews.findIndex(
+          (review) => review.user == req.body.userId
+        );
+
+        if (index >= 0) {
+          result?.reviews.splice(index, 1);
+        }
+
+        result.reviews.push({
+          user: req.body.userId,
+          text: req.body.content,
+          time: new Date().toISOString(),
+          replies: [],
+        });
+
+        result.save().then((response) => {
+          return res.status(200).send(response);
+        });
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+            RATE AGENCY
+----------------------------------------- */
+router.post(`/rate`, async (req, res) => {
+  try {
+    await Agency.findById(req.body.id, (err, result) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+
+      if (result) {
+        // Remove the rating if already given
+        let index = result?.rating.findIndex(
+          (element) => element.user == req.body.userId
+        );
+
+        if (index >= 0) {
+          result?.rating.splice(index, 1);
+        }
+
+        var total_ratings = parseInt(req.body.rate);
+        let final_rating = parseInt(req.body.rate);
+        for (let i = 0; i < result?.rating?.length; i++) {
+          total_ratings += parseInt(result?.rating[i]?.rate);
+        }
+        if (result?.rating.length > 0) {
+          final_rating = parseInt(total_ratings) / (result?.rating?.length + 1);
+        }
+
+        result?.rating.push({
+          rate: req.body.rate,
+          user: req.body.userId,
+        });
+
+        result.totalRating = parseInt(final_rating.toFixed(2));
+        result.save().then((response) => {
+          return res.status(200).send(response);
+        });
+      } else {
+        return res.status(422).send("Agency not found");
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router;

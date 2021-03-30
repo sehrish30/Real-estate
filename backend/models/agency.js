@@ -45,7 +45,16 @@ const agencySchema = mongoose.Schema(
     bio: {
       type: String,
     },
-    rating: {
+    rating: [
+      {
+        rate: Number,
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
+    totalRating: {
       type: Number,
       default: 0,
     },
