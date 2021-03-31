@@ -98,7 +98,14 @@ const Home = ({ navigation }) => {
           leftComponent={
             <View style={styles.rightNav}>
               <TouchableOpacity style={styles.menu} onPress={showMenu}>
-                <Icon name="notifications" color={"#214151"} size={30} />
+                <Icon
+                  name="notifications"
+                  color={"#214151"}
+                  size={30}
+                  onPress={() => {
+                    navigation.navigate("UserRateReview");
+                  }}
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.menu}

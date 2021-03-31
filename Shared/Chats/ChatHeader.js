@@ -4,7 +4,7 @@ import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
 import { Badge } from "react-native-elements";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteChat } from "../../Shared/Services/ChatServices";
-import { CHAT_EXISTS } from "../../Redux/constants";
+
 import chat from "../../Redux/Reducers/chat";
 const ChatHeader = ({
   showTrash,

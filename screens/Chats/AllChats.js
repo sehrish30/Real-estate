@@ -242,8 +242,8 @@ const AllChats = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
-      headerTitleStyle: { color: "#a2d0c1" },
-      headerTintColor: "#a2d0c1",
+      headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
+      headerTintColor: "#2c6e8f",
       title: "Messages",
       headerRight: () => (
         <TouchableOpacity
@@ -252,7 +252,7 @@ const AllChats = ({ navigation }) => {
             setShowSearchBar(true);
           }}
         >
-          <AntDesign name="search1" color={"#a2d0c1"} size={30} />
+          <AntDesign name="search1" color={"#2c6e8f"} size={30} />
         </TouchableOpacity>
       ),
     });

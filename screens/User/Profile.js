@@ -27,8 +27,8 @@ const Profile = ({ navigation }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
-      headerTitleStyle: { color: "#a2d0c1" },
-      headerTintColor: "#a2d0c1",
+      headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
+      headerTintColor: "#2c6e8f",
       title: "Account",
       headerRight: () => (
         <TouchableOpacity onPress={logout}>
