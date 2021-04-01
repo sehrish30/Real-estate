@@ -231,7 +231,11 @@ const Chat = ({ navigation, route }) => {
         setChatExists(false);
         chatExistence = false;
         setLoading(true);
-        navigation.navigate("AllChats");
+        navigation.reset({
+          index: 1,
+          routes: [{ name: "AllChats" }],
+        });
+        // navigation.navigate("AllChats");
       };
     }, [])
   );

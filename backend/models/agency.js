@@ -71,28 +71,28 @@ const agencySchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    reviews: [
-      {
-        rate: Number,
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-        text: String,
-        time: {
-          type: String,
-          default: new Date().toISOString(),
-        },
-        replies: {
-          type: Object,
-          text: String,
-          time: {
-            type: String,
-            default: new Date().toISOString(),
-          },
-        },
-      },
-    ],
+    // reviews: [
+    //   {
+    //     rate: Number,
+    //     user: {
+    //       type: Schema.Types.ObjectId,
+    //       ref: "User",
+    //     },
+    //     text: String,
+    //     time: {
+    //       type: String,
+    //       default: new Date().toISOString(),
+    //     },
+    //     replies: {
+    //       type: Object,
+    //       text: String,
+    //       time: {
+    //         type: String,
+    //         default: new Date().toISOString(),
+    //       },
+    //     },
+    //   },
+    // ],
     commercial: [String],
     land: [mongoose.ObjectId],
     residential: [mongoose.ObjectId],

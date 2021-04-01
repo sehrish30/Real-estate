@@ -189,7 +189,6 @@ export async function loginAgencySrv(data, navigation) {
       navigation.navigate("Home");
       return res;
     } else {
-      console.error("COMING");
       Toast.show({
         type: "error",
         text1: `${err}`,

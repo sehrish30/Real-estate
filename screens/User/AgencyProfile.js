@@ -110,7 +110,6 @@ const AgencyProfile = ({ navigation }) => {
   const uploadLogoFromPhone = async () => {
     let token = await AsyncStorage.getItem("jwt");
     const newfile = await uploadImageFromPhone();
-    console.error("NEW FILE", newfile);
     if (newfile) {
       const res = await uploadLogoToCloudinary(newfile);
       // console.log(res);

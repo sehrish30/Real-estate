@@ -40,6 +40,7 @@ const ProfileCard = ({
 }) => {
   console.log(residential);
   const [visible, setVisible] = useState(false);
+  const [showFullBio, setShowFullBio] = useState(false);
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let userId = null;
@@ -127,7 +128,16 @@ const ProfileCard = ({
           <Text style={[styles.font, styles.userText]}>{user}</Text>
         </View>
         <Card.Divider />
-        <Text style={styles.bio}>{bio}</Text>
+        {bio?.length > 100 && !showFullBio ? (
+          <Text onPress={() => setShowFullBio(!showFullBio)} style={styles.bio}>
+            {bio.substr(0, 100)}...
+          </Text>
+        ) : (
+          <Text onPress={() => setShowFullBio(!showFullBio)} style={styles.bio}>
+            {bio}
+          </Text>
+        )}
+
         <Card.Divider />
         <View style={styles.locationRow}>
           <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
@@ -232,7 +242,9 @@ const ProfileCard = ({
           )}
         </View>
         <Card.Divider />
-        {/* <Button
+
+        <RatingsReviews userId={userId} id={id} />
+        <Button
           title="Rate"
           onPress={() => {
             navigation.navigate("UserRateReview", {
@@ -240,12 +252,6 @@ const ProfileCard = ({
               userId,
             });
           }}
-        /> */}
-        <RatingsReviews
-          userId={userId}
-          id={id}
-          // rating={rating}
-          // reviews={reviews}
         />
       </Card>
     </>
@@ -284,7 +290,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     marginBottom: 16,
-    textAlign: "center",
+    textAlign: "left",
     // letterSpacing: 0.5,
   },
   locationSection: {

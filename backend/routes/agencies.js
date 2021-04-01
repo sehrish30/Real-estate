@@ -118,11 +118,15 @@ router.get(`/pending-agencies`, async (req, res) => {
 
 router.get("/all-reviews", async (req, res) => {
   console.log("Data", req.query);
+
   try {
     const agency = await Agency.findById(req.query.id)
       .select("totalRating rating")
-      .populate("rating.user", "dp email")
-      .limit(req.body.limit);
+      .populate({
+        path: "rating.user",
+        select: "dp email",
+      })
+      .slice("rating", parseInt(req.query.limit));
 
     if (!agency) {
       return res.status(422).send("No agency found");

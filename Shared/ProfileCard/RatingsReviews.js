@@ -27,7 +27,7 @@ const RatingsReviews = ({ id, userId }) => {
   const [visible, setVisible] = useState(false);
   const [comment, setComment] = useState("");
   const [showReply, setShowReply] = useState("");
-  const [ratings, setRatings] = useState("");
+
   const [another, setAnother] = useState([]);
   const [totalRating, setTotalRating] = useState("");
   const [agencyId, setAgencyId] = useState("");
@@ -237,19 +237,19 @@ const RatingsReviews = ({ id, userId }) => {
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color={totalRating >= 1 ? "#f8dc81" : "#edeef7"}
+          color={totalRating >= 1 ? "#f8dc81" : "#cfd3ce"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color={totalRating >= 2 ? "#f8dc81" : "#edeef7"}
+          color={totalRating >= 2 ? "#f8dc81" : "#cfd3ce"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color={totalRating >= 3 ? "#f8dc81" : "#edeef7"}
+          color={totalRating >= 3 ? "#f8dc81" : "#cfd3ce"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
@@ -277,22 +277,30 @@ const RatingsReviews = ({ id, userId }) => {
           Reviews
         </Text>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          marginTop: 10,
-          padding: 0,
-          alignItems: "flex-start",
-        }}
-      >
-        {id && (
-          <FlatList
-            keyExtractor={(item) => item?._id}
-            data={another}
-            renderItem={renderItem}
-          />
-        )}
-      </View>
+      {another?.length !== 0 ? (
+        <View
+          style={{
+            flexDirection: "row",
+            marginTop: 10,
+            padding: 0,
+            alignItems: "flex-start",
+          }}
+        >
+          {id && (
+            <FlatList
+              keyExtractor={(item) => item?._id}
+              data={another}
+              renderItem={renderItem}
+            />
+          )}
+        </View>
+      ) : (
+        <View style={{ marginTop: 20 }}>
+          <Text style={{ fontFamily: "EBGaramond-Regular", fontSize: 16 }}>
+            No Reviews
+          </Text>
+        </View>
+      )}
       {showSeeMore && (
         <Button
           icon={

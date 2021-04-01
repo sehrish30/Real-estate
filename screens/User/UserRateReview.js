@@ -41,7 +41,7 @@ const UserRateReview = ({ navigation, route }) => {
     (async () => {
       const rate = checkUsersRate(id, userId, token);
       const [rateRes] = await Promise.all([rate]);
-      console.error(rateRes);
+
       if (rateRes) {
         setPrevState(true);
         rateRes.map((rating) => {
