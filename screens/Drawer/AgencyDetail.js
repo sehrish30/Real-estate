@@ -1,8 +1,7 @@
 import React, { useCallback, useReducer, useLayoutEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import axios from "axios";
-import baseURL from "../../assets/common/baseUrl";
+
 import { getAgencyDetails } from "../../Shared/Services/ProfileServices";
 import ProfileCard from "../../Shared/ProfileCard/ProfileCard";
 import { ScrollView } from "react-native-gesture-handler";
@@ -15,6 +14,8 @@ const initialState = {
   land: 0,
   residential: 0,
   industrial: 0,
+  rating: [],
+  reviews: [],
 };
 
 const AgencyDetail = ({ route, navigation }) => {
@@ -24,6 +25,8 @@ const AgencyDetail = ({ route, navigation }) => {
       headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
       headerTintColor: "#2c6e8f",
     });
+
+    return () => {};
   }, [navigation]);
 
   // REDUCERS

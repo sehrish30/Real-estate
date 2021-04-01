@@ -113,12 +113,88 @@ router.get(`/pending-agencies`, async (req, res) => {
 });
 
 /*----------------------------------------
+        GET ALL RATINGS OG AGENCIES
+----------------------------------------- */
+
+router.get("/all-reviews", async (req, res) => {
+  console.log("Data", req.query);
+  try {
+    const agency = await Agency.findById(req.query.id)
+      .select("totalRating rating")
+      .populate("rating.user", "dp email")
+      .limit(req.body.limit);
+
+    if (!agency) {
+      return res.status(422).send("No agency found");
+    }
+    if (agency.length < 1) {
+      return res.status(200).send(false);
+    }
+    return res.status(200).send(agency);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+           Review AGENCY
+----------------------------------------- */
+
+// router.get("/check-users-review", async (req, res) => {
+//   console.log("Data", req.query);
+//   try {
+//     const agency = await Agency.find({
+//       _id: req.query.id,
+//       "reviews.user": req.query.userId,
+//     })
+//       .select("reviews")
+//       .populate("reviews.user", "dp email");
+
+//     if (!agency) {
+//       return res.status(422).send("No agency found");
+//     }
+//     if (agency.length < 1) {
+//       return res.status(200).send(false);
+//     }
+//     return res.status(200).send(agency);
+//   } catch (err) {
+//     return res.status(500).send(err);
+//   }
+// });
+
+/*----------------------------------------
+           Rating AGENCY
+----------------------------------------- */
+
+router.get(`/check-users-rating`, async (req, res) => {
+  console.log("Data", req.query);
+  try {
+    const agency = await Agency.find({
+      _id: req.query.id,
+      "rating.user": req.query.userId,
+    })
+      .select("rating")
+      .populate("rating.user", "dp email");
+
+    if (!agency) {
+      return res.status(422).send("No agency found");
+    }
+    if (agency.length < 1) {
+      return res.status(200).send(false);
+    }
+    return res.status(200).send(agency);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
             Agency DETAILS
 ---------------------------------------- */
 router.get("/:id", async (req, res) => {
-  const agency = await Agency.findById(req.params.id).select(
-    "-attachments -password"
-  );
+  const agency = await Agency.findById(req.params.id)
+    .select("-attachments -password")
+    .populate("reviews.user", "dp email");
 
   if (!agency) {
     return res
@@ -676,9 +752,9 @@ router.post(`/reply-review`, async (req, res) => {
         return res.status(422).send(err);
       }
       if (result) {
-        for (let i = 0; i < result.reviews.length; i++) {
-          if (result.reviews[i].user == req.body.userId) {
-            result.reviews[i].replies = {
+        for (let i = 0; i < result.rating.length; i++) {
+          if (result.rating[i].user == req.body.userId) {
+            result.rating[i].replies = {
               text: req.body.content,
               time: new Date().toISOString(),
             };
@@ -727,6 +803,9 @@ router.post(`/rate`, async (req, res) => {
         result?.rating.push({
           rate: req.body.rate,
           user: req.body.userId,
+          text: req.body.content,
+          time: new Date().toISOString(),
+          replies: {},
         });
 
         result.totalRating = parseInt(final_rating.toFixed(2));

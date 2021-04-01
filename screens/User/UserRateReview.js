@@ -8,11 +8,28 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
-
+import { useSelector } from "react-redux";
+import Toast from "react-native-toast-message";
 import { Button, AirbnbRating, Text } from "react-native-elements";
+import {
+  checkUsersRate,
+  checkUsersReview,
+  rateService,
+} from "../../Shared/Services/RateServices";
 
 var { width } = Dimensions.get("screen");
-const UserRateReview = ({ navigation }) => {
+const UserRateReview = ({ navigation, route }) => {
+  const { id, userId } = route.params;
+  let token = useSelector((state) => state.auth.token);
+
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [prevRate, setPrevRate] = useState(0);
+  const [prevState, setPrevState] = useState(null);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
@@ -20,12 +37,45 @@ const UserRateReview = ({ navigation }) => {
       headerTintColor: "#2c6e8f",
       headerTitle: "Rate Us",
     });
+
+    (async () => {
+      const rate = checkUsersRate(id, userId, token);
+      const [rateRes] = await Promise.all([rate]);
+      console.error(rateRes);
+      if (rateRes) {
+        setPrevState(true);
+        rateRes.map((rating) => {
+          rating.rating.map((rate) => {
+            if (rate.user._id === userId) {
+              setRating(rate.rate);
+              setReview(rate.text);
+            }
+          });
+        });
+      }
+
+      console.log(rateRes, reviewRes);
+    })();
   }, [navigation]);
 
-  const [rating, setRating] = useState("");
-  const [review, setReview] = useState("");
+  const sendRateAndReview = async () => {
+    navigation.navigate("Home");
+    if (review) {
+      const res = await rateService(
+        { id, userId, rate: rating, content: review },
+        token
+      );
+      console.log("SEND INFO", res);
 
-  const scrollY = useRef(new Animated.Value(0)).current;
+      setLoading(true);
+      Toast.show({
+        type: "success",
+        text1: `Thank you for your review`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  };
 
   useEffect(() => {
     if (rating) {
@@ -92,7 +142,7 @@ const UserRateReview = ({ navigation }) => {
           reviewSize={18}
           reviewColor="#fdb827"
           unSelectedColor="#839b97"
-          defaultRating={0}
+          defaultRating={rating}
           size={30}
           showRating={true}
           onFinishRating={(text) => setRating(text)}
@@ -138,9 +188,12 @@ const UserRateReview = ({ navigation }) => {
               style={styles.input}
               onChangeText={(text) => setReview(text)}
               value={review}
+              placeholder={"Review..."}
             />
           </View>
           <Button
+            disabled={loading}
+            loading={loading}
             containerStyle={{
               marginHorizontal: 15,
               marginTop: 20,
@@ -151,7 +204,10 @@ const UserRateReview = ({ navigation }) => {
             titleStyle={{
               fontFamily: "EBGaramond-Bold",
             }}
-            title="Send"
+            title={prevState ? "Edit Rating" : "Send Rating"}
+            onPress={() => {
+              sendRateAndReview();
+            }}
           />
         </Animated.View>
       ) : null}

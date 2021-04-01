@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
   FlatList,
   TextInput,
   Dimensions,
-  BackHandler,
   Pressable,
 } from "react-native";
 import {
@@ -13,85 +12,165 @@ import {
   Avatar,
   ListItem,
   BottomSheet,
-  Icon,
   Button,
+  Icon,
 } from "react-native-elements";
-import { FontAwesome } from "@expo/vector-icons";
+import { formatDistanceToNow } from "date-fns";
+import { useSelector } from "react-redux";
 
+import { Feather, FontAwesome } from "@expo/vector-icons";
 var { height, width } = Dimensions.get("screen");
+import { getAllReviews, replyReview } from "../Services/RateServices";
+import { useFocusEffect } from "@react-navigation/core";
 
-const RatingsReviews = () => {
+const RatingsReviews = ({ id, userId }) => {
   const [visible, setVisible] = useState(false);
   const [comment, setComment] = useState("");
   const [showReply, setShowReply] = useState("");
+  const [ratings, setRatings] = useState("");
+  const [another, setAnother] = useState([]);
+  const [totalRating, setTotalRating] = useState("");
+  const [agencyId, setAgencyId] = useState("");
+  const [readMore, setReadMore] = useState("");
+  const [limit, setLimit] = useState(3);
+  const [showSeeMore, setShowSeeMore] = useState(true);
+  let agency = useSelector((state) => state.auth.agency);
+  let token = useSelector((state) => state.auth.token);
 
-  const list = [
-    {
-      id: "545",
-      user: "Amy Farha",
-      dp: "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-      text: "Vice President",
-      time: new Date().toISOString(),
-      replies: [
-        {
-          text: "Thank you for posting",
-          time: new Date().toISOString(),
-        },
-      ],
-    },
-    {
-      id: "544",
-      user: "Chris Jackson",
-      dp:
-        "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-      text:
-        "Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman",
-      time: new Date().toISOString(),
-      replies: [],
-    },
-  ];
+  useFocusEffect(
+    useCallback(() => {
+      console.log(id);
+
+      if (id) {
+        (async () => {
+          console.log("NO ID", id);
+          const res = await getAllReviews(id, token, limit);
+          setAgencyId(res.id);
+          if (res.rating.length < limit) {
+            setShowSeeMore(false);
+          }
+
+          setTotalRating(res.totalRating);
+          console.log("RES", res);
+          setAnother(res.rating);
+        })();
+        console.log("AGAIN");
+      }
+    }, [id, limit])
+  );
+
+  // const list = [
+  //   {
+  //     _id: "545",
+  //     user: {
+  //       email: "Amy Farha",
+  //       dp: "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+  //     },
+
+  //     text: "Vice President",
+  //     time: "2021-03-31T18:15:19.558Z",
+  //     replies: {
+  //       text: "Thank you for posting",
+  //       time: new Date().toISOString(),
+  //     },
+  //   },
+  //   {
+  //     _id: "544",
+  //     user: {
+  //       email: "Chris Jackson",
+  //       dp:
+  //         "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
+  //     },
+  //     text:
+  //       "Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman",
+  //     time: new Date().toISOString(),
+  //     replies: {},
+  //   },
+  // ];
 
   const renderItem = ({ item }) => (
     <>
-      <ListItem containerStyle={{ backgroundColor: "#e4fbff" }}>
+      <ListItem
+        bottomDivider
+        containerStyle={{
+          backgroundColor: "#e4fbff",
+          textAlign: "left",
+          alignItems: "flex-start",
+          borderColor: "#839b97",
+        }}
+      >
         <Avatar
           rounded
-          containerStyle={{ alignSelf: "flex-start" }}
-          source={{ uri: item.dp }}
+          containerStyle={{
+            alignSelf: "flex-start",
+          }}
+          source={{ uri: item?.user?.dp || "https:" }}
         />
 
         <ListItem.Content>
           <ListItem.Title
             style={{ color: "#214151", fontFamily: "EBGaramond-Italic" }}
           >
-            {item.user}
+            {item?.user.email}
           </ListItem.Title>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ color: "#839b97", marginBottom: 5 }}>
+              {item.rate}
+            </Text>
+            <FontAwesome
+              style={{ marginLeft: 2 }}
+              name="star"
+              size={12}
+              color="#f8dc81"
+            />
+          </View>
 
-          <ListItem.Subtitle style={{ color: "#214151" }}>
-            {item.text}
-          </ListItem.Subtitle>
+          {item?.text.length > 20 && item.user.email !== readMore ? (
+            <ListItem.Subtitle
+              style={{ color: "#214151" }}
+              onPress={() => {
+                setReadMore(item.user.email);
+              }}
+            >
+              {item.text.substr(0, 100)}....
+            </ListItem.Subtitle>
+          ) : (
+            <ListItem.Subtitle
+              onPress={() => {
+                if (readMore) {
+                  setReadMore(null);
+                }
+              }}
+              style={{ color: "#214151" }}
+            >
+              {item.text}
+            </ListItem.Subtitle>
+          )}
+
           <Text
             style={{ color: "#839b97", fontSize: 10, alignSelf: "flex-end" }}
           >
-            1 month ago
+            {item.time ? formatDistanceToNow(Date.parse(item?.time)) : null}
           </Text>
         </ListItem.Content>
-        <Pressable
-          onPressOut={() => {
-            setVisible(true);
-          }}
-        >
-          <FontAwesome
-            style={{ alignSelf: "flex-start" }}
-            name="mail-reply"
-            size={15}
-            color="#214151"
-          />
-        </Pressable>
+        {agency.id == id && (
+          <Pressable
+            onPressOut={() => {
+              setVisible(true);
+            }}
+          >
+            <FontAwesome
+              style={{ alignSelf: "flex-start" }}
+              name="mail-reply"
+              size={15}
+              color="#214151"
+            />
+          </Pressable>
+        )}
       </ListItem>
-      {item.replies.length > 0 && (
+      {item?.replies && (
         <>
-          {showReply === item.id ? (
+          {showReply === item?._id ? (
             <Pressable onPressIn={() => setShowReply("")}>
               <Text
                 style={{
@@ -104,7 +183,7 @@ const RatingsReviews = () => {
               </Text>
             </Pressable>
           ) : (
-            <Pressable onPressIn={() => setShowReply(item.id)}>
+            <Pressable onPressIn={() => setShowReply(item?._id)}>
               <Text
                 style={{
                   alignSelf: "flex-end",
@@ -119,25 +198,23 @@ const RatingsReviews = () => {
         </>
       )}
 
-      {showReply === item.id && (
+      {showReply === item?._id && (
         <>
-          {item?.replies?.map((reply) => (
-            <View
-              style={{
-                marginLeft: 40,
-                backgroundColor: "#8dadb3",
-                color: "#fff",
-                padding: 15,
-                borderRadius: 5,
-              }}
-            >
-              <ListItem.Content>
-                <ListItem.Subtitle style={{ color: "#fff" }}>
-                  {reply.text}
-                </ListItem.Subtitle>
-              </ListItem.Content>
-            </View>
-          ))}
+          <View
+            style={{
+              marginLeft: 40,
+              backgroundColor: "#8dadb3",
+              color: "#fff",
+              padding: 15,
+              borderRadius: 5,
+            }}
+          >
+            <ListItem.Content>
+              <ListItem.Subtitle style={{ color: "#fff" }}>
+                {item?.replies?.text}
+              </ListItem.Subtitle>
+            </ListItem.Content>
+          </View>
         </>
       )}
     </>
@@ -152,7 +229,7 @@ const RatingsReviews = () => {
           color="#214151"
         />
         <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-          Ratings
+          Rating
         </Text>
       </View>
       <View style={{ flexDirection: "row", marginVertical: 15 }}>
@@ -160,33 +237,33 @@ const RatingsReviews = () => {
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color="#f8dc81"
+          color={totalRating >= 1 ? "#f8dc81" : "#edeef7"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color="#f8dc81"
+          color={totalRating >= 2 ? "#f8dc81" : "#edeef7"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color="#f8dc81"
+          color={totalRating >= 3 ? "#f8dc81" : "#edeef7"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color="#f8dc81"
+          color={totalRating >= 4 ? "#f8dc81" : "#cfd3ce"}
         />
         <FontAwesome
           style={{ marginRight: 10 }}
           name="star"
           size={25}
-          color="#edeef7"
+          color={totalRating > 4 ? "#f8dc81" : "#cfd3ce"}
         />
-        <Text style={[styles.font, { fontSize: 18 }]}>4.5</Text>
+        <Text style={[styles.font, { fontSize: 18 }]}>{totalRating}/5</Text>
       </View>
 
       <View style={{ flexDirection: "row", marginTop: 20 }}>
@@ -200,23 +277,47 @@ const RatingsReviews = () => {
           Reviews
         </Text>
       </View>
-      <View style={{ flexDirection: "row", marginTop: 10, padding: 0 }}>
-        <FlatList
-          keyExtractor={(item) => item.id}
-          data={list}
-          renderItem={renderItem}
-        />
-      </View>
-      <Button
-        buttonStyle={{ borderColor: "#214151" }}
-        containerStyle={{ marginTop: 15 }}
-        titleStyle={{
-          fontFamily: "EBGaramond-Bold",
-          color: "#839b97",
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 10,
+          padding: 0,
+          alignItems: "flex-start",
         }}
-        title="Load more"
-        type="outline"
-      />
+      >
+        {id && (
+          <FlatList
+            keyExtractor={(item) => item?._id}
+            data={another}
+            renderItem={renderItem}
+          />
+        )}
+      </View>
+      {showSeeMore && (
+        <Button
+          icon={
+            <Feather
+              name="plus"
+              size={15}
+              color="#839b97"
+              style={{ marginRight: 5 }}
+            />
+          }
+          buttonStyle={{ borderColor: "#214151" }}
+          containerStyle={{ marginTop: 15 }}
+          titleStyle={{
+            fontFamily: "EBGaramond-Bold",
+            color: "#839b97",
+          }}
+          title="See more"
+          type="outline"
+          onPress={() => {
+            setLimit(limit + 3);
+            console.log("DONE", limit);
+          }}
+        />
+      )}
+
       <BottomSheet
         isVisible={visible}
         containerStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
@@ -260,7 +361,7 @@ const RatingsReviews = () => {
             name="send-o"
             type="font-awesome"
             color="#214151"
-            onPress={() => console.log("hello")}
+            onPress={() => replyReview({ id, content: comment, userId }, token)}
           />
         </View>
       </BottomSheet>

@@ -176,7 +176,7 @@ const AgencyProfile = ({ navigation }) => {
         industrial: agency.industrial?.length,
         land: agency.land?.length,
       });
-      console.log(profile, agency);
+      console.log(profile, agency.commercial);
       // console.error(profile.id);
     };
     getAgency();
@@ -201,6 +201,7 @@ const AgencyProfile = ({ navigation }) => {
         land={land}
         showEditbutton={true}
         changePassword={changePassword}
+        id={profile.id}
       />
 
       <CustomModal

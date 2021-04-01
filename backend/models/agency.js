@@ -52,6 +52,19 @@ const agencySchema = mongoose.Schema(
           type: Schema.Types.ObjectId,
           ref: "User",
         },
+        text: String,
+        time: {
+          type: String,
+          default: new Date().toISOString(),
+        },
+        replies: {
+          type: Object,
+          text: String,
+          time: {
+            type: String,
+            default: new Date().toISOString(),
+          },
+        },
       },
     ],
     totalRating: {
@@ -60,6 +73,7 @@ const agencySchema = mongoose.Schema(
     },
     reviews: [
       {
+        rate: Number,
         user: {
           type: Schema.Types.ObjectId,
           ref: "User",
@@ -92,20 +106,20 @@ const agencySchema = mongoose.Schema(
   }
 );
 
-agencySchema.set("toJSON", {
-  transform: function (doc, ret, options) {
-    ret.id = ret._id;
-    delete ret._id;
-    delete ret.__v;
-  },
+// agencySchema.set("toJSON", {
+//   transform: function (doc, ret, options) {
+//     ret.id = ret._id;
+//     delete ret._id;
+//     delete ret.__v;
+//   },
+// });
+
+agencySchema.virtual("id").get(function () {
+  return this._id.toHexString();
 });
 
-// agencySchema.virtual("id").get(function () {
-//   return this._id.toHexString();
-// });
-
-// agencySchema.set("toJSON", {
-//   virtuals: true,
-// });
+agencySchema.set("toJSON", {
+  virtuals: true,
+});
 
 exports.Agency = mongoose.model("Agent", agencySchema);

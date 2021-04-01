@@ -39,7 +39,7 @@ const AgencySearchCard = ({ index, agency, navigation }) => {
           </View>
           <View style={{ marginLeft: "auto", flexDirection: "row" }}>
             <Text style={[styles.font, { fontSize: 18, color: "#f8dc81" }]}>
-              {agency.rating || 0}
+              {agency.totalRating || 0}
             </Text>
             <Icon
               // onPress={showMenu}

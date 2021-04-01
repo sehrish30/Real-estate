@@ -135,6 +135,7 @@ const CustomModal = ({
             title="SAVE"
             buttonStyle={{ backgroundColor: "#214151", marginBottom: 10 }}
             style={styles.savebtn}
+            titleStyle={{ fontFamily: "EBGaramond-Bold" }}
             onPress={() => {
               setShowModal(false);
               storeUserInfo();
@@ -143,7 +144,7 @@ const CustomModal = ({
           <Button
             title="CANCEL"
             type="outline"
-            titleStyle={{ color: "#214151" }}
+            titleStyle={{ color: "#214151", fontFamily: "EBGaramond-Bold" }}
             style={styles.cancelbtn}
             onPress={() => {
               setShowModal(false);

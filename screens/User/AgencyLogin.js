@@ -29,6 +29,10 @@ const AgencyLogin = ({ navigation }) => {
         logo,
         location,
         bio,
+        commercial,
+        residential,
+        industrial,
+        land,
       } = res.data.agency;
       const agency = {
         id,
@@ -38,6 +42,10 @@ const AgencyLogin = ({ navigation }) => {
         logo,
         location,
         bio,
+        commercial,
+        residential,
+        industrial,
+        land,
       };
 
       // navigation.replace("Home");

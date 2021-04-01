@@ -8,10 +8,10 @@ import {
 } from "react-native";
 import { Image, Card, Text, Badge } from "react-native-elements";
 import * as Linking from "expo-linking";
-
+import { Button } from "react-native-elements";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Button } from "react-native-elements";
+
 import { useSelector } from "react-redux";
 import { SimpleLineIcons, EvilIcons } from "@expo/vector-icons";
 
@@ -35,6 +35,8 @@ const ProfileCard = ({
   navigation,
   id,
   phoneNumber,
+  // rating,
+  // reviews,
 }) => {
   console.log(residential);
   const [visible, setVisible] = useState(false);
@@ -176,7 +178,9 @@ const ProfileCard = ({
             keyExtractor={(item) => item.id}
           />
         </View>
-        <View style={{ marginTop: 30, flexDirection: "row" }}>
+        <View
+          style={{ marginTop: 30, flexDirection: "row", paddingBottom: 20 }}
+        >
           {customer?.decoded?.userId && (
             <>
               <Button
@@ -228,7 +232,21 @@ const ProfileCard = ({
           )}
         </View>
         <Card.Divider />
-        <RatingsReviews />
+        {/* <Button
+          title="Rate"
+          onPress={() => {
+            navigation.navigate("UserRateReview", {
+              id,
+              userId,
+            });
+          }}
+        /> */}
+        <RatingsReviews
+          userId={userId}
+          id={id}
+          // rating={rating}
+          // reviews={reviews}
+        />
       </Card>
     </>
   );

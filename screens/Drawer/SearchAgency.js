@@ -36,6 +36,7 @@ const SearchAgency = ({ navigation }) => {
     if (value?.length > 0 || location) {
       setLoading(true);
       const res = await searchAgencies(value, location.item);
+
       setAgencies(res);
       setLoading(false);
     }

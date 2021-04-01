@@ -15,8 +15,6 @@ import { sendChat } from "../../Shared/Services/ChatServices";
 import { SafeAreaView } from "react-native";
 import { uploadToCloudinary } from "../../Shared/services";
 
-import EmojiSelector, { Categories } from "react-native-emoji-selector";
-
 var { width, height } = Dimensions.get("window");
 const MessageInput = ({ chatSend, chatId }) => {
   const [message, setMessage] = useState("");
