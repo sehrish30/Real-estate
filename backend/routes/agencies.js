@@ -118,25 +118,89 @@ router.get(`/pending-agencies`, async (req, res) => {
 
 router.get("/all-reviews", async (req, res) => {
   console.log("Data", req.query);
+  let filter = {};
 
   try {
-    const agency = await Agency.findById(req.query.id)
-      .select("totalRating rating")
-      .populate({
-        path: "rating.user",
-        select: "dp email",
-        // options: { sort: { rate: -1 } },
-      })
-      .slice("rating", parseInt(req.query.limit));
-    console.log("NO REACH");
+    let id = mongoose.Types.ObjectId(req.query.id);
+    let agency;
 
-    if (!agency) {
-      return res.status(422).send("No agency found");
+    if (req.query.time) {
+      agency = await Agency.aggregate([
+        { $match: { _id: id } },
+        { $unwind: "$rating" },
+        {
+          $sort: {
+            // "rating.rate": parseInt(req.query.order),
+            "rating.time": parseInt(req.query.time),
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            rating: { $push: "$rating" },
+          },
+        },
+
+        {
+          $project: {
+            id: "$_id",
+            rating: "$rating",
+          },
+        },
+
+        { $limit: parseInt(req.query.limit) },
+      ]);
     }
-    if (agency.length < 1) {
-      return res.status(200).send(false);
+    if (req.query.order) {
+      agency = await Agency.aggregate([
+        { $match: { _id: id } },
+        { $unwind: "$rating" },
+        {
+          $sort: {
+            "rating.rate": parseInt(req.query.order),
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            rating: { $push: "$rating" },
+          },
+        },
+
+        {
+          $project: {
+            id: "$_id",
+            rating: "$rating",
+          },
+        },
+
+        { $limit: parseInt(req.query.limit) },
+      ]);
     }
-    return res.status(200).send(agency);
+
+    const agencyRating = await Agency.findById(req.query.id).select(
+      "totalRating"
+    );
+
+    // const agency = await Agency.findById(req.query.id)
+    //   .select("totalRating rating")
+    //   .sort({ "rating.rate": -1 })
+    //   .populate({
+    //     path: "rating.user",
+    //     select: "dp email",
+    //   })
+    //   .slice("rating", parseInt(req.query.limit));
+    // console.log("NO REACH");
+
+    // if (!agency) {
+    //   return res.status(422).send("No agency found");
+    // }
+    // if (agency.length < 1) {
+    //   return res.status(200).send(false);
+    // }
+    return res
+      .status(200)
+      .send({ ...agency[0], totalRating: agencyRating.totalRating });
   } catch (err) {
     return res.status(500).send(err);
   }

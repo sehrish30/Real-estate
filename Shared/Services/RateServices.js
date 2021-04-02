@@ -112,13 +112,10 @@ export async function checkUsersRate(id, userId, token) {
   }
 }
 
-export async function getAllReviews(id, token, limit = 0) {
+export async function getAllReviews(data, token) {
   try {
     const res = await axios.get(`${baseURL}agencies/all-reviews`, {
-      params: {
-        id: id,
-        limit,
-      },
+      params: data,
       headers: {
         Authorization: `Bearer ${token}`,
       },

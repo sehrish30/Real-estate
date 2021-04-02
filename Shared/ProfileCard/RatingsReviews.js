@@ -18,7 +18,11 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useSelector } from "react-redux";
 
-import { Feather, FontAwesome } from "@expo/vector-icons";
+import {
+  Feather,
+  FontAwesome,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 var { height, width } = Dimensions.get("screen");
 import { getAllReviews, replyReview } from "../Services/RateServices";
 import { useFocusEffect } from "@react-navigation/core";
@@ -45,7 +49,7 @@ const RatingsReviews = ({ id, url }) => {
       if (id) {
         (async () => {
           console.log("NO ID", id);
-          const res = await getAllReviews(id, token, limit);
+          const res = await getAllReviews({ id, limit, order: -1 }, token);
           setAgencyId(res.id);
           if (res.rating.length < limit) {
             setShowSeeMore(false);
@@ -59,7 +63,6 @@ const RatingsReviews = ({ id, url }) => {
       }
     }, [id, limit, another])
   );
-
 
   const renderItem = ({ item }) => (
     <View style={{ display: "flex" }}>
@@ -166,7 +169,7 @@ const RatingsReviews = ({ id, url }) => {
               <Text
                 style={{
                   alignSelf: "flex-end",
-                  fontFamily: "EBGaramond-Italic",
+                  fontFamily: "EBGaramond-Regular",
                   color: "#214151",
                   padding: 10,
                 }}
@@ -312,6 +315,25 @@ const RatingsReviews = ({ id, url }) => {
           Reviews
         </Text>
       </View>
+      <Button
+        containerStyle={{ alignSelf: "flex-end" }}
+        title="Sort"
+        titleStyle={{
+          fontFamily: "EBGaramond-Regular",
+          fontSize: 16,
+          color: "#34626c",
+        }}
+        type="clear"
+        iconRight={true}
+        icon={
+          <MaterialCommunityIcons
+            style={{ marginLeft: 2 }}
+            name="sort-variant"
+            size={15}
+            color="#34626c"
+          />
+        }
+      />
       {another?.length !== 0 ? (
         <View
           style={{
