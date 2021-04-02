@@ -76,6 +76,7 @@ const AgencyDetail = ({ route, navigation }) => {
         industrial={industrial}
         navigation={navigation}
         phoneNumber={profile.phoneNumber}
+        name={profile.name}
       />
     </ScrollView>
   );

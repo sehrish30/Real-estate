@@ -60,34 +60,6 @@ const RatingsReviews = ({ id, url }) => {
     }, [id, limit, another])
   );
 
-  // const list = [
-  //   {
-  //     _id: "545",
-  //     user: {
-  //       email: "Amy Farha",
-  //       dp: "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
-  //     },
-
-  //     text: "Vice President",
-  //     time: "2021-03-31T18:15:19.558Z",
-  //     replies: {
-  //       text: "Thank you for posting",
-  //       time: new Date().toISOString(),
-  //     },
-  //   },
-  //   {
-  //     _id: "544",
-  //     user: {
-  //       email: "Chris Jackson",
-  //       dp:
-  //         "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-  //     },
-  //     text:
-  //       "Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman Vice Chairman",
-  //     time: new Date().toISOString(),
-  //     replies: {},
-  //   },
-  // ];
 
   const renderItem = ({ item }) => (
     <View style={{ display: "flex" }}>

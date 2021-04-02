@@ -18,7 +18,11 @@ const Profile = ({ navigation }) => {
       await AsyncStorage.removeItem("user");
       await AsyncStorage.removeItem("isLoggedIn");
       dispatch(logoutUser());
-      navigation.navigate("Home");
+      // navigation.navigate("Home");
+      navigation.reset({
+        index: 1,
+        routes: [{ name: "Home" }],
+      });
     } catch (e) {
       console.error(e);
     }

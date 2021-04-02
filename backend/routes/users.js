@@ -323,12 +323,12 @@ router.put(`/change-password`, async (req, res) => {
       const { userId } = decoded;
 
       if (userId === req.body.id) {
-        userId = await User.findById(req.body.id).select("password");
+        user = await User.findById(req.body.id).select("password");
 
-        if (bcrypt.compareSync(req.body.password, agency.password)) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
           const passwordHash = bcrypt.hashSync(req.body.newPassword, 14);
 
-          // Update agency with hashed password
+          // Update user with hashed password
           newUser = await User.findByIdAndUpdate(req.body.id, {
             password: passwordHash,
           });
@@ -345,7 +345,7 @@ router.put(`/change-password`, async (req, res) => {
             }
           );
           newUser.password = undefined;
-          newUser.isApproved = undefined;
+
           const returnData = {
             newUser,
             token,
