@@ -1,6 +1,6 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
-
+import { formatDistanceToNow } from "date-fns";
 const config = {
   headers: {
     Accept: "application/json",
@@ -22,7 +22,7 @@ export async function rateService(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (res.status(200) || res.status(201)) {
+    if (res.status == 200 || res.status == 201) {
       return true;
     }
   } catch (err) {
@@ -42,7 +42,7 @@ export async function reviewService(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (res.status(200) || res.status(201)) {
+    if (res.status == 200 || res.status == 201) {
       return true;
     }
   } catch (err) {
@@ -60,7 +60,7 @@ export async function replyReview(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
-    if (res.status(200) || res.status(201)) {
+    if (res.status == 200 || res.status == 201) {
       return true;
     }
   } catch (err) {

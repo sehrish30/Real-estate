@@ -23,7 +23,7 @@ var { height, width } = Dimensions.get("screen");
 import { getAllReviews, replyReview } from "../Services/RateServices";
 import { useFocusEffect } from "@react-navigation/core";
 
-const RatingsReviews = ({ id, userId }) => {
+const RatingsReviews = ({ id, url }) => {
   const [visible, setVisible] = useState(false);
   const [comment, setComment] = useState("");
   const [showReply, setShowReply] = useState("");
@@ -33,6 +33,7 @@ const RatingsReviews = ({ id, userId }) => {
   const [agencyId, setAgencyId] = useState("");
   const [readMore, setReadMore] = useState("");
   const [limit, setLimit] = useState(3);
+  const [userToBeReplied, setUserToBeReplied] = useState("");
   const [showSeeMore, setShowSeeMore] = useState(true);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
@@ -56,7 +57,7 @@ const RatingsReviews = ({ id, userId }) => {
         })();
         console.log("AGAIN");
       }
-    }, [id, limit])
+    }, [id, limit, another])
   );
 
   // const list = [
@@ -89,9 +90,9 @@ const RatingsReviews = ({ id, userId }) => {
   // ];
 
   const renderItem = ({ item }) => (
-    <>
+    <View style={{ display: "flex" }}>
       <ListItem
-        bottomDivider
+        // bottomDivider
         containerStyle={{
           backgroundColor: "#e4fbff",
           textAlign: "left",
@@ -155,8 +156,13 @@ const RatingsReviews = ({ id, userId }) => {
         </ListItem.Content>
         {agency.id == id && (
           <Pressable
-            onPressOut={() => {
+            style={{ padding: 5 }}
+            onPressIn={() => {
+              setUserToBeReplied(item.user.id);
               setVisible(true);
+              if (item?.replies?.text) {
+                setComment(item.replies.text);
+              }
             }}
           >
             <FontAwesome
@@ -177,6 +183,7 @@ const RatingsReviews = ({ id, userId }) => {
                   alignSelf: "flex-end",
                   fontFamily: "EBGaramond-Italic",
                   color: "#214151",
+                  padding: 10,
                 }}
               >
                 Close
@@ -189,6 +196,7 @@ const RatingsReviews = ({ id, userId }) => {
                   alignSelf: "flex-end",
                   fontFamily: "EBGaramond-Italic",
                   color: "#214151",
+                  padding: 10,
                 }}
               >
                 View reply
@@ -210,14 +218,69 @@ const RatingsReviews = ({ id, userId }) => {
             }}
           >
             <ListItem.Content>
-              <ListItem.Subtitle style={{ color: "#fff" }}>
-                {item?.replies?.text}
-              </ListItem.Subtitle>
+              {/* <Text
+                style={{
+                  fontFamily: "EBGaramond-Regular",
+                  color: "#214151",
+                  paddingBottom: 5,
+                }}
+              >
+                By agency
+              </Text> */}
+
+              <View style={{ flexDirection: "row" }}>
+                <Avatar
+                  rounded
+                  containerStyle={{
+                    alignSelf: "flex-start",
+                  }}
+                  source={{ uri: url }}
+                />
+
+                <View style={{ flexDirection: "column" }}>
+                  <Text
+                    style={{
+                      paddingLeft: 10,
+                      color: "#214151",
+                      fontFamily: "EBGaramond-Regular",
+                    }}
+                  >
+                    By agency
+                  </Text>
+                  <ListItem.Subtitle
+                    style={{
+                      color: "#fff",
+                      paddingLeft: 10,
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    {item?.replies?.text}
+                  </ListItem.Subtitle>
+                </View>
+              </View>
+              <Text
+                style={{
+                  alignSelf: "flex-end",
+                  color: "#cfd3ce",
+                  fontSize: 12,
+                }}
+              >
+                {formatDistanceToNow(Date.parse(item.replies?.time))}
+              </Text>
             </ListItem.Content>
           </View>
         </>
       )}
-    </>
+      <View
+        style={{
+          backgroundColor: "#839b97",
+          padding: 0.2,
+          borderRadius: 10,
+          width: 50,
+          marginLeft: width / 3,
+        }}
+      ></View>
+    </View>
   );
   return (
     <View style={styles.review}>
@@ -369,7 +432,38 @@ const RatingsReviews = ({ id, userId }) => {
             name="send-o"
             type="font-awesome"
             color="#214151"
-            onPress={() => replyReview({ id, content: comment, userId }, token)}
+            onPress={async () => {
+              const response = await replyReview(
+                { id, content: comment, userId: userToBeReplied },
+                token
+              );
+              setVisible(false);
+
+              if (response) {
+                setAnother(
+                  another.forEach((review) =>
+                    review.user.id == userToBeReplied
+                      ? (review.replies = {
+                          text: comment,
+                          time: Date.now(),
+                        })
+                      : review
+                  )
+                  // another.map((review, index) => {
+                  //   console.error(review);
+                  //   review.user.id == userToBeReplied
+                  //     ? {
+                  //         ...review,
+                  //         replies: {
+                  //           text: comment,
+                  //           time: Date.now,
+                  //         },
+                  //       }
+                  //     : review;
+                  // })
+                );
+              }
+            }}
           />
         </View>
       </BottomSheet>

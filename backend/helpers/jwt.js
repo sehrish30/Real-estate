@@ -27,6 +27,7 @@ const authJwt = () => {
       `/chats/all-chatrooms`,
       `/agencies/email-exists/*`,
       `/agencies/reset-password`,
+      `/agencies/all-reviews`,
     ],
   });
 };

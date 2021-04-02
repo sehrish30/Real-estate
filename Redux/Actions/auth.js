@@ -13,7 +13,6 @@ import {
   UPDATEAGENCYPROFILE,
 } from "../constants";
 import Toast from "react-native-toast-message";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const login = (data, navigation, setLoading) => (dispatch) => {
   loginUser(data)

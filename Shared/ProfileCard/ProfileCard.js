@@ -243,7 +243,7 @@ const ProfileCard = ({
         </View>
         <Card.Divider />
 
-        <RatingsReviews userId={userId} id={id} />
+        <RatingsReviews url={logo?.url} id={id} />
         <Button
           title="Rate"
           onPress={() => {

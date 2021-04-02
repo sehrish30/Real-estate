@@ -125,8 +125,10 @@ router.get("/all-reviews", async (req, res) => {
       .populate({
         path: "rating.user",
         select: "dp email",
+        // options: { sort: { rate: -1 } },
       })
       .slice("rating", parseInt(req.query.limit));
+    console.log("NO REACH");
 
     if (!agency) {
       return res.status(422).send("No agency found");
@@ -559,7 +561,7 @@ router.put(`/change-password`, async (req, res) => {
           const token = jwt.sign(
             {
               agencyId: newAgency.id,
-              isAdmin: true,
+              isAdmin: false,
             },
             process.env.SECRET,
             {
@@ -751,6 +753,7 @@ router.post(`/review`, async (req, res) => {
 ----------------------------------------- */
 router.post(`/reply-review`, async (req, res) => {
   try {
+    console.log(req.body, "REPLY");
     await Agency.findById(req.body.id, (err, result) => {
       if (err) {
         return res.status(422).send(err);

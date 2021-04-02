@@ -304,4 +304,61 @@ router.get(`/`, async (req, res) => {
   }
 });
 
+/*----------------------------------------
+            USER CHANGE Password
+---------------------------------------- */
+router.put(`/change-password`, async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(` `)[1];
+
+  if (!mongoose.isValidObjectId(req.body.id)) {
+    return res.status(400).res("Invalid User");
+  }
+
+  try {
+    jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { userId } = decoded;
+
+      if (userId === req.body.id) {
+        userId = await User.findById(req.body.id).select("password");
+
+        if (bcrypt.compareSync(req.body.password, agency.password)) {
+          const passwordHash = bcrypt.hashSync(req.body.newPassword, 14);
+
+          // Update agency with hashed password
+          newUser = await User.findByIdAndUpdate(req.body.id, {
+            password: passwordHash,
+          });
+
+          // generate token to send to user
+          const token = jwt.sign(
+            {
+              userId: newUser.id,
+              isAdmin: newUser.isAdmin,
+            },
+            process.env.SECRET,
+            {
+              expiresIn: "15d",
+            }
+          );
+          newUser.password = undefined;
+          newUser.isApproved = undefined;
+          const returnData = {
+            newUser,
+            token,
+          };
+          return res.status(200).send(returnData);
+        }
+      } else {
+        return res.status(401).send("User not authorized");
+      }
+    });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 module.exports = router;
