@@ -201,6 +201,7 @@ const AgencyProfile = ({ navigation }) => {
         showEditbutton={true}
         changePassword={changePassword}
         id={profile.id}
+        name={profile.name}
       />
 
       <CustomModal

@@ -39,6 +39,7 @@ const RatingsReviews = ({ id, url }) => {
   const [readMore, setReadMore] = useState("");
   const [limit, setLimit] = useState(3);
   const [userToBeReplied, setUserToBeReplied] = useState("");
+  const [order, setOrder] = useState(1);
   const [showSeeMore, setShowSeeMore] = useState(true);
   const [visible, setVisible] = useState(false);
   let agency = useSelector((state) => state.auth.agency);
@@ -50,7 +51,20 @@ const RatingsReviews = ({ id, url }) => {
 
       if (id) {
         (async () => {
-          const res = await getAllReviews({ id, limit, order: -1 }, token);
+          let res;
+          if (order === 1) {
+            res = await getAllReviews({ id, limit, order: -1 }, token);
+          }
+          if (order === 2) {
+            res = await getAllReviews({ id, limit, order: 1 }, token);
+          }
+          if (order === 3) {
+            res = await getAllReviews({ id, limit, time: -1 }, token);
+          }
+          if (order === 4) {
+            res = await getAllReviews({ id, limit, time: 1 }, token);
+          }
+
           setAgencyId(res.id);
 
           if (res?.rating.length < limit) {
@@ -63,7 +77,7 @@ const RatingsReviews = ({ id, url }) => {
         })();
       }
       // another
-    }, [id, limit])
+    }, [id, limit, order])
   );
 
   const toggleOverlay = () => {
@@ -199,16 +213,6 @@ const RatingsReviews = ({ id, url }) => {
             }}
           >
             <ListItem.Content>
-              {/* <Text
-                style={{
-                  fontFamily: "EBGaramond-Regular",
-                  color: "#214151",
-                  paddingBottom: 5,
-                }}
-              >
-                By agency
-              </Text> */}
-
               <View style={{ flexDirection: "row" }}>
                 <Avatar
                   rounded
@@ -386,11 +390,15 @@ const RatingsReviews = ({ id, url }) => {
           type="outline"
           onPress={() => {
             setLimit(limit + 3);
-            console.log("DONE", limit);
           }}
         />
       )}
-      <SortOverlay toggleOverlay={toggleOverlay} visible={visibleSort} />
+      <SortOverlay
+        setOrder={setOrder}
+        order={order}
+        toggleOverlay={toggleOverlay}
+        visible={visibleSort}
+      />
       <BottomSheet
         isVisible={visible}
         onPress={() => setVisible(false)}
@@ -418,16 +426,23 @@ const RatingsReviews = ({ id, url }) => {
           />
         </View>
         <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
-          <Icon
-            raised
-            name="close"
-            type="font-awesome"
-            color="#214151"
+          <View
             onPress={() => {
               setVisible(false);
               setComment("");
             }}
-          />
+          >
+            <Icon
+              raised
+              name="close"
+              type="font-awesome"
+              color="#214151"
+              onPress={() => {
+                setVisible(false);
+                setComment("");
+              }}
+            />
+          </View>
           <Icon
             reverse
             name="send-o"
@@ -435,10 +450,13 @@ const RatingsReviews = ({ id, url }) => {
             color="#214151"
             onPress={async () => {
               setVisible(false);
-              const response = await replyReview(
-                { id, content: comment, userId: userToBeReplied },
-                token
-              );
+              let response;
+              if (comment.length !== 0) {
+                response = await replyReview(
+                  { id, content: comment, userId: userToBeReplied },
+                  token
+                );
+              }
 
               if (response) {
                 console.log("USERTOBEREPLIEd", userToBeReplied, another);

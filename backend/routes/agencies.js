@@ -133,6 +133,7 @@ router.get("/all-reviews", async (req, res) => {
             "rating.time": parseInt(req.query.time),
           },
         },
+        { $limit: parseInt(req.query.limit) },
         {
           $group: {
             _id: "$_id",
@@ -144,26 +145,9 @@ router.get("/all-reviews", async (req, res) => {
           $project: {
             id: "$_id",
             rating: "$rating",
-            // user: {
-            //   $convert: {
-            //     input: "$rating.user",
-            //     to: "objectId",
-            //     onError: "An error occurred",
-            //     onNull: "Input was null or empty",
-            //   },
-            // },
           },
         },
-        // {
-        //   $lookup: {
-        //     from: "users",
-        //     localField: "user",
-        //     foreignField: "_id",
-        //     as: "user",
-        //   },
-        // },
-
-        { $limit: parseInt(req.query.limit) },
+        { $limit: 1 },
       ]).exec(async (err, result) => {
         if (err) {
           return res.status(422).send(err);
@@ -196,6 +180,7 @@ router.get("/all-reviews", async (req, res) => {
             "rating.rate": parseInt(req.query.order),
           },
         },
+        { $limit: parseInt(req.query.limit) },
         {
           $group: {
             _id: "$_id",
@@ -210,7 +195,7 @@ router.get("/all-reviews", async (req, res) => {
           },
         },
 
-        { $limit: parseInt(req.query.limit) },
+        { $limit: 1 },
       ]).exec(async (err, result) => {
         if (err) {
           return res.status(422).send(err);

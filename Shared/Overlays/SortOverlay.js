@@ -1,23 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Overlay } from "react-native-elements";
-import { Dimensions, Pressable } from "react-native";
-import FontIcon from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { Dimensions } from "react-native";
 import { CheckBox } from "react-native-elements";
 
-var { width, height } = Dimensions.get("screen");
-const SortOverlay = ({ toggleOverlay, visible }) => {
-  const [order, setOrder] = useState(1);
-  const [time, setTime] = useState(0);
-
+var { width } = Dimensions.get("screen");
+const SortOverlay = ({ toggleOverlay, visible, order, setOrder }) => {
   return (
     <Overlay
       overlayStyle={{ width: width / 1.5 }}
+      backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       isVisible={visible}
       onBackdropPress={toggleOverlay}
     >
       <CheckBox
-        onPress={() => setOrder(1)}
+        onPress={() => {
+          setOrder(1);
+          toggleOverlay();
+        }}
         center
         title="Higest Rated"
         checkedIcon="dot-circle-o"
@@ -34,7 +33,10 @@ const SortOverlay = ({ toggleOverlay, visible }) => {
         }}
       />
       <CheckBox
-        onPress={() => setOrder(2)}
+        onPress={() => {
+          setOrder(2);
+          toggleOverlay();
+        }}
         center
         title="Lowest rated"
         checkedIcon="dot-circle-o"
@@ -51,7 +53,10 @@ const SortOverlay = ({ toggleOverlay, visible }) => {
         }}
       />
       <CheckBox
-        onPress={() => setOrder(3)}
+        onPress={() => {
+          setOrder(3);
+          toggleOverlay();
+        }}
         center
         title="Most recent"
         checkedIcon="dot-circle-o"
@@ -68,7 +73,10 @@ const SortOverlay = ({ toggleOverlay, visible }) => {
         }}
       />
       <CheckBox
-        onPress={() => setOrder(4)}
+        onPress={() => {
+          setOrder(4);
+          toggleOverlay();
+        }}
         center
         title="Old"
         checkedIcon="dot-circle-o"

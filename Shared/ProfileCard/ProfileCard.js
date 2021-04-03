@@ -111,7 +111,7 @@ const ProfileCard = ({
               <SimpleLineIcons
                 style={{ verticalAlign: "middle", marginRight: 15 }}
                 name="options-vertical"
-                color={"#a2d0c1"}
+                color={"#839b97"}
                 size={30}
                 onPress={toggleOverlay}
               />
@@ -242,41 +242,44 @@ const ProfileCard = ({
             </>
           )}
         </View>
-        <Button
-          buttonStyle={{ marginVertical: 10 }}
-          titleStyle={{
-            color: "#214151",
-          }}
-          icon={
-            <MaterialCommunityIcons
-              name="email-outline"
-              size={15}
-              color="#214151"
-              style={{ marginRight: 5 }}
-            />
-          }
-          title={user}
-          type="clear"
-          onPress={async () => {
-            const response = await MailComposer.isAvailableAsync();
-            console.error(response);
-            if (response) {
-              const res = await MailComposer.composeAsync({
-                recipients: [user],
-                subject: `Hello 👋, this is a buyer/seller from Iconic Real Estate`,
-                // attachments: [``],
-                body: "Iconic Real Estate",
-                isHtml: false,
-              });
-            } else {
-              Linking.openURL(
-                `mailto:${user}?subject=Hello 👋, this is a seller/buyer from Iconic Real Estate=Description=I want to`
-              );
+        {customer?.decoded?.userId && (
+          <Button
+            buttonStyle={{ marginVertical: 10 }}
+            titleStyle={{
+              color: "#214151",
+            }}
+            icon={
+              <MaterialCommunityIcons
+                name="email-outline"
+                size={15}
+                color="#214151"
+                style={{ marginRight: 5 }}
+              />
             }
+            title={user}
+            type="clear"
+            onPress={async () => {
+              const response = await MailComposer.isAvailableAsync();
+              console.error(response);
+              if (response) {
+                const res = await MailComposer.composeAsync({
+                  recipients: [user],
+                  subject: `Hello 👋, this is a buyer/seller from Iconic Real Estate`,
+                  // attachments: [``],
+                  body: "Iconic Real Estate",
+                  isHtml: false,
+                });
+              } else {
+                Linking.openURL(
+                  `mailto:${user}?subject=Hello 👋, this is a seller/buyer from Iconic Real Estate=Description=I want to`
+                );
+              }
 
-            console.log(res);
-          }}
-        />
+              console.log(res);
+            }}
+          />
+        )}
+
         <Card.Divider />
 
         <RatingsReviews url={logo?.url} id={id} />
