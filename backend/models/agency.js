@@ -71,28 +71,7 @@ const agencySchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // reviews: [
-    //   {
-    //     rate: Number,
-    //     user: {
-    //       type: Schema.Types.ObjectId,
-    //       ref: "User",
-    //     },
-    //     text: String,
-    //     time: {
-    //       type: String,
-    //       default: new Date().toISOString(),
-    //     },
-    //     replies: {
-    //       type: Object,
-    //       text: String,
-    //       time: {
-    //         type: String,
-    //         default: new Date().toISOString(),
-    //       },
-    //     },
-    //   },
-    // ],
+
     commercial: [String],
     land: [mongoose.ObjectId],
     residential: [mongoose.ObjectId],
@@ -103,6 +82,8 @@ const agencySchema = mongoose.Schema(
 
   {
     timestamps: true,
+    toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+    toObject: { virtuals: true },
   }
 );
 
@@ -122,4 +103,13 @@ agencySchema.set("toJSON", {
   virtuals: true,
 });
 
+// agencySchema.virtual("ratings", {
+//   ref: "User", // The model to use
+//   localField: "rating.user", // Find people where `localField`
+//   foreignField: "id", // is equal to `foreignField`
+//   // If `justOne` is true, 'members' will be a single doc as opposed to
+//   // an array. `justOne` is false by default.
+//   justOne: false,
+//   // options: { sort: { name: -1 }, limit: 5 }, // Query options, see http://bit.ly/mongoose-query-options
+// });
 exports.Agency = mongoose.model("Agent", agencySchema);

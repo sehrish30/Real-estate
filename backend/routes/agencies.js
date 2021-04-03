@@ -130,7 +130,6 @@ router.get("/all-reviews", async (req, res) => {
         { $unwind: "$rating" },
         {
           $sort: {
-            // "rating.rate": parseInt(req.query.order),
             "rating.time": parseInt(req.query.time),
           },
         },
@@ -145,11 +144,48 @@ router.get("/all-reviews", async (req, res) => {
           $project: {
             id: "$_id",
             rating: "$rating",
+            // user: {
+            //   $convert: {
+            //     input: "$rating.user",
+            //     to: "objectId",
+            //     onError: "An error occurred",
+            //     onNull: "Input was null or empty",
+            //   },
+            // },
           },
         },
+        // {
+        //   $lookup: {
+        //     from: "users",
+        //     localField: "user",
+        //     foreignField: "_id",
+        //     as: "user",
+        //   },
+        // },
 
         { $limit: parseInt(req.query.limit) },
-      ]);
+      ]).exec(async (err, result) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
+
+        const totalRating = await Agency.findById(req.query.id).select(
+          "totalRating"
+        );
+        Agency.populate(
+          result,
+          { path: "rating.user", select: "dp email" },
+          (err, populatedAgency) => {
+            if (err) {
+              return res.status(500).send(err);
+            }
+            return res.status(200).send({
+              totalRating: totalRating.totalRating,
+              ...populatedAgency[0],
+            });
+          }
+        );
+      });
     }
     if (req.query.order) {
       agency = await Agency.aggregate([
@@ -175,12 +211,29 @@ router.get("/all-reviews", async (req, res) => {
         },
 
         { $limit: parseInt(req.query.limit) },
-      ]);
-    }
+      ]).exec(async (err, result) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
 
-    const agencyRating = await Agency.findById(req.query.id).select(
-      "totalRating"
-    );
+        const totalRating = await Agency.findById(req.query.id).select(
+          "totalRating"
+        );
+        Agency.populate(
+          result,
+          { path: "rating.user", select: "dp email" },
+          (err, populatedAgency) => {
+            if (err) {
+              return res.status(500).send(err);
+            }
+            return res.status(200).send({
+              totalRating: totalRating.totalRating,
+              ...populatedAgency[0],
+            });
+          }
+        );
+      });
+    }
 
     // const agency = await Agency.findById(req.query.id)
     //   .select("totalRating rating")
@@ -198,9 +251,8 @@ router.get("/all-reviews", async (req, res) => {
     // if (agency.length < 1) {
     //   return res.status(200).send(false);
     // }
-    return res
-      .status(200)
-      .send({ ...agency[0], totalRating: agencyRating.totalRating });
+
+    // return res.status(200).send({ ...agency[0], totalRating: agencyRating });
   } catch (err) {
     return res.status(500).send(err);
   }

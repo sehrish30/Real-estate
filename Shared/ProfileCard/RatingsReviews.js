@@ -26,9 +26,10 @@ import {
 var { height, width } = Dimensions.get("screen");
 import { getAllReviews, replyReview } from "../Services/RateServices";
 import { useFocusEffect } from "@react-navigation/core";
+import SortOverlay from "../Overlays/SortOverlay";
 
 const RatingsReviews = ({ id, url }) => {
-  const [visible, setVisible] = useState(false);
+  const [visibleSort, setVisibleSort] = useState(false);
   const [comment, setComment] = useState("");
   const [showReply, setShowReply] = useState("");
 
@@ -39,6 +40,7 @@ const RatingsReviews = ({ id, url }) => {
   const [limit, setLimit] = useState(3);
   const [userToBeReplied, setUserToBeReplied] = useState("");
   const [showSeeMore, setShowSeeMore] = useState(true);
+  const [visible, setVisible] = useState(false);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
 
@@ -48,21 +50,25 @@ const RatingsReviews = ({ id, url }) => {
 
       if (id) {
         (async () => {
-          console.log("NO ID", id);
           const res = await getAllReviews({ id, limit, order: -1 }, token);
           setAgencyId(res.id);
-          if (res.rating.length < limit) {
+
+          if (res?.rating.length < limit) {
             setShowSeeMore(false);
           }
 
           setTotalRating(res.totalRating);
-          console.log("RES", res);
+          // console.log("RES", res);
           setAnother(res.rating);
         })();
-        console.log("AGAIN");
       }
-    }, [id, limit, another])
+      // another
+    }, [id, limit])
   );
+
+  const toggleOverlay = () => {
+    setVisibleSort(!visibleSort);
+  };
 
   const renderItem = ({ item }) => (
     <View style={{ display: "flex" }}>
@@ -152,7 +158,7 @@ const RatingsReviews = ({ id, url }) => {
       {item?.replies && (
         <>
           {showReply === item?._id ? (
-            <Pressable onPressIn={() => setShowReply("")}>
+            <Pressable onPressOut={() => setShowReply("")}>
               <Text
                 style={{
                   alignSelf: "flex-end",
@@ -165,7 +171,7 @@ const RatingsReviews = ({ id, url }) => {
               </Text>
             </Pressable>
           ) : (
-            <Pressable onPressIn={() => setShowReply(item?._id)}>
+            <Pressable onPressOut={() => setShowReply(item?._id)}>
               <Text
                 style={{
                   alignSelf: "flex-end",
@@ -227,6 +233,7 @@ const RatingsReviews = ({ id, url }) => {
                       color: "#fff",
                       paddingLeft: 10,
                       justifyContent: "flex-end",
+                      paddingRight: 30,
                     }}
                   >
                     {item?.replies?.text}
@@ -316,6 +323,7 @@ const RatingsReviews = ({ id, url }) => {
         </Text>
       </View>
       <Button
+        onPress={toggleOverlay}
         containerStyle={{ alignSelf: "flex-end" }}
         title="Sort"
         titleStyle={{
@@ -382,9 +390,10 @@ const RatingsReviews = ({ id, url }) => {
           }}
         />
       )}
-
+      <SortOverlay toggleOverlay={toggleOverlay} visible={visibleSort} />
       <BottomSheet
         isVisible={visible}
+        onPress={() => setVisible(false)}
         containerStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       >
         <View
@@ -398,63 +407,56 @@ const RatingsReviews = ({ id, url }) => {
           ]}
         >
           <TextInput
+            autoFocus={true}
             style={{ borderColor: "red", color: "#214151", fontSize: 16 }}
             textAlign="left"
             multiline
             numberOfLines={4}
             onChangeText={(text) => setComment(text)}
             value={comment}
-            placeholder="Comment"
+            placeholder="Reply your customer..."
           />
         </View>
         <View style={{ justifyContent: "flex-end", flexDirection: "row" }}>
           <Icon
-            underlayColor="red"
             raised
             name="close"
             type="font-awesome"
-            color="#839b97"
+            color="#214151"
             onPress={() => {
               setVisible(false);
               setComment("");
             }}
           />
           <Icon
-            containerStyle={{}}
             reverse
-            raised
             name="send-o"
             type="font-awesome"
             color="#214151"
             onPress={async () => {
+              setVisible(false);
               const response = await replyReview(
                 { id, content: comment, userId: userToBeReplied },
                 token
               );
-              setVisible(false);
 
               if (response) {
+                console.log("USERTOBEREPLIEd", userToBeReplied, another);
+
                 setAnother(
-                  another.forEach((review) =>
-                    review.user.id == userToBeReplied
-                      ? (review.replies = {
+                  another.map((review) => {
+                    if (review.user.id == userToBeReplied) {
+                      return (review = {
+                        ...review,
+                        replies: {
                           text: comment,
-                          time: Date.now(),
-                        })
-                      : review
-                  )
-                  // another.map((review, index) => {
-                  //   console.error(review);
-                  //   review.user.id == userToBeReplied
-                  //     ? {
-                  //         ...review,
-                  //         replies: {
-                  //           text: comment,
-                  //           time: Date.now,
-                  //         },
-                  //       }
-                  //     : review;
-                  // })
+                          time: new Date().toISOString(),
+                        },
+                      });
+                    } else {
+                      return review;
+                    }
+                  })
                 );
               }
             }}
