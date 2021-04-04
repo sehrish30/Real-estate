@@ -335,6 +335,7 @@ const RegisterAgent = ({ navigation }) => {
             value={phone}
           />
           <SelectBox
+            inputPlaceholder="Type location"
             label="Locations"
             containerStyle={{
               borderRadius: 10,
@@ -401,6 +402,7 @@ const RegisterAgent = ({ navigation }) => {
                 <Dialog.Title>Choose Category for your image</Dialog.Title>
 
                 <SelectBox
+                  inputPlaceholder="Type Category"
                   label="Select single"
                   options={catgeories}
                   value={category}
@@ -425,6 +427,13 @@ const RegisterAgent = ({ navigation }) => {
                     backgroundColor: "#e4fbff",
                     borderRadius: 10,
                   }}
+                />
+                <Dialog.Button
+                  style={{
+                    color: "#77928C",
+                  }}
+                  label="Close"
+                  onPress={() => setVisible(false)}
                 />
               </Dialog.Container>
             </View>
@@ -532,7 +541,7 @@ const styles = StyleSheet.create({
   },
   dialog: {
     backgroundColor: "#e4fbff",
-    width: width / 1.2,
+    width: width / 1.1,
   },
   dialogbackground: {
     backgroundColor: "#e4fbff",

@@ -7,6 +7,7 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
   return (
     <View style={{ marginHorizontal: 15, marginTop: 5 }}>
       <SelectBox
+        inputPlaceholder="Type location"
         label="Select location"
         options={items}
         value={location}
@@ -33,7 +34,6 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
           borderRadius: 10,
         }}
         inputFilterStyle={{
-          color: "#214151",
           // fontFamily: "EBGaramond-Regular",
           fontSize: 16,
           paddingHorizontal: 5,
