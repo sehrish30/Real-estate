@@ -1,12 +1,19 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+} from "react-native";
 import Icon from "react-native-vector-icons/Fontisto";
 import { Avatar } from "react-native-elements";
-import { Card, Text } from "react-native-elements";
-
+import { Card } from "react-native-elements";
+var { width } = Dimensions.get("screen");
 const AgencySearchCard = ({ index, agency, navigation }) => {
   return (
     <TouchableOpacity
+      activeOpacity={0.8}
       key={index}
       onPress={() => {
         navigation.navigate("AgencyDetail", {
@@ -14,7 +21,7 @@ const AgencySearchCard = ({ index, agency, navigation }) => {
         });
       }}
     >
-      <Card containerStyle={styles.card}>
+      <Card containerStyle={[styles.card]}>
         <Card.Title style={styles.title}>
           <Text>{agency.name}</Text>
         </Card.Title>
@@ -28,17 +35,24 @@ const AgencySearchCard = ({ index, agency, navigation }) => {
             }}
           />
           <View style={styles.basicInfo}>
-            <Text h2 h2Style={styles.name}>
-              {agency.bio ? `${agency.bio?.substring(0, 20)}...` : "No bio"}
+            <Text style={[styles.onlySerif, { color: "#214151" }]}>
+              {agency.bio ? `${agency.bio?.substring(0, 25)}...` : "No bio"}
             </Text>
-            <Text style={[styles.name, { color: "#8dadb3", marginTop: 10 }]}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[
+                styles.name,
+                { color: "#8dadb3", marginTop: 10, width: width / 1.5 },
+              ]}
+            >
               Commercial {agency.commercial?.length || 0} | Residential{" "}
               {agency.residential?.length || 0} | Industrial{" "}
               {agency.industrial?.length || 0}
             </Text>
           </View>
           <View style={{ marginLeft: "auto", flexDirection: "row" }}>
-            <Text style={[styles.font, { fontSize: 18, color: "#f8dc81" }]}>
+            <Text style={[styles.font, { fontSize: 18, color: "#2c6e8f" }]}>
               {agency.totalRating || 0}
             </Text>
             <Icon
@@ -59,17 +73,22 @@ export default AgencySearchCard;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#eff7e1",
+    backgroundColor: "#fff",
     borderRadius: 15,
     elevation: 4,
     shadowOffset: { width: 5, height: 5 },
-    // boxShadow: "0 20px 50px #839b97",
+    shadowColor: "#214151",
+    shadowOpacity: 0.2,
     paddingTop: 5,
   },
   basicInfo: {
     paddingTop: 5,
     paddingHorizontal: 10,
     color: "#214151",
+  },
+  onlySerif: {
+    fontSize: 14,
+    fontWeight: "300",
   },
   name: {
     fontFamily: "EBGaramond-Regular",
@@ -85,9 +104,11 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "left",
-    backgroundColor: "#c7ffd8",
-    padding: 10,
     borderRadius: 5,
-    margin: 0,
+    paddingTop: 5,
+    paddingBottom: 0,
+    color: "#214151",
+    fontFamily: "EBGaramond-Bold",
+    paddingLeft: 10,
   },
 });

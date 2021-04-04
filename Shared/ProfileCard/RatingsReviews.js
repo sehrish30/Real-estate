@@ -33,7 +33,6 @@ const RatingsReviews = ({ id, url }) => {
   const [comment, setComment] = useState("");
   const [showReply, setShowReply] = useState("");
 
-  const [another, setAnother] = useState([]);
   const [totalRating, setTotalRating] = useState("");
   const [agencyId, setAgencyId] = useState("");
   const [readMore, setReadMore] = useState("");
@@ -42,13 +41,12 @@ const RatingsReviews = ({ id, url }) => {
   const [order, setOrder] = useState(1);
   const [showSeeMore, setShowSeeMore] = useState(true);
   const [visible, setVisible] = useState(false);
+  const [another, setAnother] = useState([]);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
 
   useFocusEffect(
     useCallback(() => {
-      console.log(id);
-
       if (id) {
         (async () => {
           let res;
@@ -67,13 +65,15 @@ const RatingsReviews = ({ id, url }) => {
 
           setAgencyId(res.id);
 
-          if (res?.rating.length < limit) {
+          if (res?.rating?.length < limit) {
             setShowSeeMore(false);
           }
 
           setTotalRating(res.totalRating);
           // console.log("RES", res);
-          setAnother(res.rating);
+          if (res.rating) {
+            setAnother(res.rating);
+          }
         })();
       }
       // another
@@ -121,11 +121,11 @@ const RatingsReviews = ({ id, url }) => {
             />
           </View>
 
-          {item?.text.length > 20 && item.user.email !== readMore ? (
+          {item?.text.length > 20 && item.user?.email !== readMore ? (
             <ListItem.Subtitle
               style={{ color: "#214151" }}
               onPress={() => {
-                setReadMore(item.user.email);
+                setReadMore(item.user?.email);
               }}
             >
               {item.text.substr(0, 100)}....
@@ -326,27 +326,29 @@ const RatingsReviews = ({ id, url }) => {
           Reviews
         </Text>
       </View>
-      <Button
-        onPress={toggleOverlay}
-        containerStyle={{ alignSelf: "flex-end" }}
-        title="Sort"
-        titleStyle={{
-          fontFamily: "EBGaramond-Regular",
-          fontSize: 16,
-          color: "#34626c",
-        }}
-        type="clear"
-        iconRight={true}
-        icon={
-          <MaterialCommunityIcons
-            style={{ marginLeft: 2 }}
-            name="sort-variant"
-            size={15}
-            color="#34626c"
-          />
-        }
-      />
-      {another?.length !== 0 ? (
+      {another.length !== 0 && (
+        <Button
+          onPress={toggleOverlay}
+          containerStyle={{ alignSelf: "flex-end" }}
+          title="Sort"
+          titleStyle={{
+            fontFamily: "EBGaramond-Regular",
+            fontSize: 16,
+            color: "#34626c",
+          }}
+          type="clear"
+          iconRight={true}
+          icon={
+            <MaterialCommunityIcons
+              style={{ marginLeft: 2 }}
+              name="sort-variant"
+              size={15}
+              color="#34626c"
+            />
+          }
+        />
+      )}
+      {another.length !== 0 ? (
         <View
           style={{
             flexDirection: "row",
@@ -370,7 +372,7 @@ const RatingsReviews = ({ id, url }) => {
           </Text>
         </View>
       )}
-      {showSeeMore && (
+      {showSeeMore && another.length !== 0 && (
         <Button
           icon={
             <Feather

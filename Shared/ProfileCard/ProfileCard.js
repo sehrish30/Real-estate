@@ -109,7 +109,7 @@ const ProfileCard = ({
               }}
             >
               <SimpleLineIcons
-                style={{ verticalAlign: "middle", marginRight: 15 }}
+                style={{ marginRight: 15 }}
                 name="options-vertical"
                 color={"#839b97"}
                 size={30}
@@ -142,7 +142,7 @@ const ProfileCard = ({
         <Card.Divider />
         <View style={styles.locationRow}>
           <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-            <View style={{ verticalAlign: "middle" }}>
+            <View>
               <IonIcons
                 style={{ marginRight: 8 }}
                 name="ios-location-outline"
@@ -167,11 +167,10 @@ const ProfileCard = ({
         <Card.Divider />
         <View style={styles.locationRow}>
           <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-            <View style={{ verticalAlign: "middle" }}>
+            <View>
               <FontAwesome5
                 style={{
                   marginRight: 8,
-                  verticalAlign: "middle",
                 }}
                 name="building"
                 color={"#214151"}
@@ -192,7 +191,7 @@ const ProfileCard = ({
         <View
           style={{ marginTop: 30, flexDirection: "row", paddingBottom: 20 }}
         >
-          {customer?.decoded?.userId && (
+          {!agency.id && (
             <>
               <Button
                 type="outline"
@@ -260,7 +259,7 @@ const ProfileCard = ({
             type="clear"
             onPress={async () => {
               const response = await MailComposer.isAvailableAsync();
-              console.error(response);
+
               if (response) {
                 const res = await MailComposer.composeAsync({
                   recipients: [user],

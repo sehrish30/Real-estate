@@ -16,15 +16,15 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
         searchIconColor="#8dadb3"
         style={[styles.font, { color: "#214151" }]}
         inputFilterContainerStyle={{
-          backgroundColor: "#f8dc81",
+          backgroundColor: "#fff",
         }}
         optionsLabelStyle={{
           color: "#214151",
           paddingLeft: 10,
-          backgroundColor: "#faeda5",
+          backgroundColor: "#e4fbff",
         }}
         optionContainerStyle={{
-          backgroundColor: "#faeda5",
+          backgroundColor: "#e4fbff",
         }}
         containerStyle={{
           backgroundColor: "#8dadb3",
@@ -32,7 +32,7 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
         }}
         inputFilterStyle={{
           color: "#214151",
-          fontFamily: "EBGaramond-Regular",
+          // fontFamily: "EBGaramond-Regular",
           fontSize: 16,
           paddingHorizontal: 5,
         }}

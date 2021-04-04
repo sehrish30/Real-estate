@@ -15,6 +15,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { searchAgencies } from "../../Shared/Services/SearchServices";
 import AgencyLocationSearch from "../../Shared/ProfileCard/AgencyLocationSearch";
 import AgencySearchCard from "../../Shared/ProfileCard/AgencySearchCard";
+import { ScrollView } from "react-native-gesture-handler";
 
 const SearchAgency = ({ navigation }) => {
   const [search, setSearch] = useState(null);
@@ -23,6 +24,10 @@ const SearchAgency = ({ navigation }) => {
   const [agencies, setAgencies] = useState([]);
   const [debounceValue, setDebounceValue] = useState("");
   const [loading, setLoading] = useState(false);
+  const [highRating, setHighRating] = useState("");
+  const [lowRating, setLowRating] = useState("");
+  const [popular, setPopular] = useState("");
+
   let timer;
 
   const useDebounce = (value, delay = 1000) => {
@@ -44,6 +49,7 @@ const SearchAgency = ({ navigation }) => {
 
   useLayoutEffect(() => {
     searchTypedAgency(useDebounce(search));
+
     return () => {
       clearTimeout(timer);
     };
@@ -67,11 +73,14 @@ const SearchAgency = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       searchField.current.focus();
+      return () => {
+        setSearch("");
+      };
     }, [])
   );
 
   return (
-    <SafeAreaView>
+    <ScrollView>
       <SearchBar
         ref={searchField}
         placeholder="Search Agencies..."
@@ -80,11 +89,10 @@ const SearchAgency = ({ navigation }) => {
         containerStyle={styles.searchBar}
         inputContainerStyle={styles.searchbarInput}
         inputStyle={styles.input}
-        placeholderTextColor="#eff7e1"
+        placeholderTextColor="#839b97"
         leftIconContainerStyle={{ color: "#eff7e1" }}
         rightIconContainerStyle={{
-          backgroundColor: "#8dadb3",
-          color: "#eff7e1",
+          backgroundColor: "#fff",
         }}
       />
       <AgencyLocationSearch
@@ -115,27 +123,29 @@ const SearchAgency = ({ navigation }) => {
           </Text>
         </View>
       ) : null}
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 export default SearchAgency;
 const styles = StyleSheet.create({
   searchBar: {
-    backgroundColor: "#8dadb3",
-    color: "#eff7e1",
+    backgroundColor: "#fff",
+    borderWidth: 0,
     borderColor: "transparent",
+    paddingVertical: 0,
   },
   searchbarInput: {
-    backgroundColor: "#8dadb3",
+    backgroundColor: "#fff",
     borderColor: "transparent",
   },
   input: {
-    color: "#eff7e1",
-    fontFamily: "EBGaramond-Regular",
+    color: "#214151",
+    fontSize: 16,
+    // fontFamily: "EBGaramond-Regular",
   },
   font: {
-    fontFamily: "EBGaramond-Regular",
+    // fontFamily: "EBGaramond-Regular",
   },
   notFound: {
     display: "flex",

@@ -55,21 +55,35 @@ cloudinary.config({
 
 router.get(`/`, async (req, res) => {
   try {
-    let locationFilter = {};
-    let nameFilter = {};
-    let mainFilter = {};
+    // function to convert to regex
+    const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
 
-    // user can query by name and location
-    if (req.query.location) {
-      locationFilter = { location: { $in: req.query.location.split(",") } };
-      mainFilter = { ...locationFilter };
+    const searchRgx = rgx(req.query.name);
+    let highRating = undefined;
+    let lowRating = undefined;
+    let updatedOnes = undefined;
+
+    if (req.query.highRating) {
+      highRating = parseInt(req.query.highRating);
     }
 
-    if (req.query.name) {
-      let agencyName = new RegExp("^" + req.query.name);
-      nameFilter = { name: agencyName };
-      mainFilter = { ...mainFilter, ...nameFilter };
+    if (req.query.lowRating) {
+      lowRating = parseInt(req.query.lowRating);
     }
+
+    if (req.query.recent) {
+      updatedOnes = new Date().getMonth() - 3;
+    }
+
+    const mainRegex = {
+      $or: [
+        { name: { $regex: searchRgx, $options: "i" } },
+        { location: { $in: req.query?.location?.split(",") } },
+        { "rating.rate": { $gt: highRating } },
+        { "rating.rate": { $lt: lowRating } },
+        { updatedAt: { $gte: updatedOnes } },
+      ],
+    };
 
     // pagination agents
     let skip = 0;
@@ -79,7 +93,7 @@ router.get(`/`, async (req, res) => {
       skip = count - 10;
     }
 
-    const agencyList = await Agency.find(mainFilter)
+    const agencyList = await Agency.find(mainRegex)
       .select("-attachments -password")
       .skip(skip)
       .limit(count);
