@@ -336,6 +336,9 @@ const RegisterAgent = ({ navigation }) => {
           />
           <SelectBox
             label="Locations"
+            containerStyle={{
+              borderRadius: 10,
+            }}
             style={[styles.font, { color: "#a2d0c1" }]}
             options={items}
             selectedValues={locations}
@@ -347,6 +350,7 @@ const RegisterAgent = ({ navigation }) => {
             toggleIconColor="#f8dc81"
             inputFilterContainerStyle={{
               backgroundColor: "#f7f6e7",
+              borderRadius: 10,
             }}
             optionsLabelStyle={{
               color: "#214151",
@@ -403,21 +407,23 @@ const RegisterAgent = ({ navigation }) => {
                   onChange={onChange()}
                   hideInputFilter={false}
                   arrowIconColor="#f8dc81"
-                  searchIconColor="#f8dc81"
+                  searchIconColor="#e4fbff"
                   toggleIconColor="#f8dc81"
                   inputFilterContainerStyle={{
-                    backgroundColor: "#f8dc81",
+                    backgroundColor: "#e4fbff",
+                    borderRadius: 10,
                   }}
                   optionsLabelStyle={{
                     color: "#214151",
                     paddingLeft: 10,
-                    backgroundColor: "#f8dc81",
+                    backgroundColor: "#e4fbff",
                   }}
                   optionContainerStyle={{
-                    backgroundColor: "#f8dc81",
+                    backgroundColor: "#e4fbff",
                   }}
                   containerStyle={{
-                    backgroundColor: "#f8dc81",
+                    backgroundColor: "#e4fbff",
+                    borderRadius: 10,
                   }}
                 />
               </Dialog.Container>
@@ -505,7 +511,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   addAttachment: {
-    borderColor: "#f8dc81",
+    borderColor: "#e4fbff",
     // width: "max-content",
   },
   buttonStyle: {
@@ -525,11 +531,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   dialog: {
-    backgroundColor: "#f8dc81",
+    backgroundColor: "#e4fbff",
     width: width / 1.2,
   },
   dialogbackground: {
-    backgroundColor: "#f8dc81",
+    backgroundColor: "#e4fbff",
     width: width / 1.2,
   },
   register: {

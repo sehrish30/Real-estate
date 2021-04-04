@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { SafeAreaView, ActivityIndicator } from "react-native";
 import { StyleSheet, View } from "react-native";
-import { SearchBar } from "react-native-elements";
+import { SearchBar, Badge } from "react-native-elements";
 import { Text } from "react-native-elements";
 
 import { useFocusEffect } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { searchAgencies } from "../../Shared/Services/SearchServices";
 import AgencyLocationSearch from "../../Shared/ProfileCard/AgencyLocationSearch";
 import AgencySearchCard from "../../Shared/ProfileCard/AgencySearchCard";
 import { ScrollView } from "react-native-gesture-handler";
+import BadgeView from "../../Shared/ProfileCard/BadgeView";
 
 const SearchAgency = ({ navigation }) => {
   const [search, setSearch] = useState(null);
@@ -26,7 +27,7 @@ const SearchAgency = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [highRating, setHighRating] = useState("");
   const [lowRating, setLowRating] = useState("");
-  const [popular, setPopular] = useState("");
+  const [recent, setRecent] = useState(false);
 
   let timer;
 
@@ -38,9 +39,15 @@ const SearchAgency = ({ navigation }) => {
   };
 
   const searchTypedAgency = async (value) => {
-    if (value?.length > 0 || location) {
+    if (value?.length > 0 || location || highRating || lowRating || recent) {
       setLoading(true);
-      const res = await searchAgencies(value, location.item);
+      const res = await searchAgencies(
+        value,
+        location.item,
+        highRating,
+        lowRating,
+        recent
+      );
 
       setAgencies(res);
       setLoading(false);
@@ -52,12 +59,16 @@ const SearchAgency = ({ navigation }) => {
 
     return () => {
       clearTimeout(timer);
+      setLoading(true);
     };
-  }, [search, debounceValue, location]);
+  }, [search, debounceValue, location, highRating, lowRating, recent]);
 
   const onChange = () => {
     return (val) => {
       setLocation(val);
+      setHighRating("");
+      setLowRating("");
+      setRecent("");
     };
   };
 
@@ -83,8 +94,13 @@ const SearchAgency = ({ navigation }) => {
     <ScrollView>
       <SearchBar
         ref={searchField}
-        placeholder="Search Agencies..."
-        onChangeText={(search) => setSearch(search)}
+        placeholder="Type agency name"
+        onChangeText={(search) => {
+          setSearch(search);
+          setHighRating("");
+          setLowRating("");
+          setRecent("");
+        }}
         value={search}
         containerStyle={styles.searchBar}
         inputContainerStyle={styles.searchbarInput}
@@ -99,6 +115,17 @@ const SearchAgency = ({ navigation }) => {
         setLocation={setLocation}
         onChange={onChange}
         location={location}
+      />
+
+      <BadgeView
+        highRating={highRating}
+        setHighRating={setHighRating}
+        lowRating={lowRating}
+        setLowRating={setLowRating}
+        recent={recent}
+        setRecent={setRecent}
+        setSearch={setSearch}
+        setLocation={setLocation}
       />
 
       {agencies?.length > 0 ? (

@@ -9,15 +9,27 @@ const config = {
   },
 };
 
-export async function searchAgencies(name, location) {
-  console.log(name, location);
+export async function searchAgencies(
+  name,
+  location,
+  highRating,
+  lowRating,
+  recent
+) {
   try {
     let data;
     if (name && location) {
       data = { params: { name, location } };
     } else if (!name && location) {
       data = { params: { location } };
+    } else if (highRating) {
+      data = { params: { highRating } };
+    } else if (lowRating) {
+      data = { params: { lowRating } };
+    } else if (recent) {
+      data = { params: { recent } };
     } else {
+      console.error("RECH");
       data = { params: { name } };
     }
     const res = await axios.get(`${baseURL}agencies`, data, config);

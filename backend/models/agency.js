@@ -69,7 +69,7 @@ const agencySchema = mongoose.Schema(
     ],
     totalRating: {
       type: Number,
-      default: 0,
+      default: parseInt(0),
     },
 
     commercial: [String],

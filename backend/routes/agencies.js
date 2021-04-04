@@ -68,20 +68,30 @@ router.get(`/`, async (req, res) => {
     }
 
     if (req.query.lowRating) {
+      console.log("LOWRATING", req.query.lowRating);
       lowRating = parseInt(req.query.lowRating);
     }
 
     if (req.query.recent) {
-      updatedOnes = new Date().getMonth() - 3;
+      updatedOnes = new Date();
+
+      // .toLocaleDateString()
+      updatedOnes = new Date();
+      // console.log("TODAY DATE", updatedOnes);
+      // getting all the agencies updated this month
+      updatedOnes.setMonth(updatedOnes.getMonth() - 1);
+      console.log("OLD", updatedOnes);
+      updatedOnes.setDate(updatedOnes.getDay() + 15);
+      console.log("PREV DATE", updatedOnes);
     }
 
     const mainRegex = {
       $or: [
         { name: { $regex: searchRgx, $options: "i" } },
         { location: { $in: req.query?.location?.split(",") } },
-        { "rating.rate": { $gt: highRating } },
-        { "rating.rate": { $lt: lowRating } },
-        { updatedAt: { $gte: updatedOnes } },
+        { totalRating: { $gt: highRating } },
+        { totalRating: { $lt: lowRating } },
+        { updatedAt: { $gt: updatedOnes } },
       ],
     };
 

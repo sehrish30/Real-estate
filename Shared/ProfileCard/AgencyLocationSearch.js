@@ -17,6 +17,7 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
         style={[styles.font, { color: "#214151" }]}
         inputFilterContainerStyle={{
           backgroundColor: "#fff",
+          borderRadius: 10,
         }}
         optionsLabelStyle={{
           color: "#214151",
@@ -29,6 +30,7 @@ const AgencyLocationSearch = ({ onChange, location, setLocation }) => {
         containerStyle={{
           backgroundColor: "#8dadb3",
           padding: 5,
+          borderRadius: 10,
         }}
         inputFilterStyle={{
           color: "#214151",
