@@ -1,14 +1,7 @@
-import React, {
-  useLayoutEffect,
-  useState,
-  useRef,
-  useCallback,
-  useEffect,
-} from "react";
-import { SafeAreaView, ActivityIndicator } from "react-native";
-import { StyleSheet, View } from "react-native";
-import { SearchBar, Badge } from "react-native-elements";
-import { Text } from "react-native-elements";
+import React, { useLayoutEffect, useState, useRef, useCallback } from "react";
+import { ActivityIndicator, StyleSheet, View, Dimensions } from "react-native";
+
+import { SearchBar, Badge, Text } from "react-native-elements";
 
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -17,7 +10,9 @@ import AgencyLocationSearch from "../../Shared/ProfileCard/AgencyLocationSearch"
 import AgencySearchCard from "../../Shared/ProfileCard/AgencySearchCard";
 import { ScrollView } from "react-native-gesture-handler";
 import BadgeView from "../../Shared/ProfileCard/BadgeView";
+import { SafeAreaView } from "react-native";
 
+const { height, width } = Dimensions.get("screen");
 const SearchAgency = ({ navigation }) => {
   const [search, setSearch] = useState(null);
   const [location, setLocation] = useState("");
@@ -91,7 +86,7 @@ const SearchAgency = ({ navigation }) => {
   );
 
   return (
-    <ScrollView>
+    <>
       <SearchBar
         ref={searchField}
         placeholder="Type agency name"
@@ -130,14 +125,16 @@ const SearchAgency = ({ navigation }) => {
 
       {agencies?.length > 0 ? (
         !loading ? (
-          agencies.map((agency, index) => (
-            <AgencySearchCard
-              navigation={navigation}
-              key={agency.id}
-              index={index}
-              agency={agency}
-            />
-          ))
+          <ScrollView style={styles.scroll}>
+            {agencies.map((agency, index) => (
+              <AgencySearchCard
+                navigation={navigation}
+                key={agency.id}
+                index={index}
+                agency={agency}
+              />
+            ))}
+          </ScrollView>
         ) : (
           <View style={styles.notFound}>
             <ActivityIndicator size="large" color="#f8dc81" />
@@ -150,7 +147,7 @@ const SearchAgency = ({ navigation }) => {
           </Text>
         </View>
       ) : null}
-    </ScrollView>
+    </>
   );
 };
 
@@ -181,5 +178,8 @@ const styles = StyleSheet.create({
     marginTop: 40,
     justifyContent: "center",
     alignItems: "center",
+  },
+  scroll: {
+    paddingBottom: height / 2,
   },
 });

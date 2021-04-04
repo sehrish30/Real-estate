@@ -35,33 +35,8 @@ const MenuOverlay = ({
         overlayStyle={{ width: width / 1.5 }}
         isVisible={visible}
         onBackdropPress={toggleOverlay}
+        backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       >
-        {/* <Button
-          buttonStyle={{
-            borderColor: "#a2d0c1",
-            height: 50,
-          }}
-          containerStyle={{}}
-          titleStyle={{
-            color: "#214151",
-            fontFamily: "EBGaramond-Bold",
-          }}
-          type="outline"
-          icon={
-            <FontAwesome
-              style={{ paddingRight: 10 }}
-              name="trash-o"
-              size={15}
-              color="#214151"
-            />
-          }
-          title="Clear chat"
-          onPress={() => {
-            setVisible(false);
-            constDeleteAllMessages();
-          }}
-        /> */}
-        {console.log(blockstatus)}
         {!chatBlocked && !blockstatus && (
           <Button
             buttonStyle={{

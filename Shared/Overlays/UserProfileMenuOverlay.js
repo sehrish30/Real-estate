@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Overlay } from "react-native-elements";
 import { Dimensions } from "react-native";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { changeUserPasswordSrv } from "../../Shared/Services/AuthServices";
+import CustomModalPassword from "../Input/CustomModalPassword";
 
 var { width, height } = Dimensions.get("screen");
-const CustomOptionsOverlay = ({
+const UserProfileMenuOverlay = ({
   visible,
   toggleOverlay,
-  changePassword,
-  editAgency,
+  setShowPasswordModal,
+  showPasswordModal,
 }) => {
   return (
     <Overlay
@@ -20,33 +22,8 @@ const CustomOptionsOverlay = ({
     >
       <Button
         onPress={() => {
-          editAgency();
-          toggleOverlay();
-        }}
-        type="outline"
-        buttonStyle={{
-          backgroundColor: "#fff",
-          borderColor: "#214151",
-          height: 50,
-          marginVertical: 5,
-        }}
-        titleStyle={{
-          color: "#214151",
-        }}
-        icon={
-          <FontIcon
-            style={{ marginRight: 15 }}
-            name="pencil-square"
-            color={"#214151"}
-            size={30}
-          />
-        }
-        title="Edit Profile"
-      />
-
-      <Button
-        onPress={() => {
-          changePassword();
+          //   changeUserPasswordSrv();
+          setShowPasswordModal(true);
           toggleOverlay();
         }}
         type="outline"
@@ -88,4 +65,4 @@ const CustomOptionsOverlay = ({
   );
 };
 
-export default CustomOptionsOverlay;
+export default UserProfileMenuOverlay;

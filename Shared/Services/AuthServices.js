@@ -56,6 +56,7 @@ export async function loginGoogleUser(data) {
 
       const decoded = jwt_decode(res.data.token);
       sendData = { decoded, ...res.data };
+
       await AsyncStorage.setItem("user", JSON.stringify(sendData));
       await AsyncStorage.setItem("isLoggedIn", "true");
     }
@@ -226,6 +227,38 @@ export async function changeAgencyPassword(data, token) {
     Toast.show({
       type: "error",
       text1: `Password incorrect`,
+      text2: `Try again`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
+  }
+}
+
+export async function changeUserPasswordSrv(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}users/change-password`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+    if (res.status == 401) {
+      Toast.show({
+        type: "error",
+        text1: `User doesn't exist`,
+        text2: `Try again`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Password couldn't be changed`,
       text2: `Try again`,
       visibilityTime: 2000,
       topOffset: 30,

@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, Dimensions, TouchableOpacity } from "react-native";
 import { Card } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -7,9 +7,18 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../../Redux/Actions/auth";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import UserProfileMenuOverlay from "../../Shared/Overlays/UserProfileMenuOverlay";
+import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
 
+var { height, width } = Dimensions.get("screen");
 const Profile = ({ navigation }) => {
   const [user, setUser] = useState("");
+  const [userDp, setUserDp] = useState("");
+  const [openMenu, setOpenMenu] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [isGoogle, setIsGoogle] = useState("");
   const dispatch = useDispatch();
 
   const logout = async () => {
@@ -26,6 +35,10 @@ const Profile = ({ navigation }) => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const toggleOverlay = () => {
+    setOpenMenu(!openMenu);
   };
 
   useLayoutEffect(() => {
@@ -51,6 +64,10 @@ const Profile = ({ navigation }) => {
         const data = await AsyncStorage.getItem("user");
         const parsedData = JSON.parse(data);
         setUser(parsedData.email);
+
+        setUserId(parsedData.decoded.userId);
+        setUserDp(parsedData.dp);
+        setIsGoogle(parsedData.isGoogle);
       } catch (e) {
         console.log(e);
       }
@@ -60,18 +77,46 @@ const Profile = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <UserProfileMenuOverlay
+        visible={openMenu}
+        toggleOverlay={toggleOverlay}
+        showPasswordModal={showPasswordModal}
+        setShowPasswordModal={setShowPasswordModal}
+      />
       <Card containerStyle={styles.bg}>
-        <Card.Title style={styles.font}>
-          <Icon
-            style={{ verticalAlign: "middle", marginRight: 5 }}
-            name="user-circle-o"
-            color={"#a2d0c1"}
+        {!isGoogle && (
+          <SimpleLineIcons
+            style={{ marginLeft: "auto" }}
+            name="options-vertical"
+            color={"#839b97"}
             size={30}
+            onPress={toggleOverlay}
           />
-          <Text style={styles.font}>{user}</Text>
+        )}
+
+        <Card.Title style={styles.font}>
+          <Card.Image
+            style={{ width: 50, height: 50, borderRadius: 100 }}
+            source={{ uri: userDp }}
+          ></Card.Image>
         </Card.Title>
+        <Text
+          style={[
+            styles.font,
+            { fontSize: 18, alignSelf: "center", marginBottom: 10 },
+          ]}
+        >
+          {user}
+        </Text>
+
         <Card.Divider />
       </Card>
+      <CustomModalPassword
+        showPasswordModal={showPasswordModal}
+        setShowPasswordModal={setShowPasswordModal}
+        userPassword={true}
+        userId={userId}
+      />
     </ScrollView>
   );
 };
@@ -80,7 +125,8 @@ export default Profile;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#eff7e1",
+    backgroundColor: "#fff",
+    height: height,
   },
   font: {
     fontFamily: "EBGaramond-Regular",
@@ -89,5 +135,8 @@ const styles = StyleSheet.create({
   text: {
     color: "#214151",
   },
-  bg: {},
+  bg: {
+    backgroundColor: "#eff7e1",
+    borderRadius: 10,
+  },
 });

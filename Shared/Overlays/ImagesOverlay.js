@@ -24,6 +24,7 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
   return (
     <Overlay
       isVisible={visible}
+      backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       onBackdropPress={toggleOverlay}
       overlayStyle={{
         paddingVertical: 20,

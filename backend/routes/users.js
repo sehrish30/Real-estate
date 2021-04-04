@@ -5,7 +5,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
-const sendinBlue = require("nodemailer-sendinblue-transport");
+
+const mongoose = require("mongoose");
 
 const transporter = nodemailer.createTransport({
   service: "SendinBlue", // no need to set host or port etc.
@@ -61,6 +62,7 @@ router.post("/google-register", async (req, res) => {
     let user = new User({
       email,
       dp: photoUrl,
+      isGoogle: true,
     });
 
     user = await user.save();
@@ -96,7 +98,9 @@ router.post("/login", async (req, res) => {
           expiresIn: "15d",
         }
       );
-      return res.status(200).send({ email: user.email, token, dp: user.dp });
+      return res
+        .status(200)
+        .send({ email: user.email, token, dp: user.dp, isGoogle: false });
     } else {
       return res.status(400).send("Wrong Password");
     }
@@ -127,7 +131,9 @@ router.post("/google-login", async (req, res) => {
       }
     );
 
-    return res.status(200).send({ email: user.email, dp: user.dp, token });
+    return res
+      .status(200)
+      .send({ email: user.email, dp: user.dp, token, isGoogle: true });
   } catch (e) {
     return res.status(500).send(e);
   }
@@ -310,7 +316,7 @@ router.get(`/`, async (req, res) => {
 router.put(`/change-password`, async (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(` `)[1];
-
+  console.error(req.body);
   if (!mongoose.isValidObjectId(req.body.id)) {
     return res.status(400).res("Invalid User");
   }

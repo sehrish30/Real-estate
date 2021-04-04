@@ -26,6 +26,7 @@ const SingleImageOverlay = ({
         justifyContent: "center",
         alignItems: "center",
       }}
+      backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       isVisible={visible}
       onBackdropPress={toggleOverlay}
     >

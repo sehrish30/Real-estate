@@ -6,7 +6,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { changeAgencyPassword } from "../../Shared/Services/AuthServices";
 import { useDispatch } from "react-redux";
 import * as actions from "../../Redux/Actions/auth";
-
+import { changeUserPasswordSrv } from "../../Shared/Services/AuthServices";
 import { SafeAreaView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,6 +20,8 @@ const CustomModalPassword = ({
   agencyId,
   navigation,
   dispatchProfile,
+  userPassword = false,
+  userId,
 }) => {
   const dispatch = useDispatch();
   const [oldPassword, setOldPassword] = useState("");
@@ -28,22 +30,44 @@ const CustomModalPassword = ({
   const [errorMessage1, setErrorMessage1] = useState(null);
   const [errorMessage2, setErrorMessage2] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const servicePassword = async () => {
     if (newPassword !== "") {
       if (confirmNewPassword !== "") {
         if (confirmNewPassword === newPassword) {
           const token = await AsyncStorage.getItem("jwt");
-          const data = {
-            id: agencyId,
-            password: oldPassword,
-            newPassword: newPassword,
-          };
-          const res = await changeAgencyPassword(data, token);
+          setLoading(true);
+          let res;
+          let resuser;
+          if (userPassword) {
+            const userData = {
+              id: userId,
+              password: oldPassword,
+              newPassword: newPassword,
+            };
+
+            resuser = await changeUserPasswordSrv(userData, token);
+            if (resuser) {
+              setShowPasswordModal(false);
+              setShowSuccess(true);
+              console.error(res);
+              setOldPassword("");
+              setConfirmNewPassword("");
+              setNewPassword("");
+              setLoading(false);
+            }
+          } else {
+            const data = {
+              id: agencyId,
+              password: oldPassword,
+              newPassword: newPassword,
+            };
+            res = await changeAgencyPassword(data, token);
+          }
           if (res) {
             setShowPasswordModal(false);
             setShowSuccess(true);
-            console.error(res);
             setOldPassword("");
             setConfirmNewPassword("");
             setNewPassword("");
@@ -63,6 +87,7 @@ const CustomModalPassword = ({
               land: res.newAgency.land?.length,
             });
             await AsyncStorage.setItem("agency", JSON.stringify(res.newAgency));
+            setLoading(false);
           }
         } else {
           setErrorMessage2("Passwords don't match");
@@ -134,7 +159,8 @@ const CustomModalPassword = ({
           </SafeAreaView>
 
           <Button
-            title="SAVE"
+            title="Update password"
+            loading={loading}
             buttonStyle={{ backgroundColor: "#214151", marginBottom: 10 }}
             titleStyle={{ fontFamily: "EBGaramond-Bold" }}
             style={styles.savebtn}
@@ -143,7 +169,7 @@ const CustomModalPassword = ({
             }}
           />
           <Button
-            title="CANCEL"
+            title="Cancel"
             type="outline"
             titleStyle={{ color: "#214151", fontFamily: "EBGaramond-Bold" }}
             style={styles.cancelbtn}
