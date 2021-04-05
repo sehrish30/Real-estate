@@ -212,6 +212,23 @@ const SocketServer = (server) => {
     });
 
     /*-----------------------------------------
+             User Created new chat
+    ---------------------------------------- */
+    socket.on("newChat", async (chatData) => {
+      console.log("NEW CHAT COMMON", chatData);
+      if (users.has(chatData.toUserId)) {
+        users.get(chatData.toUserId).sockets.forEach((socket) => {
+          io.to(socket).emit("newChat", chatData.info);
+        });
+      }
+      if (users.has(chatData.fromUserId)) {
+        users.get(chatData.fromUserId).sockets.forEach((socket) => {
+          io.to(socket).emit("newChat", chatData.info);
+        });
+      }
+    });
+
+    /*-----------------------------------------
              User Disconnected
     ---------------------------------------- */
 

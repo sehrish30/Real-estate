@@ -93,6 +93,7 @@ const Chat = ({ navigation, route }) => {
             { agency: route.params.agency, customer: route.params.customer },
             token
           );
+          console.error(res, route.params);
 
           // Storing current chat ID in redux
           dispatch(actions.currentChat(route.params?.chatId));
@@ -118,7 +119,7 @@ const Chat = ({ navigation, route }) => {
                  FETCH CHATS
       --------------------------------------*/
 
-        if (chatExistence) {
+        if (chatExistence && !route.params.notsure) {
           (async () => {
             const res = await fetchAllChats(
               { agency: route.params.agency, customer: route.params.customer },
@@ -209,19 +210,20 @@ const Chat = ({ navigation, route }) => {
       })();
       setLoading(false);
 
-      (async () => {
-        if (agency.id) {
-          await seenChat(
-            { chatId: route.params?.chatId, person: agency.id },
-            token
-          );
-        } else {
-          await seenChat(
-            { chatId: route.params?.chatId, person: user.decoded.userId },
-            token
-          );
-        }
-      })();
+      // (async () => {
+      //   console.log("PROBLEM");
+      //   if (agency.id) {
+      //     await seenChat(
+      //       { chatId: route.params?.chatId, person: agency.id },
+      //       token
+      //     );
+      //   } else {
+      //     await seenChat(
+      //       { chatId: route.params?.chatId, person: user.decoded.userId },
+      //       token
+      //     );
+      //   }
+      // })();
 
       return () => {
         unsubscribe();

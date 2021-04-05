@@ -18,6 +18,8 @@ import {
   DELETE_CHAT,
   BLOCK_CHAT,
   UNBLOCK_CHAT,
+  FETCH_CHATS,
+  EDIT_FETCH_CHATS,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -49,6 +51,7 @@ export const online = (userId) => (dispatch) => {
 };
 
 export const getChats = (chats) => (dispatch) => {
+  console.log("GET CHATS", chats);
   dispatch({ type: SET_CHATS, payload: chats });
 };
 
@@ -94,4 +97,13 @@ export const blockChat = (chat) => (dispatch) => {
 
 export const chatunblock = (chat) => (dispatch) => {
   dispatch({ type: UNBLOCK_CHAT, payload: chat });
+};
+
+export const fetchAllChats = (chat) => (dispatch) => {
+  dispatch({ type: FETCH_CHATS, payload: chat });
+};
+
+export const addToFetchedChats = (chat) => (dispatch) => {
+  console.log("ACTION HERE", chat);
+  dispatch({ type: EDIT_FETCH_CHATS, payload: chat });
 };

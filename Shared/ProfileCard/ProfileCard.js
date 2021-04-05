@@ -39,7 +39,6 @@ const ProfileCard = ({
   // rating,
   // reviews,
 }) => {
-  console.log(residential);
   const [visible, setVisible] = useState(false);
   const [showFullBio, setShowFullBio] = useState(false);
   let customer = useSelector((state) => state.auth.user);
@@ -273,8 +272,6 @@ const ProfileCard = ({
                   `mailto:${user}?subject=Hello 👋, this is a seller/buyer from Iconic Real Estate=Description=I want to`
                 );
               }
-
-              console.log(res);
             }}
           />
         )}

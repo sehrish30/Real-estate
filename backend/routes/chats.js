@@ -54,9 +54,16 @@ router.post("/createchat", async (req, res) => {
       chats: [],
     });
     chatRoom = await chatRoom.save();
+    const data = await chatRoom
+      .populate("customer", "email dp")
+      .populate({
+        path: "agency",
+        select: "name logo",
+      })
+      .execPopulate();
     if (!chatRoom) return res.status(400).send("Chat couldn't be created");
 
-    return res.status(200).json({ status: "Chat created" });
+    return res.status(200).json(data);
   } catch (err) {
     return res.status(500).send(err);
   }
@@ -178,7 +185,7 @@ router.get(`/all-agencychatrooms`, async (req, res) => {
   Chat.find({ agency: req.query.agency })
     .populate("customer")
     .populate("chats")
-    .sort({ createdAt: -1 })
+    .sort({ updatedAt: -1 })
     .exec((err, chatrooms) => {
       if (err) {
         return res.status(402).send(err);

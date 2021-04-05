@@ -14,7 +14,9 @@ export function useSocket(user, dispatch) {
   if (Object.keys(socketStored).length === 0) {
     socket.emit("join", user);
   }
+  let chatsStored = store.getState().chat.chats;
 
+  dispatch(actions.fetchAllChats(user.allChats));
   dispatch(actions.getChats(user.allChats));
 
   dispatch(actions.setSocket(socket));
@@ -60,6 +62,10 @@ export function useSocket(user, dispatch) {
 
   socket.on("chatunblock", (chat) => {
     dispatch(actions.chatunblock(chat));
+  });
+
+  socket.on("newChat", (chat) => {
+    dispatch(actions.addToFetchedChats(chat));
   });
   socket.connect;
 }

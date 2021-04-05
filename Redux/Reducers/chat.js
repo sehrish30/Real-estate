@@ -16,6 +16,8 @@ import {
   DELETE_CHAT,
   BLOCK_CHAT,
   UNBLOCK_CHAT,
+  FETCH_CHATS,
+  EDIT_FETCH_CHATS,
 } from "../constants";
 
 const initialState = {
@@ -28,6 +30,7 @@ const initialState = {
   chatExists: false,
   messages: [],
   unseenCount: [],
+  allChats: [],
 };
 
 const chat = (state = initialState, action) => {
@@ -184,7 +187,6 @@ const chat = (state = initialState, action) => {
 
     case SET_MESSAGE:
       if (state.currentChat == payload.chatId) {
-        console.log("HERE ONLY");
         return {
           ...state,
           messages: [...state.messages, payload],
@@ -237,6 +239,16 @@ const chat = (state = initialState, action) => {
           currentChatBlocked: false,
         };
       }
+    case FETCH_CHATS:
+      return {
+        ...state,
+        allChats: action.payload,
+      };
+    case EDIT_FETCH_CHATS:
+      return {
+        ...state,
+        allChats: [payload, ...state.allChats],
+      };
 
     default:
       return state;

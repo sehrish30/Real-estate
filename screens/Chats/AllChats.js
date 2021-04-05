@@ -4,7 +4,6 @@ import {
   View,
   TouchableOpacity,
   FlatList,
-  ScrollView,
   StatusBar,
   ActivityIndicator,
   Dimensions,
@@ -21,10 +20,10 @@ import CreateChat from "../../Shared/Chats/CreateChat";
 import { SearchBar } from "react-native-elements";
 
 var { width, height } = Dimensions.get("window");
-const AllChats = ({ navigation }) => {
+const AllChats = ({ navigation, route }) => {
   const [allChats, setAllChats] = useState([]);
   const [safetyChats, setSafetyChats] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [unseencount, setUnseencount] = useState([]);
   const [showNoagency, setShowNoAgency] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -37,6 +36,7 @@ const AllChats = ({ navigation }) => {
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
   let sockets = useSelector((state) => state.chat.socket);
+  let fetchedChats = useSelector((state) => state.chat.allChats);
   console.log(sockets, "SEHRISH CRYING");
 
   let userId;
@@ -56,10 +56,13 @@ const AllChats = ({ navigation }) => {
     React.useCallback(() => {
       if (user.email) {
         (async () => {
-          const res = await customerRooms(
-            { customer: user.decoded.userId },
-            token
-          );
+          let res;
+
+          if (fetchedChats.length <= 0) {
+            res = await customerRooms({ customer: user.decoded.userId }, token);
+          } else {
+            setAllChats(fetchedChats);
+          }
 
           if (!res) {
             setLoading(false);
@@ -109,11 +112,13 @@ const AllChats = ({ navigation }) => {
                     online: false,
                   },
                 ],
+                new: false,
               };
 
               setAllChats((prev) => [...prev, info]);
               setSafetyChats((prev) => [...prev, info]);
               fastChats.push(info);
+              console.log("FAST CHATS", fastChats);
             });
             Promise.all(requests).then(() => {
               useSocket({ user, allChats: fastChats }, dispatch);
@@ -124,8 +129,12 @@ const AllChats = ({ navigation }) => {
         })();
       } else if (agency.email) {
         (async () => {
-          const res = await agencyRooms({ agency: agency.id }, token);
-
+          let res;
+          if (fetchedChats.length <= 0) {
+            res = await agencyRooms({ agency: agency.id }, token);
+          } else {
+            setAllChats(fetchedChats);
+          }
           if (!res) {
             setLoading(false);
           } else {
@@ -173,6 +182,7 @@ const AllChats = ({ navigation }) => {
                     online: false,
                   },
                 ],
+                new: false,
               };
               setAllChats((prev) => [...prev, info]);
               setSafetyChats((prev) => [...prev, info]);
@@ -194,10 +204,11 @@ const AllChats = ({ navigation }) => {
           }
         })();
       }
+
       return () => {
-        setAllChats([]);
-        setSafetyChats([]);
-        setUnseencount([]);
+        // setAllChats([]);
+        // setSafetyChats([]);
+        // setUnseencount([]);
         socket.disconnect(true);
         socket.off();
       };
@@ -257,9 +268,9 @@ const AllChats = ({ navigation }) => {
       ),
     });
     return () => {
-      setAllChats([]);
-      setSafetyChats([]);
-      setUnseencount([]);
+      // setAllChats([]);
+      // setSafetyChats([]);
+      // setUnseencount([]);
     };
   }, [navigation]);
 
@@ -303,7 +314,7 @@ const AllChats = ({ navigation }) => {
       {allChats.length !== 0 && !loading ? (
         <View style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
           <FlatList
-            data={allChats}
+            data={fetchedChats}
             renderItem={renderItem}
             keyExtractor={(item) => {
               return item.id;
