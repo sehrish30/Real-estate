@@ -13,7 +13,11 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as MailComposer from "expo-mail-composer";
 import { useSelector } from "react-redux";
-import { SimpleLineIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  SimpleLineIcons,
+  MaterialCommunityIcons,
+  EvilIcons,
+} from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
 
@@ -241,39 +245,51 @@ const ProfileCard = ({
           )}
         </View>
         {customer?.decoded?.userId && (
-          <Button
-            buttonStyle={{ marginVertical: 10 }}
-            titleStyle={{
-              color: "#214151",
-            }}
-            icon={
-              <MaterialCommunityIcons
-                name="email-outline"
-                size={15}
-                color="#214151"
-                style={{ marginRight: 5 }}
-              />
-            }
-            title={user}
-            type="clear"
-            onPress={async () => {
-              const response = await MailComposer.isAvailableAsync();
-
-              if (response) {
-                const res = await MailComposer.composeAsync({
-                  recipients: [user],
-                  subject: `Hello 👋, this is a buyer/seller from Iconic Real Estate`,
-                  // attachments: [``],
-                  body: "Iconic Real Estate",
-                  isHtml: false,
-                });
-              } else {
-                Linking.openURL(
-                  `mailto:${user}?subject=Hello 👋, this is a seller/buyer from Iconic Real Estate=Description=I want to`
-                );
+          <>
+            <Button
+              raised={true}
+              buttonStyle={{ backgroundColor: "#f8dc81" }}
+              titleStyle={{ color: "#214151" }}
+              icon={<EvilIcons name="calendar" size={30} color="#214151" />}
+              title="Schedule Consultation"
+              onPress={() => {
+                navigation.navigate("ScheduleConsultationForm");
+              }}
+            />
+            <Button
+              buttonStyle={{ marginVertical: 10, borderColor: "#214151" }}
+              titleStyle={{
+                color: "#214151",
+              }}
+              icon={
+                <MaterialCommunityIcons
+                  name="email-outline"
+                  size={18}
+                  color="#214151"
+                  style={{ marginRight: 5 }}
+                />
               }
-            }}
-          />
+              title={"Email"}
+              type="outline"
+              onPress={async () => {
+                const response = await MailComposer.isAvailableAsync();
+
+                if (response) {
+                  const res = await MailComposer.composeAsync({
+                    recipients: [user],
+                    subject: `Hello 👋, this is a buyer/seller from Iconic Real Estate`,
+                    // attachments: [``],
+                    body: "Iconic Real Estate",
+                    isHtml: false,
+                  });
+                } else {
+                  Linking.openURL(
+                    `mailto:${user}?subject=Hello 👋, this is a seller/buyer from Iconic Real Estate=Description=I want to`
+                  );
+                }
+              }}
+            />
+          </>
         )}
 
         <Card.Divider />

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Dimensions } from "react-native";
 import { ListItem, Avatar, Badge } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSelector } from "react-redux";
@@ -7,7 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
 
 // import TouchableScale from "react-native-touchable-scale";
-
+var { height, width } = Dimensions.get("screen");
 const ChatsCard = ({
   name,
   uri,
@@ -81,6 +81,8 @@ const ChatsCard = ({
           <ListItem.Subtitle style={{ color: "#214151" }}>
             {type === "image" ? (
               <Ionicons name="image-outline" size={17} color="#8dadb3" />
+            ) : message.length > 25 ? (
+              <Text>{message.substr(0, 25)}...</Text>
             ) : (
               message
             )}

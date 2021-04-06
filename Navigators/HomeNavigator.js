@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Home from "../screens/Drawer/Home";
 import SearchAgency from "../screens/Drawer/SearchAgency";
 import AgencyDetail from "../screens/Drawer/AgencyDetail";
+import ScheduleConsultationForm from "../screens/Drawer/ScheduleConsultationForm";
 import UserRateReview from "../screens/User/UserRateReview";
 
 const Stack = createStackNavigator();
@@ -41,7 +42,14 @@ function MyStack() {
         name="AgencyDetail"
         component={AgencyDetail}
         options={{
-          title: "AgencyDetail",
+          title: "Agency Details",
+        }}
+      />
+      <Stack.Screen
+        name="ScheduleConsultationForm"
+        component={ScheduleConsultationForm}
+        options={{
+          title: "Schedule consultation with agency",
         }}
       />
     </Stack.Navigator>

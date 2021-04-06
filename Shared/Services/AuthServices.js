@@ -249,9 +249,9 @@ export async function changeUserPasswordSrv(data, token) {
     if (res.status == 401) {
       Toast.show({
         type: "error",
-        text1: `User doesn't exist`,
+        text1: `Wrong previous password`,
         text2: `Try again`,
-        visibilityTime: 2000,
+        visibilityTime: 4000,
         topOffset: 30,
       });
     }
@@ -260,7 +260,7 @@ export async function changeUserPasswordSrv(data, token) {
       type: "error",
       text1: `Password couldn't be changed`,
       text2: `Try again`,
-      visibilityTime: 2000,
+      visibilityTime: 4000,
       topOffset: 30,
     });
   }
