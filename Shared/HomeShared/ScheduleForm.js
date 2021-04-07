@@ -33,6 +33,7 @@ const ScheduleForm = ({
   setCheckedInPerson,
   setMessage,
   message,
+  params,
 }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [startTimeZone, setStartTimeZone] = useState("");
@@ -67,6 +68,7 @@ const ScheduleForm = ({
       }
     >
       <Input
+        disabled={params?.email}
         inputStyle={styles.inputStyle}
         label="Email"
         labelStyle={styles.fieldLabels}
@@ -76,6 +78,7 @@ const ScheduleForm = ({
         value={email}
       />
       <Input
+        disabled={params?.phoneNumber}
         keyboardType="numeric"
         inputStyle={styles.inputStyle}
         label="Phone number"
@@ -170,6 +173,7 @@ const ScheduleForm = ({
       ) : null}
       <View style={styles.checkBoxes}>
         <CheckBox
+          disabled={params?.phoneNumber}
           checkedColor="#214151"
           uncheckedColor="#839b97"
           containerStyle={{ backgroundColor: "#fff" }}
@@ -182,6 +186,7 @@ const ScheduleForm = ({
           }}
         />
         <CheckBox
+          disabled={params?.phoneNumber}
           checkedColor="#214151"
           uncheckedColor="#839b97"
           containerStyle={{ backgroundColor: "#fff" }}
@@ -210,7 +215,7 @@ const ScheduleForm = ({
         containerStyle={styles.schedulebtn}
         buttonStyle={styles.schedulebtninputContainer}
         titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
-        title="Request Schedule"
+        title={params?.email ? "Request Reschedule" : "Request Schedule"}
       />
     </ScrollView>
   );

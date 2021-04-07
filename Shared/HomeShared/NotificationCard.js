@@ -5,15 +5,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import TouchableScale from "react-native-touchable-scale";
 import NotificationsOverlay from "../Overlays/NotificationsOverlay";
 
-const NotificationCard = ({ notificationContent, author, dp, time }) => {
+const NotificationCard = ({
+  navigation,
+  notificationContent,
+  author,
+  dp,
+  time,
+}) => {
   const [visible, setVisible] = useState(false);
-  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const toggleOverlay = () => {
     setVisible(!visible);
   };
   return (
-    <View style={styles.card}>
+    <View style={[styles.card]}>
       <ListItem
         //   key={id}
         bottomDivider
@@ -28,11 +33,6 @@ const NotificationCard = ({ notificationContent, author, dp, time }) => {
         }}
         onPress={() => {
           toggleOverlay();
-          Animated.timing(animatedValue, {
-            toValue: 1,
-            duration: 3000,
-            useNativeDriver: false,
-          }).start();
         }}
         ViewComponent={LinearGradient}
       >
@@ -73,7 +73,13 @@ const NotificationCard = ({ notificationContent, author, dp, time }) => {
 
         {/* <ListItem.Chevron color="white" /> */}
       </ListItem>
-      <NotificationsOverlay visible={visible} toggleOverlay={toggleOverlay} />
+      {visible && (
+        <NotificationsOverlay
+          navigation={navigation}
+          visible={visible}
+          toggleOverlay={toggleOverlay}
+        />
+      )}
     </View>
   );
 };

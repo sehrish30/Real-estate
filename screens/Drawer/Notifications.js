@@ -42,6 +42,7 @@ const Notifications = ({ navigation }) => {
       notificationContent={item.notificationContent}
       dp={item.dp}
       time={item.time}
+      navigation={navigation}
     />
   );
   //   <Item title={item.title} />;

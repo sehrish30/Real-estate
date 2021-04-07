@@ -12,7 +12,7 @@ const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
   errors: {},
 };
-const ScheduleConsultationForm = ({ navigation }) => {
+const ScheduleConsultationForm = ({ navigation, route }) => {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
@@ -20,11 +20,24 @@ const ScheduleConsultationForm = ({ navigation }) => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [level, setLevel] = useState(1);
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [disableOptions, setDisableOptions] = useState(false);
+  const [email, setEmail] = useState(route.params?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    route.params?.phoneNumber || ""
+  );
   const [checkedVirtual, setCheckedVirtual] = useState(true);
   const [checkedInPerson, setCheckedInPerson] = useState(false);
   const [message, setMessage] = useState("");
+
+  // if (route.params.email) {
+  //   const { email, phoneNumber, meeting } = route.params;
+  //   setEmail(email);
+  //   setPhoneNumber(phoneNumber);
+  //   if (meeting == "person") {
+  //     setCheckedInPerson(true);
+  //     setCheckedVirtual(false);
+  //   }
+  // }
 
   const [duration, setDuration] = useState("");
 
@@ -127,6 +140,7 @@ const ScheduleConsultationForm = ({ navigation }) => {
         setCheckedInPerson={setCheckedInPerson}
         setMessage={setMessage}
         message={message}
+        params={route.params}
       />
       {show && (
         <DateTimePicker
