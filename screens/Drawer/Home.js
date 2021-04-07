@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { SafeAreaView } from "react-native";
 import { Header } from "react-native-elements";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -103,7 +104,7 @@ const Home = ({ navigation }) => {
                   color={"#214151"}
                   size={30}
                   onPress={() => {
-                    navigation.navigate("UserRateReview");
+                    navigation.navigate("Notifications");
                   }}
                 />
               </TouchableOpacity>
@@ -113,7 +114,11 @@ const Home = ({ navigation }) => {
                   navigation.navigate("SearchAgency");
                 }}
               >
-                <Icon name="ios-search" color={"#214151"} size={30} />
+                <MaterialIcons
+                  name="person-search"
+                  color={"#214151"}
+                  size={30}
+                />
               </TouchableOpacity>
             </View>
           }

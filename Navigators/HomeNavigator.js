@@ -6,6 +6,7 @@ import SearchAgency from "../screens/Drawer/SearchAgency";
 import AgencyDetail from "../screens/Drawer/AgencyDetail";
 import ScheduleConsultationForm from "../screens/Drawer/ScheduleConsultationForm";
 import UserRateReview from "../screens/User/UserRateReview";
+import Notifications from "../screens/Drawer/Notifications";
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,13 @@ function MyStack() {
         component={ScheduleConsultationForm}
         options={{
           title: "Schedule consultation with agency",
+        }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{
+          title: "Notifications",
         }}
       />
     </Stack.Navigator>

@@ -204,6 +204,7 @@ const ScheduleForm = ({
         selectionColor="#839b97"
         placeholder="Message..."
         placeholderTextColor="#839b97"
+        maxLength={250}
       />
       <Button
         containerStyle={styles.schedulebtn}
