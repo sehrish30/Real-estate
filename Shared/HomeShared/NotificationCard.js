@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { StyleSheet, Text, View, Animated } from "react-native";
 import { Avatar, ListItem, Badge, Overlay } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
-import TouchableScale from "react-native-touchable-scale";
+// import TouchableScale from "react-native-touchable-scale";
 import NotificationsOverlay from "../Overlays/NotificationsOverlay";
 
 const NotificationCard = ({
@@ -22,7 +22,7 @@ const NotificationCard = ({
       <ListItem
         //   key={id}
         bottomDivider
-        Component={TouchableScale}
+        // Component={TouchableScale}
         friction={90} //
         tension={100} // These props are passed to the parent component (here TouchableScale)
         activeScale={0.95} //

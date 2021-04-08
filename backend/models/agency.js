@@ -71,7 +71,13 @@ const agencySchema = mongoose.Schema(
       type: Number,
       default: parseInt(0),
     },
-
+    consultations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Consultation",
+        required: false,
+      },
+    ],
     commercial: [String],
     land: [mongoose.ObjectId],
     residential: [mongoose.ObjectId],

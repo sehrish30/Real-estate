@@ -41,6 +41,7 @@ const usersRoutes = require("./routes/users");
 const agentRoutes = require("./routes/agencies");
 const propertyRoutes = require("./routes/properties");
 const chatsRoutes = require("./routes/chats");
+const consulationRoutes = require("./routes/consultations");
 
 /*---------------------------------
               ROUTER
@@ -49,6 +50,7 @@ app.use(`/users`, usersRoutes);
 app.use(`/agencies`, agentRoutes);
 app.use(`/properties`, propertyRoutes);
 app.use(`/chats`, chatsRoutes);
+app.use(`/consulation`, consulationRoutes);
 
 /*---------------------------------
        MONGOOSE CONNECTION

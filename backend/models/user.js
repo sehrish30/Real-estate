@@ -18,6 +18,13 @@ const userSchema = mongoose.Schema({
     default:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
   },
+  consultations: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Consultation",
+      required: false,
+    },
+  ],
 
   resetToken: String,
   expireToken: Date,
