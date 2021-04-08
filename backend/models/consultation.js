@@ -36,6 +36,9 @@ const consultationSchema = mongoose.Schema(
       type: String,
       default: "pending",
     },
+    email: {
+      type: String,
+    },
     rescdheuleMessage: String,
   },
   {
@@ -51,4 +54,4 @@ consultationSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-exports.Category = mongoose.model("Consultation", consultationSchema);
+exports.Consultation = mongoose.model("Consultation", consultationSchema);

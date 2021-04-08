@@ -40,4 +40,4 @@ notificationSchema.virtual("id").get(function () {
   return this._id.toHexString();
 });
 
-exports.Chat = mongoose.model("Notification", notificationSchema);
+exports.Notification = mongoose.model("Notification", notificationSchema);

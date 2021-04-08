@@ -1,6 +1,7 @@
 const { Consultation } = require("../models/consultation.js");
 const { User } = require("../models/user.js");
-const { Agency } = require("../models/agency");
+const { Agency } = require("../models/agency.js");
+const { Notification } = require("../models/notification.js");
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
@@ -87,8 +88,10 @@ router.post("/customer-requesting-consultation", async (req, res) => {
       message,
       isVirtual,
       date,
+      email,
     } = req.body;
-    let consulation = new Consultation({
+
+    let consultation = new Consultation({
       customer,
       agency,
       phoneNumber,
@@ -97,24 +100,66 @@ router.post("/customer-requesting-consultation", async (req, res) => {
       message,
       isVirtual,
       date,
+      email,
     });
-    consulation = await consulation.save();
-    if (!consulation)
+
+    consultation = await consultation.save();
+
+    if (!consultation) {
       return res.status(400).send("Consultation couldn't be send");
+    } else {
+      let meetingType;
+      if (isVirtual === true) {
+        meetingType = "virtual";
+      } else {
+        meetingType = "in person";
+      }
 
-    // Save the consultation in user
-    await User.findByIdAndUpdate(req.body.customer, {
-      $push: {
-        consultation: consulation.id,
-      },
-    });
+      // Save the notification
+      let notification = new Notification({
+        customer,
+        agency,
+        consultationId: consultation._id,
+        content: `${email} wants to schedule ${meetingType} meeting with you`,
+      });
 
-    // Save the consultation in agency
-    await Agency.findByIdAndUpdate(req.body.customer, {
-      $push: {
-        consultation: consulation.id,
-      },
-    });
-  } catch (err) {}
+      notification = notification.save();
+
+      // Save the consultation in user
+      const user = User.findByIdAndUpdate(req.body.customer, {
+        $push: {
+          consultations: consultation.id,
+        },
+      });
+
+      // Save the consultation in agency
+      const agencyData = Agency.findByIdAndUpdate(req.body.agency, {
+        $push: {
+          consultations: consultation.id,
+        },
+      });
+
+      await Promise.all([notification, user, agencyData]);
+      return res.status(200).send(consultation);
+    }
+  } catch (err) {
+    return res.status(500).send("WHAT THE HELL");
+  }
 });
+
+/*----------------------------------------
+ AGENCY DECLINING THE REQUEST
+----------------------------------------- */
+
+/*----------------------------------------
+ AGENCY ACCEPTING THE REQUEST
+----------------------------------------- */
+
+/*----------------------------------------
+ AGENCY REQUESTING FOR RESCHEDULE
+----------------------------------------- */
+
+/*----------------------------------------
+ AGENCY ACCEPTING THE REQUEST
+----------------------------------------- */
 module.exports = router;
