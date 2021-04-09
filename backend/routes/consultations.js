@@ -4,7 +4,7 @@ const { Agency } = require("../models/agency.js");
 const { Notification } = require("../models/notification.js");
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
@@ -31,20 +31,29 @@ transporter.use(
 ----------------------------------------- */
 router.get("/user-consultations/:id", async (req, res) => {
   try {
-    // get the token
-    const authHeader = req.headers["authorization"];
-
-    const token = authHeader && authHeader.split(` `)[1];
-
-    await User.findById(req.params.id, "consultations").exec(
-      (err, consultation) => {
+    // when populating multiple fields in the doc use array
+    await User.findById(req.params.id)
+      .select("consultations")
+      .populate({
+        path: "consultations",
+        populate: [
+          {
+            path: "agency",
+            select: "name",
+          },
+          {
+            path: "customer",
+            select: "email",
+          },
+        ],
+      })
+      .exec((err, consultation) => {
         if (err) {
           return res.status(500).send("No User with consultation");
         }
 
         return res.status(200).send(consultation);
-      }
-    );
+      });
   } catch (err) {
     return res.status(500).send(err);
   }
@@ -60,15 +69,15 @@ router.get("/agency-consultations/:id", async (req, res) => {
 
     const token = authHeader && authHeader.split(` `)[1];
 
-    await Agency.findById(req.params.id, "consultations").exec(
-      (err, consultation) => {
+    await Agency.findById(req.params.id)
+      .populate("consultations")
+      .exec((err, consultation) => {
         if (err) {
           return res.status(500).send("No Agency with consultation");
         }
 
         return res.status(200).send(consultation);
-      }
-    );
+      });
   } catch (err) {
     return res.status(500).send(err);
   }
@@ -143,23 +152,194 @@ router.post("/customer-requesting-consultation", async (req, res) => {
       return res.status(200).send(consultation);
     }
   } catch (err) {
-    return res.status(500).send("WHAT THE HELL");
+    return res.status(500).send(err);
   }
 });
 
 /*----------------------------------------
  AGENCY DECLINING THE REQUEST
 ----------------------------------------- */
+router.put("/decline-consultation-request", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(` `)[1];
+
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+      if (agencyId) {
+        Consultation.findByIdAndUpdate(
+          req.body.id,
+          {
+            status: "declined",
+          },
+          { new: true }
+        ).exec((err, consultation) => {
+          if (err) {
+            return res.status(422).send(err);
+          }
+          return res.status(200).send(consultation);
+        });
+      } else {
+        return res.status(401).send("You aren't authorized");
+      }
+    });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
 
 /*----------------------------------------
  AGENCY ACCEPTING THE REQUEST
 ----------------------------------------- */
+router.put("/accept-consultation-request", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(` `)[1];
+
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+      if (agencyId) {
+        Consultation.findByIdAndUpdate(
+          req.body.id,
+          {
+            status: "accepted",
+            payment: req.body.payment,
+          },
+          { new: true }
+        ).exec((err, consultation) => {
+          if (err) {
+            return res.status(422).send(err);
+          }
+          return res.status(200).send(consultation);
+        });
+      } else {
+        return res.status(401).send("You aren't authorized");
+      }
+    });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
 
 /*----------------------------------------
  AGENCY REQUESTING FOR RESCHEDULE
 ----------------------------------------- */
+router.put("/accept-consultation-request", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(` `)[1];
+
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+      if (agencyId) {
+        Consultation.findByIdAndUpdate(
+          req.body.id,
+          {
+            status: "reschedule",
+            rescdheuleMessage: "Thanks for the reschedule",
+          },
+          { new: true }
+        ).exec((err, consultation) => {
+          if (err) {
+            return res.status(422).send(err);
+          }
+          return res.status(200).send(consultation);
+        });
+      } else {
+        return res.status(401).send("You aren't authorized");
+      }
+    });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
 
 /*----------------------------------------
- AGENCY ACCEPTING THE REQUEST
+    AGENCY REQUESTING FOR PAID
 ----------------------------------------- */
+router.put("/payment-consultation-request", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(` `)[1];
+
+    jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+      console.log(agencyId, req.body.agencyId);
+      if (agencyId == req.body.agencyId) {
+        Consultation.findByIdAndUpdate(
+          req.body.id,
+          {
+            status: "paid",
+            rescdheuleMessage: undefined,
+          },
+          { new: true }
+        ).exec((err, consultation) => {
+          if (err) {
+            return res.status(422).send(err);
+          }
+          return res.status(200).send(consultation);
+        });
+      } else {
+        return res.status(401).send("You aren't authorized");
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+          DATE PASSED SO EXPIRE
+----------------------------------------- */
+router.put("/done-consultation-request", async (req, res) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(` `)[1];
+
+    jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ error: err });
+      }
+      const { agencyId } = decoded;
+      console.log(agencyId, req.body.agencyId);
+
+      const date = await Consultation.findById(req.body.id).select("date");
+
+      var timestamp = Date.parse(date.date.split("-").reverse().join("-"));
+      if (timestamp < Date.now()) {
+        if (agencyId == req.body.agencyId) {
+          Consultation.findByIdAndUpdate(
+            req.body.id,
+            {
+              status: "done",
+            },
+            { new: true }
+          ).exec((err, consultation) => {
+            if (err) {
+              return res.status(422).send(err);
+            }
+            return res.status(200).send(consultation);
+          });
+        } else {
+          return res.status(401).send("You aren't authorized");
+        }
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router;

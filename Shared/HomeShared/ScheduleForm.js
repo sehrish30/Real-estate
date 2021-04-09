@@ -39,6 +39,8 @@ const ScheduleForm = ({
   const [startTimeZone, setStartTimeZone] = useState("");
   const [endTimeZone, setEndTimeZone] = useState("");
 
+  const handleConsultation = () => {};
+
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
@@ -215,7 +217,8 @@ const ScheduleForm = ({
         containerStyle={styles.schedulebtn}
         buttonStyle={styles.schedulebtninputContainer}
         titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
-        title={params?.email ? "Request Reschedule" : "Request Schedule"}
+        title={params?.email ? "Request Consultation" : "Reschedule"}
+        onPress={handleConsultation}
       />
     </ScrollView>
   );

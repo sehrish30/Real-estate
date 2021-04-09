@@ -39,6 +39,9 @@ const consultationSchema = mongoose.Schema(
     email: {
       type: String,
     },
+    payment: {
+      type: String,
+    },
     rescdheuleMessage: String,
   },
   {

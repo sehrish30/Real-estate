@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import { StyleSheet, Text, Dimensions, TouchableOpacity } from "react-native";
-import { Card } from "react-native-elements";
+import { Card, Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -10,6 +10,7 @@ import { logoutUser } from "../../Redux/Actions/auth";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import UserProfileMenuOverlay from "../../Shared/Overlays/UserProfileMenuOverlay";
 import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
+import { PaymentsStripe as Stripe } from "expo-payments-stripe";
 
 var { height, width } = Dimensions.get("screen");
 const Profile = ({ navigation }) => {
@@ -35,6 +36,34 @@ const Profile = ({ navigation }) => {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const pay = async () => {
+    Stripe.setOptionsAsync({
+      publishableKey:
+        "pk_test_51HSUY0AdvemoYxG9xgzcDDUzNF3YrhNkBrTtIaBHDta61z9MAPfQ4uXzj0OWGrL30p2bYM6nkSmoqfAUjec2BRlw00WMx5fgtF", // Your key
+      androidPayMode: "test", // [optional] used to set wallet environment (AndroidPay)
+      // merchantId: "your_merchant_id", // [optional] used for payments with ApplePay
+    });
+
+    // payment request with card form
+
+    const options = {
+      requiredBillingAddressFields: "full",
+      prefilledInformation: {
+        billingAddress: {
+          name: "Gunilla Haugeh",
+          line1: "Canary Place",
+          line2: "3",
+          city: "Macon",
+          state: "Georgia",
+          country: "US",
+          postalCode: "31217",
+        },
+      },
+    };
+    const cardtoken = await Stripe.paymentRequestWithCardFormAsync(options);
+    console.log("CARD TOKEN", cardtoken);
   };
 
   const toggleOverlay = () => {
@@ -117,6 +146,7 @@ const Profile = ({ navigation }) => {
         userPassword={true}
         userId={userId}
       />
+      <Button title="Solid Button" onPress={() => pay()} />
     </ScrollView>
   );
 };
