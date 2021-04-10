@@ -115,7 +115,7 @@ router.post("/customer-requesting-consultation", async (req, res) => {
     consultation = await consultation.save();
 
     if (!consultation) {
-      return res.status(400).send("Consultation couldn't be send");
+      return res.status(404).send("Consultation couldn't be send");
     } else {
       let meetingType;
       if (isVirtual === true) {

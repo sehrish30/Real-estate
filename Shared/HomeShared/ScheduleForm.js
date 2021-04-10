@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+  useReducer,
+} from "react";
 import {
   StyleSheet,
   Text,
@@ -13,6 +19,8 @@ var { height, width } = Dimensions.get("screen");
 import { Ionicons, Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
+import { consultationRequest } from "../Services/NotificationServices";
+import { useSelector } from "react-redux";
 
 const ScheduleForm = ({
   showDatepicker,
@@ -34,12 +42,62 @@ const ScheduleForm = ({
   setMessage,
   message,
   params,
+  emailRef,
+  phonenoRef,
+  navigation: { goBack },
 }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [startTimeZone, setStartTimeZone] = useState("");
+  const [loading, setLoading] = useState(false);
   const [endTimeZone, setEndTimeZone] = useState("");
+  let token = useSelector((state) => state.auth.token);
+  let user = useSelector((state) => state.auth.user);
+  let socket = useSelector((state) => state.chat.socket);
+  let userId;
+  if (user.decoded.userId) {
+    userId = user.decoded.userId;
+  }
 
-  const handleConsultation = () => {};
+  const handleConsultation = async () => {
+    setLoading(true);
+    const checkProceed = () => {
+      return Object.keys(errors).every(function (x) {
+        return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
+      });
+    };
+
+    if (checkProceed()) {
+      let isVirtual = true;
+      if (checkedVirtual) {
+        isVirtual = true;
+      } else {
+        isVirtual = false;
+      }
+      let formatEmail = email;
+
+      let data = {
+        customer: userId,
+        agency: params.agencyId,
+        phoneNumber,
+        startTime,
+        endTime,
+        message,
+        isVirtual,
+        date: userDate,
+        email: formatEmail.toLowerCase().trim(),
+      };
+
+      const res = await consultationRequest(data, token);
+
+      if (res) {
+        socket.emit("notifyConsultationRequest", data);
+        goBack();
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  };
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -69,6 +127,7 @@ const ScheduleForm = ({
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
+      {/* {console.error(errors.email)} */}
       <Input
         disabled={params?.email}
         inputStyle={styles.inputStyle}
@@ -78,8 +137,12 @@ const ScheduleForm = ({
         rightIcon={<Ionicons name="mail-outline" size={24} color="#214151" />}
         onChangeText={(value) => setEmail(value)}
         value={email}
+        ref={emailRef}
+        errorMessage={errors.email}
       />
       <Input
+        errorMessage={errors?.phoneno}
+        ref={phonenoRef}
         disabled={params?.phoneNumber}
         keyboardType="numeric"
         inputStyle={styles.inputStyle}
@@ -217,8 +280,10 @@ const ScheduleForm = ({
         containerStyle={styles.schedulebtn}
         buttonStyle={styles.schedulebtninputContainer}
         titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
-        title={params?.email ? "Request Consultation" : "Reschedule"}
+        title={params?.email ? "Reschedule" : "Request consultation"}
         onPress={handleConsultation}
+        loading={loading}
+        disabled={loading}
       />
     </ScrollView>
   );

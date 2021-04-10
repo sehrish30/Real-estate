@@ -1,7 +1,14 @@
-import React, { useLayoutEffect, useReducer, useState, useEffect } from "react";
+import React, {
+  useLayoutEffect,
+  useReducer,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 
 import { StyleSheet, ScrollView } from "react-native";
-
+import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { intervalToDuration, formatDuration } from "date-fns";
 import ScheduleForm from "../../Shared/HomeShared/ScheduleForm";
@@ -28,6 +35,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   const [checkedVirtual, setCheckedVirtual] = useState(true);
   const [checkedInPerson, setCheckedInPerson] = useState(false);
   const [message, setMessage] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   // if (route.params.email) {
   //   const { email, phoneNumber, meeting } = route.params;
@@ -38,6 +46,60 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   //     setCheckedVirtual(false);
   //   }
   // }
+
+  // Refs to show error
+  const emailRef = useRef();
+  const phonenoRef = useRef();
+
+  useFocusEffect(
+    useCallback(() => {
+      if (emailRef.current.isFocused() && email.length < 1) {
+        console.log(emailRef.current.isFocused());
+        dispatchErrors({
+          errors: {
+            ...errors,
+            email: "Email required",
+          },
+        });
+      } else if (
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email) &&
+        emailRef.current.isFocused()
+      ) {
+        console.log("INVALID");
+        dispatchErrors({
+          errors: {
+            ...errors,
+            email: "Email invalid",
+          },
+        });
+      } else {
+        dispatchErrors({
+          errors: {
+            ...errors,
+            email: null,
+          },
+        });
+      }
+
+      // phone number
+      if (phonenoRef.current.isFocused() && phoneNumber.length < 8) {
+        dispatchErrors({
+          errors: {
+            ...errors,
+            phoneno: "Phone number invalid",
+          },
+        });
+      } else if (phonenoRef.current.isFocused()) {
+        dispatchErrors({
+          errors: {
+            ...errors,
+            phoneno: null,
+          },
+        });
+      }
+      return () => {};
+    }, [email, phoneNumber])
+  );
 
   const [duration, setDuration] = useState("");
 
@@ -81,7 +143,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
           dispatchErrors({
             errors: {
               ...errors,
-              timeInterval: "",
+              timeInterval: null,
             },
           });
         }
@@ -90,7 +152,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         dispatchErrors({
           errors: {
             ...errors,
-            timeInterval: "",
+            timeInterval: null,
           },
         });
       }
@@ -141,6 +203,9 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         setMessage={setMessage}
         message={message}
         params={route.params}
+        emailRef={emailRef}
+        phonenoRef={phonenoRef}
+        navigation={navigation}
       />
       {show && (
         <DateTimePicker

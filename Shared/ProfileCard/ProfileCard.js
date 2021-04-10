@@ -253,7 +253,9 @@ const ProfileCard = ({
               icon={<EvilIcons name="calendar" size={30} color="#214151" />}
               title="Schedule Consultation"
               onPress={() => {
-                navigation.navigate("ScheduleConsultationForm");
+                navigation.navigate("ScheduleConsultationForm", {
+                  agencyId: id,
+                });
               }}
             />
             <Button

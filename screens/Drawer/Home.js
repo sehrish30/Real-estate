@@ -3,10 +3,13 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { fillStore } from "../../Redux/Actions/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SafeAreaView } from "react-native";
 import { Header } from "react-native-elements";
 import { MaterialIcons } from "@expo/vector-icons";
+import socketIOClient from "socket.io-client";
+import baseURL from "../../assets/common/baseUrl";
+import { Badge } from "react-native-elements";
 
 import Icon from "react-native-vector-icons/Ionicons";
 
@@ -15,9 +18,17 @@ import jwt_decode from "jwt-decode";
 
 import Splash from "../Splash";
 import { Pressable } from "react-native";
+import { useSocket } from "../../hooks/socketConnect";
 
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
+  const showNewNotification = useSelector((state) => state.consultation.new);
+
+  /*--------------------------------------
+             ENDPOINT
+  --------------------------------------- */
+  const ENDPOINT = baseURL;
+  const socket = socketIOClient(ENDPOINT);
 
   const dispatch = useDispatch();
   const showMenu = () => {
@@ -71,6 +82,8 @@ const Home = ({ navigation }) => {
             dispatch(
               fillStore({ jwt, user, isLoggedIn, isLoggedInAgency, agency })
             );
+
+            useSocket({ user: user.length > 0 ? user : agency }, dispatch);
           }
         } catch (e) {
           console.error(e);
@@ -107,6 +120,15 @@ const Home = ({ navigation }) => {
                     navigation.navigate("Notifications");
                   }}
                 />
+                {showNewNotification && (
+                  <Badge
+                    badgeStyle={{
+                      marginLeft: 10,
+                      top: -33,
+                    }}
+                    status="warning"
+                  />
+                )}
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.menu}

@@ -1,3 +1,17 @@
+export const LOGIN = "LOGIN";
+export const LOGOUT = "LOGOUT";
+export const FILLSTATE = "FILLSTATE";
+export const LOGINAGENCY = "LOGINAGENCY";
+export const UPDATEAGENCYPROFILE = "UPDATEAGENCYPROFILE";
+
+// export const FRIEND_OFFLINE = "FRIEND_OFFLINE";
+// export const RECEIVED_MESSAGE = "RECEIVED_MESSAGE";
+// export const PAGINATE_MESSAGES = "PAGINATE_MESSAGES";
+// export const INCREMENT_SCROLL = "INCREMENT_SCROLL";
+// export const CREATE_CHAT = "CREATE_CHAT";
+// export const ADD_USER_TO_GROUP = "ADD_USER_TO_GROUP";
+// export const LEAVE_CURRENT_CHAT = "LEAVE_CURRENT_CHAT";
+
 export const SET_SOCKET = "SET_SOCKET";
 export const CHAT_EXISTS = "CHAT_EXISTS";
 export const USER_ONLINE = "USER_ONLINE";

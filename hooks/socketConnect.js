@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import baseURL from "../assets/common/baseUrl";
 import socketIOClient from "socket.io-client";
 import * as actions from "../Redux/Actions/chat";
+import * as notifyActions from "../Redux/Actions/consultation";
 import store from "../Redux/store";
 
 export function useSocket(user, dispatch) {
@@ -16,8 +17,10 @@ export function useSocket(user, dispatch) {
   }
   let chatsStored = store.getState().chat.chats;
 
-  dispatch(actions.fetchAllChats(user.allChats));
-  dispatch(actions.getChats(user.allChats));
+  if (user.allChats) {
+    dispatch(actions.fetchAllChats(user.allChats));
+    dispatch(actions.getChats(user.allChats));
+  }
 
   dispatch(actions.setSocket(socket));
 
@@ -67,5 +70,10 @@ export function useSocket(user, dispatch) {
   socket.on("newChat", (chat) => {
     dispatch(actions.addToFetchedChats(chat));
   });
+
+  socket.on("notifyConsultationRequest", (data) => {
+    dispatch(notifyActions.requestConsultation(data));
+  });
+
   socket.connect;
 }

@@ -21,7 +21,10 @@ const Register = ({ navigation }) => {
   function registerUser() {
     emailRegex = "/S+@S+.S+/";
     passRegex = "/(?=.*d)(?=.*[a-z]).{6,}/";
-    if (email !== "" && emailRegex.test(email)) {
+    if (
+      email !== "" &&
+      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+    ) {
       if (password.length >= 6 && passRegex.test(password)) {
         setLoading(true);
         let newEmail = email;

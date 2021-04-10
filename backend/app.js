@@ -50,7 +50,7 @@ app.use(`/users`, usersRoutes);
 app.use(`/agencies`, agentRoutes);
 app.use(`/properties`, propertyRoutes);
 app.use(`/chats`, chatsRoutes);
-app.use(`/consulation`, consulationRoutes);
+app.use(`/consultations`, consulationRoutes);
 
 /*---------------------------------
        MONGOOSE CONNECTION

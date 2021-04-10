@@ -2,7 +2,7 @@ import { REQUEST_CONSULTATION } from "../constants";
 
 const initialState = {
   notifications: [],
-  socket: {},
+  new: false,
 };
 
 const consultation = (state = initialState, action) => {
@@ -11,6 +11,7 @@ const consultation = (state = initialState, action) => {
     case REQUEST_CONSULTATION:
       return {
         notifications: [payload, ...state.notifications],
+        new: true,
       };
     default:
       return state;

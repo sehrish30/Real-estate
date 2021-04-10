@@ -43,7 +43,7 @@ const AllChats = ({ navigation, route }) => {
   if (agency.id) {
     userId = agency.id;
   } else {
-    userId: user.decoded.userId;
+    userId = user.decoded.userId;
   }
 
   // const ENDPOINT = "localhost:3000";

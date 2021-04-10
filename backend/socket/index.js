@@ -10,7 +10,7 @@ const SocketServer = (server) => {
     },
   });
 
-  const getChatters = async (userId, allChats) => {
+  const getChatters = async (userId, allChats = []) => {
     let friendchatters = [];
     // console.log("ALLCHATS", allChats);
     for (chat of allChats) {
@@ -29,11 +29,17 @@ const SocketServer = (server) => {
     let allChatsOfUser = [];
     let userId;
     socket.on("join", async (user) => {
-      allChatsOfUser = user.allChats;
-      console.log("USER DATA I AM GETTING", user.user.decoded.userId);
+      allChatsOfUser = user.allChats || [];
+      console.log(user);
+
+      console.log(user);
 
       // we want to know all users online to inform them about his precense
-      userId = user.user.decoded.userId;
+      if (user.user?.decoded?.userId) {
+        userId = user.user.decoded.userId;
+      } else {
+        userId = user.user.id;
+      }
 
       /*-----------------------------------------
             SETTING USER AND HIS SOCKETS
@@ -51,7 +57,7 @@ const SocketServer = (server) => {
 
         userSockets.set(socket.id, userId);
       } else {
-        console.log("USER DOESNOT HAS");
+        console.log("USER DOESNOT HAS", userId);
         // no user so set new user
         // sockets array to know user can have multiple sockets if he opens app from multiple browsers etc
         users.set(userId, { id: userId, sockets: [socket.id] });
@@ -224,6 +230,18 @@ const SocketServer = (server) => {
       if (users.has(chatData.fromUserId)) {
         users.get(chatData.fromUserId).sockets.forEach((socket) => {
           io.to(socket).emit("newChat", chatData.info);
+        });
+      }
+    });
+
+    /*-----------------------------------------
+           USER SENT CONSULTATION REQUEST
+        ---------------------------------------- */
+    socket.on("notifyConsultationRequest", async (data) => {
+      console.log(data, "WTH I AM GETTING", users.has(data.agency));
+      if (users.has(data.agency)) {
+        users.get(data.agency).sockets.forEach((socket) => {
+          io.to(socket).emit("notifyConsultationRequest", data);
         });
       }
     });
