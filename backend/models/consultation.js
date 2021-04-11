@@ -42,6 +42,7 @@ const consultationSchema = mongoose.Schema(
     payment: {
       type: String,
     },
+    duration: String,
     rescdheuleMessage: String,
   },
   {

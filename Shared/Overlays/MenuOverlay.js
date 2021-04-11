@@ -32,7 +32,7 @@ const MenuOverlay = ({
   return (
     <View>
       <Overlay
-        overlayStyle={{ width: width / 1.5 }}
+        overlayStyle={{ width: width / 1.5, borderRadius: 10 }}
         isVisible={visible}
         onBackdropPress={toggleOverlay}
         backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
@@ -62,7 +62,7 @@ const MenuOverlay = ({
               const res = await blockChat(chatData.chatId, userId, token);
               if (res) {
                 socket.emit("chatBlocked", chatData);
-                console.log("DATA I AM GETTING AFTER LOCKING", res);
+
                 setPersonWhoBlocked(res.personWhoBlocked);
                 Toast.show({
                   type: "success",

@@ -20,6 +20,8 @@ const initialState = {
   errors: {},
 };
 const ScheduleConsultationForm = ({ navigation, route }) => {
+  const [endTimeZone, setEndTimeZone] = useState("");
+  const [startTimeZone, setStartTimeZone] = useState("");
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
@@ -50,6 +52,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   // Refs to show error
   const emailRef = useRef();
   const phonenoRef = useRef();
+  const internalRef = useRef();
 
   useFocusEffect(
     useCallback(() => {
@@ -124,6 +127,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   useEffect(() => {
     (() => {
       if (startTime && endTime) {
+        console.error(startTime, endTime);
         let timedurationcheck = intervalToDuration({
           start: startTime,
           end: endTime,
@@ -137,7 +141,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
             },
           });
           setDuration("");
-        } else {
+        } else if (internalRef.current.isFocused()) {
           setDuration(formatDuration(timedurationcheck));
 
           dispatchErrors({
@@ -152,7 +156,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         dispatchErrors({
           errors: {
             ...errors,
-            timeInterval: null,
+            // timeInterval: null,
           },
         });
       }
@@ -206,6 +210,11 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         emailRef={emailRef}
         phonenoRef={phonenoRef}
         navigation={navigation}
+        startTimeZone={startTimeZone}
+        setStartTimeZone={setStartTimeZone}
+        endTimeZone={endTimeZone}
+        setEndTimeZone={setEndTimeZone}
+        internalRef={internalRef}
       />
       {show && (
         <DateTimePicker

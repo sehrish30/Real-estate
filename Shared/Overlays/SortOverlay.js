@@ -7,7 +7,7 @@ var { width } = Dimensions.get("screen");
 const SortOverlay = ({ toggleOverlay, visible, order, setOrder }) => {
   return (
     <Overlay
-      overlayStyle={{ width: width / 1.5 }}
+      overlayStyle={{ width: width / 1.5, borderRadius: 10 }}
       backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
       isVisible={visible}
       onBackdropPress={toggleOverlay}

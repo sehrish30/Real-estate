@@ -32,6 +32,7 @@ transporter.use(
 router.get("/user-consultations/:id", async (req, res) => {
   try {
     // when populating multiple fields in the doc use array
+    console.log(req.params.id);
     await User.findById(req.params.id)
       .select("consultations")
       .populate({
@@ -39,11 +40,11 @@ router.get("/user-consultations/:id", async (req, res) => {
         populate: [
           {
             path: "agency",
-            select: "name",
+            select: "name logo",
           },
           {
             path: "customer",
-            select: "email",
+            select: "email dp",
           },
         ],
       })
@@ -76,11 +77,11 @@ router.get("/agency-consultations/:id", async (req, res) => {
         populate: [
           {
             path: "agency",
-            select: "name",
+            select: "name logo",
           },
           {
             path: "customer",
-            select: "email",
+            select: "email dp",
           },
         ],
       })

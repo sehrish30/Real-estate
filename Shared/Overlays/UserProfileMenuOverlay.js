@@ -15,7 +15,7 @@ const UserProfileMenuOverlay = ({
 }) => {
   return (
     <Overlay
-      overlayStyle={{ width: width / 1.3 }}
+      overlayStyle={{ width: width / 1.3, borderRadius: 10 }}
       isVisible={visible}
       onBackdropPress={toggleOverlay}
       backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}

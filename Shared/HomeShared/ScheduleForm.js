@@ -44,12 +44,18 @@ const ScheduleForm = ({
   params,
   emailRef,
   phonenoRef,
+  setEndTimeZone,
+  endTimeZone,
+  setStartTimeZone,
+  startTimeZone,
+  internalRef,
   navigation: { goBack },
 }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [startTimeZone, setStartTimeZone] = useState("");
+
+  // const [startTimeZone, setStartTimeZone] = useState("");
   const [loading, setLoading] = useState(false);
-  const [endTimeZone, setEndTimeZone] = useState("");
+  // const [endTimeZone, setEndTimeZone] = useState("");
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
   let socket = useSelector((state) => state.chat.socket);
@@ -59,14 +65,14 @@ const ScheduleForm = ({
   }
 
   const handleConsultation = async () => {
-    setLoading(true);
     const checkProceed = () => {
       return Object.keys(errors).every(function (x) {
         return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
       });
     };
 
-    if (checkProceed()) {
+    if (checkProceed() && Object.keys(errors).length > 2 && userDate) {
+      setLoading(true);
       let isVirtual = true;
       if (checkedVirtual) {
         isVirtual = true;
@@ -79,12 +85,17 @@ const ScheduleForm = ({
         customer: userId,
         agency: params.agencyId,
         phoneNumber,
-        startTime,
-        endTime,
+        startTime: `${formatISO9075(startTime, {
+          representation: "time",
+        }).substr(0, 5)}${startTimeZone}`,
+        endTime: `${formatISO9075(endTime, {
+          representation: "time",
+        }).substr(0, 5)}${endTimeZone}`,
         message,
         isVirtual,
-        date: userDate,
+        date: formatISO9075(userDate, { representation: "date" }),
         email: formatEmail.toLowerCase().trim(),
+        duration,
       };
 
       const res = await consultationRequest(data, token);
@@ -179,6 +190,7 @@ const ScheduleForm = ({
         }}
       >
         <Input
+          ref={internalRef}
           inputStyle={styles.inputStyle}
           label="Start time"
           labelStyle={styles.fieldLabels}
@@ -203,6 +215,7 @@ const ScheduleForm = ({
           errorMessage={errors.timeInterval}
         />
         <Input
+          ref={internalRef}
           inputStyle={styles.inputStyle}
           label="End time"
           labelStyle={styles.fieldLabels}

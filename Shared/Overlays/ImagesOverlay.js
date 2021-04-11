@@ -37,7 +37,7 @@ const ImagesOverlay = ({ visible, setVisible, attachments }) => {
           style={{ marginLeft: "auto" }}
           name="close-circle-outline"
           color={"#214151"}
-          size={25}
+          size={30}
           onPress={() => {
             setVisible(false);
           }}

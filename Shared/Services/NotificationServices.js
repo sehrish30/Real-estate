@@ -54,10 +54,45 @@ export async function consultationRequest(data, token) {
   }
 }
 
-export const agencyConsultations = (agencyId, token) => {
+export async function agencyConsultations(agencyId, token) {
   try {
-    const res = axios.get(
-      `${baseURL}consultations/agency-consultations/${agencyId}`
+    const res = await axios.get(
+      `${baseURL}consultations/agency-consultations/${agencyId}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    } else {
+      Toast.show({
+        type: "info",
+        text1: `Please! Refresh the page`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function userConsultations(userId, token) {
+  try {
+    const res = await axios.get(
+      `${baseURL}consultations/user-consultations/${userId}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     if (res.status == 200 || res.status == 201) {
       return res.data;
@@ -72,4 +107,4 @@ export const agencyConsultations = (agencyId, token) => {
   } catch (err) {
     console.error(err);
   }
-};
+}

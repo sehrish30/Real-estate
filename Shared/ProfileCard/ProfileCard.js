@@ -214,6 +214,7 @@ const ProfileCard = ({
                 }}
               />
               <Button
+                raised={true}
                 onPress={() => {
                   if (userId) {
                     navigation.navigate("Chat", {
@@ -244,10 +245,9 @@ const ProfileCard = ({
             </>
           )}
         </View>
-        {customer?.decoded?.userId && (
+        {customer?.decoded?.userId && id && (
           <>
             <Button
-              raised={true}
               buttonStyle={{ backgroundColor: "#f8dc81" }}
               titleStyle={{ color: "#214151" }}
               icon={<EvilIcons name="calendar" size={30} color="#214151" />}

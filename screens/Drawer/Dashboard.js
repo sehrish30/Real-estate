@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useReducer } from "react";
 
 import {
   StyleSheet,
@@ -9,48 +9,104 @@ import {
   StatusBar,
   RefreshControl,
 } from "react-native";
+import { formatISO9075, formatDistanceToNow } from "date-fns";
+import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+  agencyConsultations,
+  userConsultations,
+} from "../../Shared/Services/NotificationServices";
 
 import DashboardList from "../../Shared/HomeShared/DashboardList";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
 
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  consultation: {},
+  consultationId: "",
+};
 var { width, height } = Dimensions.get("screen");
 
-const DATA = [
-  {
-    id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-    title: "First Item",
-    date: "23/15/2006",
-    startTime: "12:00AM",
-    endTime: "1:00AM",
-  },
-  {
-    id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-    title: "Second Item",
-    date: "23/15/2006",
-    startTime: "12:00AM",
-    endTime: "1:00AM",
-  },
-  {
-    id: "58694a0f-3da1-471f-bd96-145571e29d72",
-    title: "Third Item",
-    date: "23/15/2006",
-    startTime: "12:00AM",
-    endTime: "1:00AM",
-  },
-];
-
-const Item = ({ title, date, startTime, endTime }) => (
+const Item = ({
+  title,
+  date,
+  startTime,
+  endTime,
+  status,
+  consultationType,
+  dp,
+  phoneNumber,
+  payment,
+  customerMessage,
+  agencyMessage,
+  timesent,
+}) => (
   <DashboardList
     title={title}
     date={date}
     startTime={startTime}
     endTime={endTime}
+    status={status}
+    consultationType={consultationType}
+    dp={dp}
+    phoneNumber={phoneNumber}
+    payment={payment}
+    customerMessage={customerMessage}
+    agencyMessage={agencyMessage}
+    timesent={
+      timesent
+        ? formatDistanceToNow(Date.parse(timesent), { addSuffix: true })
+        : null
+    }
   />
 );
 
 const Dashboard = ({ navigation }) => {
   // States
   const [refreshing, setRefreshing] = useState(false);
+  let token = useSelector((state) => state.auth.token);
+  let userId;
+  let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
+  if (agency.id) {
+    userId = agency.id;
+  } else {
+    userId = user?.decoded?.userId;
+  }
+
+  // REDUCERS
+  const [{ consultations, consultationId }, dispatchConsultation] = useReducer(
+    reducer,
+    initialState
+  );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (agency.id) {
+        (async () => {
+          let res = await agencyConsultations(userId, token);
+          dispatchConsultation({
+            consultations: res.consultations,
+            consultationId: res.id,
+          });
+        })();
+      } else {
+        (async () => {
+          let res = await userConsultations(userId, token);
+          dispatchConsultation({
+            consultations: res.consultations,
+            consultationId: res.id,
+          });
+        })();
+      }
+      return () => {
+        dispatchConsultation({
+          consultations: {},
+          consultationId: null,
+        });
+      };
+    }, [refreshing])
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,20 +130,45 @@ const Dashboard = ({ navigation }) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
+    wait(2000).then(() => {
+      setRefreshing(false);
+    });
   }, []);
 
-  const renderItem = ({ item }) => (
-    <Item
-      title={item.title}
-      date={item.date}
-      startTime={item.startTime}
-      endTime={item.endTime}
-    />
-  );
+  const renderItem = ({ item }) => {
+    if (agency.id) {
+      item.title = item.customer.email;
+    } else {
+      item.title = item.agency?.name;
+    }
+    item.consultationType = "";
+    if (item.isVirtual) {
+      item.consultationType = "Virtual Consultation";
+      item.dp = item.customer.dp;
+    } else {
+      item.consultationType = "In person Consultation";
+      item.dp = item.agency?.logo.url;
+    }
+    return (
+      <Item
+        title={item.title}
+        date={item.date}
+        startTime={item.startTime}
+        endTime={item.endTime}
+        status={item.status}
+        consultationType={item.consultationType}
+        dp={item.dp}
+        phoneNumber={item.phoneNumber}
+        payment={item?.payment || 0}
+        customerMessage={item.message}
+        agencyMessage={item.rescdheuleMessage || null}
+        timesent={item.timesent}
+      />
+    );
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
+    <SafeAreaView style={styles.container}>
       <CustomHeader title={"Dashboard"} showMenu={showMenu} />
       <FlatList
         refreshControl={
@@ -99,7 +180,7 @@ const Dashboard = ({ navigation }) => {
             titleColor="#214151"
           />
         }
-        data={DATA}
+        data={consultations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
@@ -109,4 +190,10 @@ const Dashboard = ({ navigation }) => {
 
 export default Dashboard;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+    backgroundColor: "#fff",
+  },
+});
