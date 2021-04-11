@@ -70,10 +70,23 @@ router.get("/agency-consultations/:id", async (req, res) => {
     const token = authHeader && authHeader.split(` `)[1];
 
     await Agency.findById(req.params.id)
-      .populate("consultations")
+      .select("consultations")
+      .populate({
+        path: "consultations",
+        populate: [
+          {
+            path: "agency",
+            select: "name",
+          },
+          {
+            path: "customer",
+            select: "email",
+          },
+        ],
+      })
       .exec((err, consultation) => {
         if (err) {
-          return res.status(500).send("No Agency with consultation");
+          return res.status(404).send("No Agency with consultation");
         }
 
         return res.status(200).send(consultation);

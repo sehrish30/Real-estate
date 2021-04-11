@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Button, Header } from "react-native-elements";
@@ -14,6 +15,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { Input, Overlay } from "react-native-elements";
 import Toast from "react-native-toast-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import CustomHeader from "../../Shared/HomeShared/CustomHeader";
 
 var { width, height } = Dimensions.get("window");
 const AffordibilityCalculator = ({ navigation }) => {
@@ -22,8 +24,6 @@ const AffordibilityCalculator = ({ navigation }) => {
   const [annualIncome, setAnnualIncome] = useState("");
   const [monthlyexp, setMonthlyExp] = useState("");
   const [mortgage, setMortgage] = useState("");
-  const [result, setResult] = useState(0);
-  const [changedAnnual, setChangedAnnual] = useState("");
 
   const calculations = () => {
     const monthlyIncome = annualIncome / 12;
@@ -252,34 +252,17 @@ const AffordibilityCalculator = ({ navigation }) => {
     setVisible(!visible);
   };
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <Header
-        containerStyle={{
-          backgroundColor: "#eff7e1",
-          justifyContent: "space-around",
-        }}
-        rightComponent={
-          <TouchableOpacity style={styles.menu}>
-            <Icon onPress={showMenu} name="menu" color={"#214151"} size={30} />
-          </TouchableOpacity>
-        }
-      />
+    <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
+      <CustomHeader showMenu={showMenu} title={"Affordibility Calculator"} />
       <View style={{ flex: 1 }}>
         <LinearGradient
           // Button Linear Gradient
           colors={["#214151", "#8dadb3", "#a2d0c1"]}
           style={styles.background}
         >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 10,
-            }}
+          <KeyboardAwareScrollView
+            style={{ marginHorizontal: 10, marginTop: 20 }}
           >
-            <Text style={styles.text}>Affordibility Calculator</Text>
-          </View>
-          <KeyboardAwareScrollView style={{ marginHorizontal: 10 }}>
             <Input
               label="Annual income"
               value={annualIncome}
@@ -400,10 +383,10 @@ const styles = StyleSheet.create({
     height: height,
     position: "relative",
   },
-  menu: {
-    paddingTop: 10,
-    paddingRight: 20,
-  },
+  // menu: {
+  //   paddingTop: 10,
+  //   paddingRight: 20,
+  // },
   text: {
     fontFamily: "EBGaramond-Bold",
     color: "#eff7e1",

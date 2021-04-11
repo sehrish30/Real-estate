@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
+  StatusBar,
   SafeAreaView,
   Dimensions,
   Platform,
@@ -34,6 +34,7 @@ import {
 } from "../../Shared/services";
 import { items } from "../../Shared/Cities";
 import CustomMessage from "../CustomMessage";
+import CustomHeader from "../../Shared/HomeShared/CustomHeader";
 
 var { width, height } = Dimensions.get("window");
 
@@ -261,37 +262,7 @@ const RegisterAgent = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header
-        containerStyle={{
-          backgroundColor: "#eff7e1",
-          justifyContent: "space-around",
-        }}
-        leftComponent={
-          <View style={styles.rightNav}>
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="notifications"
-                color={"#214151"}
-                size={30}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="ios-search"
-                color={"#214151"}
-                size={30}
-              />
-            </TouchableOpacity>
-          </View>
-        }
-        rightComponent={
-          <TouchableOpacity style={styles.menu}>
-            <Icon onPress={showMenu} name="menu" color={"#214151"} size={30} />
-          </TouchableOpacity>
-        }
-      />
+      <CustomHeader showMenu={showMenu} title="Register your agency" />
 
       <KeyboardAwareScrollView
         viewIsInsideTabBar={true}
@@ -308,10 +279,6 @@ const RegisterAgent = ({ navigation }) => {
           heading={"Agency Register Request"}
         />
         <ScrollView contentContainerStyle={styles.form}>
-          <Text style={[styles.font, styles.heading]}>
-            Register your agency
-          </Text>
-
           <Input
             label="Name"
             labelStyle={[styles.font, { color: "#a2d0c1" }]}
@@ -489,6 +456,7 @@ export default RegisterAgent;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
   },
   menu: {
     paddingTop: 20,

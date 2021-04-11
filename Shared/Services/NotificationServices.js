@@ -35,8 +35,8 @@ export async function consultationRequest(data, token) {
     } else if (res.status == 404) {
       Toast.show({
         type: "error",
-        text1: `Consultation couldn't be sent`,
-        text2: `Try again`,
+        text1: `Consultation request couldn't be sent`,
+        text2: `Please! Try again`,
         visibilityTime: 4000,
         topOffset: 30,
       });
@@ -44,7 +44,7 @@ export async function consultationRequest(data, token) {
       Toast.show({
         type: "info",
         text1: `Our servers are down`,
-        text2: `Try again`,
+        text2: `Please! Try again`,
         visibilityTime: 4000,
         topOffset: 30,
       });
@@ -53,3 +53,23 @@ export async function consultationRequest(data, token) {
     console.error(err);
   }
 }
+
+export const agencyConsultations = (agencyId, token) => {
+  try {
+    const res = axios.get(
+      `${baseURL}consultations/agency-consultations/${agencyId}`
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    } else {
+      Toast.show({
+        type: "info",
+        text1: `Please! Refresh the page`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};

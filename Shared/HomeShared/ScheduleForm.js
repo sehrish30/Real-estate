@@ -90,7 +90,7 @@ const ScheduleForm = ({
       const res = await consultationRequest(data, token);
 
       if (res) {
-        socket.emit("notifyConsultationRequest", data);
+        socket.emit("notifyConsultationRequest", res);
         goBack();
         setLoading(false);
       } else {
