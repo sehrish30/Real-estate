@@ -83,7 +83,7 @@ const Home = ({ navigation }) => {
               fillStore({ jwt, user, isLoggedIn, isLoggedInAgency, agency })
             );
 
-            useSocket({ user: user.length > 0 ? user : agency }, dispatch);
+            useSocket({ user: user.decoded ? user : agency }, dispatch);
           }
         } catch (e) {
           console.error(e);

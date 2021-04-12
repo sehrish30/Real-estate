@@ -34,6 +34,7 @@ router.get("/user-consultations/:id", async (req, res) => {
     // when populating multiple fields in the doc use array
     console.log(req.params.id);
     await User.findById(req.params.id)
+
       .select("consultations")
       .populate({
         path: "consultations",
@@ -47,7 +48,11 @@ router.get("/user-consultations/:id", async (req, res) => {
             select: "email dp",
           },
         ],
+        options: {
+          sort: { updatedAt: -1 },
+        },
       })
+
       .exec((err, consultation) => {
         if (err) {
           return res.status(500).send("No User with consultation");
@@ -71,6 +76,7 @@ router.get("/agency-consultations/:id", async (req, res) => {
     const token = authHeader && authHeader.split(` `)[1];
 
     await Agency.findById(req.params.id)
+
       .select("consultations")
       .populate({
         path: "consultations",
@@ -84,6 +90,9 @@ router.get("/agency-consultations/:id", async (req, res) => {
             select: "email dp",
           },
         ],
+        options: {
+          sort: { updatedAt: -1 },
+        },
       })
       .exec((err, consultation) => {
         if (err) {

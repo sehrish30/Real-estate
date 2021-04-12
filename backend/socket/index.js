@@ -30,9 +30,6 @@ const SocketServer = (server) => {
     let userId;
     socket.on("join", async (user) => {
       allChatsOfUser = user.allChats || [];
-      console.log(user);
-
-      console.log(user);
 
       // we want to know all users online to inform them about his precense
       if (user.user?.decoded?.userId) {

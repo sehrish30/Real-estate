@@ -16,6 +16,7 @@ import {
   agencyConsultations,
   userConsultations,
 } from "../../Shared/Services/NotificationServices";
+import * as consultationActions from "../../Redux/Actions/consultation";
 
 import DashboardList from "../../Shared/HomeShared/DashboardList";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
@@ -74,29 +75,49 @@ const Dashboard = ({ navigation }) => {
     userId = user?.decoded?.userId;
   }
 
+  const consultationsStored = useSelector(
+    (state) => state.consultation.consultations
+  );
   // REDUCERS
   const [{ consultations, consultationId }, dispatchConsultation] = useReducer(
     reducer,
     initialState
   );
+  let dispatch = useDispatch();
 
   useFocusEffect(
     React.useCallback(() => {
       if (agency.id) {
         (async () => {
           let res = await agencyConsultations(userId, token);
-          dispatchConsultation({
-            consultations: res.consultations,
-            consultationId: res.id,
-          });
+          if (res) {
+            dispatchConsultation({
+              consultations: res.consultations,
+              consultationId: res.id,
+            });
+            dispatch(
+              consultationActions.storeAllConsultations({
+                consultations: res.consultations,
+                consultationId: res.id,
+              })
+            );
+          }
         })();
       } else {
         (async () => {
           let res = await userConsultations(userId, token);
-          dispatchConsultation({
-            consultations: res.consultations,
-            consultationId: res.id,
-          });
+          if (res) {
+            dispatchConsultation({
+              consultations: res.consultations,
+              consultationId: res.id,
+            });
+            dispatch(
+              consultationActions.storeAllConsultations({
+                consultations: res.consultations,
+                consultationId: res.id,
+              })
+            );
+          }
         })();
       }
       return () => {
@@ -180,7 +201,7 @@ const Dashboard = ({ navigation }) => {
             titleColor="#214151"
           />
         }
-        data={consultations}
+        data={consultationsStored.consultations}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />

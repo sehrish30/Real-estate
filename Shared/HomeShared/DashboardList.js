@@ -58,7 +58,7 @@ const DashboardList = ({
               overlayColor="rgba(239, 247, 225, 0.4)"
               backgroundColor="#f8dc81"
               containerStyle={styles.tooltip}
-              popover={<Text style={styles.popoverText}>Pending Request</Text>}
+              popover={<Text style={styles.popoverText}>{status}</Text>}
             >
               {status == "pending" && (
                 <MaterialIcons
