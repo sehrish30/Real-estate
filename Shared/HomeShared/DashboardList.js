@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { StyleSheet, Dimensions, View } from "react-native";
+import React, { useState, useRef } from "react";
+import { StyleSheet, Dimensions, View, Animated } from "react-native";
 import { ListItem, Tooltip, Text } from "react-native-elements";
 // import TouchableScale from "react-native-touchable-scale";
 import { LinearGradient } from "expo-linear-gradient";
-import { formatISO9075 } from "date-fns";
+
 import {
   MaterialIcons,
   MaterialCommunityIcons,
@@ -12,6 +12,7 @@ import {
   EvilIcons,
 } from "@expo/vector-icons";
 import DashboardOverlay from "../Overlays/DashboardOverlay";
+import DeleteConfirm from "../Modals/DeleteConfirm";
 
 var { width, height } = Dimensions.get("screen");
 const DashboardList = ({
@@ -27,15 +28,35 @@ const DashboardList = ({
   customerMessage,
   agencyMessage,
   timesent,
+  consultationId,
+  customer,
+  agencyId,
+  agencyName,
 }) => {
   const [visible, setVisible] = useState(false);
+  const animatedValue = useRef(new Animated.Value(0)).current;
+  // console.error(customer, agencyId, agencyName, consultationId, "ID");
 
   const toggleOverlay = () => {
     setVisible(!visible);
   };
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <ListItem
-      onPress={toggleOverlay}
+      onPress={() => {
+        toggleOverlay();
+        Animated.timing(animatedValue, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }).start(() => {
+          Animated.timing(animatedValue, {
+            toValue: 0,
+            duration: 1000,
+            useNativeDriver: true,
+          });
+        });
+      }}
       bottomDivider
       //   Component={TouchableScale}
       friction={90} //
@@ -154,6 +175,17 @@ const DashboardList = ({
         timesent={timesent}
         toggleOverlay={toggleOverlay}
         visible={visible}
+        animatedValue={animatedValue}
+        setModalVisible={setModalVisible}
+        modalVisible={modalVisible}
+      />
+      <DeleteConfirm
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        consultationId={consultationId}
+        customer={customer}
+        agencyId={agencyId}
+        agencyName={agencyName}
       />
     </ListItem>
   );

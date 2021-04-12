@@ -108,3 +108,38 @@ export async function userConsultations(userId, token) {
     console.error(err);
   }
 }
+
+export async function declineConsultation(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}consultations/decline-consultation-request`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+    if (res.status == 401) {
+      Toast.show({
+        type: "info",
+        text1: `Your agency isn't logged in`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: `agency couldn't be declined`,
+        text2: `Try again`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

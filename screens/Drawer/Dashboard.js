@@ -1,4 +1,9 @@
-import React, { useLayoutEffect, useState, useReducer } from "react";
+import React, {
+  useLayoutEffect,
+  useState,
+  useReducer,
+  useCallback,
+} from "react";
 
 import {
   StyleSheet,
@@ -9,7 +14,7 @@ import {
   StatusBar,
   RefreshControl,
 } from "react-native";
-import { formatISO9075, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import {
@@ -20,6 +25,7 @@ import * as consultationActions from "../../Redux/Actions/consultation";
 
 import DashboardList from "../../Shared/HomeShared/DashboardList";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
+import Loading from "../../Shared/Loading";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -29,6 +35,10 @@ const initialState = {
 var { width, height } = Dimensions.get("screen");
 
 const Item = ({
+  customer,
+  agencyId,
+  agencyName,
+  consultationId,
   title,
   date,
   startTime,
@@ -43,6 +53,10 @@ const Item = ({
   timesent,
 }) => (
   <DashboardList
+    customer={customer}
+    agencyId={agencyId}
+    agencyName={agencyName}
+    consultationId={consultationId}
     title={title}
     date={date}
     startTime={startTime}
@@ -65,6 +79,7 @@ const Item = ({
 const Dashboard = ({ navigation }) => {
   // States
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
   let token = useSelector((state) => state.auth.token);
   let userId;
   let user = useSelector((state) => state.auth.user);
@@ -86,45 +101,44 @@ const Dashboard = ({ navigation }) => {
   let dispatch = useDispatch();
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       if (agency.id) {
         (async () => {
           let res = await agencyConsultations(userId, token);
           if (res) {
+            setLoading(false);
             dispatchConsultation({
               consultations: res.consultations,
               consultationId: res.id,
             });
-            dispatch(
-              consultationActions.storeAllConsultations({
-                consultations: res.consultations,
-                consultationId: res.id,
-              })
-            );
+            // dispatch(
+            //   consultationActions.storeAllConsultations({
+            //     consultations: res.consultations,
+            //     consultationId: res.id,
+            //   })
+            // );
           }
         })();
       } else {
         (async () => {
           let res = await userConsultations(userId, token);
           if (res) {
+            setLoading(false);
             dispatchConsultation({
               consultations: res.consultations,
               consultationId: res.id,
             });
-            dispatch(
-              consultationActions.storeAllConsultations({
-                consultations: res.consultations,
-                consultationId: res.id,
-              })
-            );
+            // dispatch(
+            //   consultationActions.storeAllConsultations({
+            //     consultations: res.consultations,
+            //     consultationId: res.id,
+            //   })
+            // );
           }
         })();
       }
       return () => {
-        dispatchConsultation({
-          consultations: {},
-          consultationId: null,
-        });
+        dispatchConsultation({});
       };
     }, [refreshing])
   );
@@ -149,10 +163,12 @@ const Dashboard = ({ navigation }) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
   };
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
+    setLoading(true);
     wait(2000).then(() => {
       setRefreshing(false);
+      setLoading(false);
     });
   }, []);
 
@@ -172,6 +188,9 @@ const Dashboard = ({ navigation }) => {
     }
     return (
       <Item
+        customer={item.customer.email}
+        agencyId={agency.id}
+        agencyName={item.agency?.name}
         title={item.title}
         date={item.date}
         startTime={item.startTime}
@@ -184,6 +203,7 @@ const Dashboard = ({ navigation }) => {
         customerMessage={item.message}
         agencyMessage={item.rescdheuleMessage || null}
         timesent={item.timesent}
+        consultationId={item.id}
       />
     );
   };
@@ -191,20 +211,24 @@ const Dashboard = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader title={"Dashboard"} showMenu={showMenu} />
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            tintColor="#214151"
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            title="Refresh"
-            titleColor="#214151"
-          />
-        }
-        data={consultationsStored.consultations}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+      {loading ? (
+        <Loading />
+      ) : (
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              tintColor="#214151"
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              title="Refresh"
+              titleColor="#214151"
+            />
+          }
+          data={consultations}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </SafeAreaView>
   );
 };

@@ -6,6 +6,7 @@ import { useWindowDimensions } from "react-native";
 import AffordibilityCalculator from "../screens/Drawer/AffordibilityCalculator";
 import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
+import { useSelector } from "react-redux";
 import Home from "../screens/Drawer/Home";
 import HomeNavigator from "./HomeNavigator";
 import Dashboard from "../screens/Drawer/Dashboard";
@@ -14,6 +15,8 @@ const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = () => {
   const { width } = useWindowDimensions();
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const isLoggedInAgency = useSelector((state) => state.auth.isLoggedInAgency);
 
   return (
     <Drawer.Navigator
@@ -32,7 +35,10 @@ const DrawerNavigator = () => {
       drawerType={width >= 768 ? "permanent" : "slide"}
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
-      <Drawer.Screen name="Dashboard" component={Dashboard} />
+      {(isLoggedInAgency || isLoggedIn) && (
+        <Drawer.Screen name="Dashboard" component={Dashboard} />
+      )}
+
       <Drawer.Screen name="Register Agency" component={RegisterAgent} />
       <Drawer.Screen
         name="Affordibility calculator"

@@ -192,7 +192,7 @@ router.put("/decline-consultation-request", async (req, res) => {
         return res.status(401).json({ error: err });
       }
       const { agencyId } = decoded;
-      if (agencyId) {
+      if (agencyId == req.body.agencyId) {
         Consultation.findByIdAndUpdate(
           req.body.id,
           {
@@ -203,7 +203,19 @@ router.put("/decline-consultation-request", async (req, res) => {
           if (err) {
             return res.status(422).send(err);
           }
-          return res.status(200).send(consultation);
+
+          // Save the notification
+          let notification = new Notification({
+            customer: req.body.customer,
+            agency: req.body.agencyId,
+            consultationId: consultation._id,
+            content: `${req.body.agencyName} has declined your consultation request`,
+          });
+
+          notification = notification.save();
+          if (notification) {
+            return res.status(200).send(notification);
+          }
         });
       } else {
         return res.status(401).send("You aren't authorized");

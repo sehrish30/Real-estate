@@ -1,7 +1,16 @@
-import React from "react";
-import { StyleSheet, Text, View, Dimensions, ScrollView } from "react-native";
-import { Overlay, Card, Avatar } from "react-native-elements";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  ScrollView,
+  Animated,
+} from "react-native";
+import { Overlay, Button, Avatar } from "react-native-elements";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import DeleteConfirm from "../Modals/DeleteConfirm";
+import { useSelector } from "react-redux";
 
 let { width, height } = Dimensions.get("screen");
 const DashboardOverlay = ({
@@ -14,7 +23,11 @@ const DashboardOverlay = ({
   customerMessage,
   agencyMessage,
   timesent,
+  animatedValue,
+  setModalVisible,
+  modalVisible,
 }) => {
+  let agency = useSelector((state) => state.auth.agency);
   return (
     <Overlay
       overlayStyle={{ width: width, borderRadius: 10 }}
@@ -22,7 +35,21 @@ const DashboardOverlay = ({
       onBackdropPress={toggleOverlay}
       backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
     >
-      <ScrollView>
+      <Animated.ScrollView
+        style={{
+          transform: [
+            {
+              rotateY: animatedValue.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: ["340deg", "350deg", "360deg"],
+              }),
+            },
+            {
+              perspective: 400,
+            },
+          ],
+        }}
+      >
         <View>
           <Ionicons
             style={{ marginLeft: "auto" }}
@@ -114,7 +141,41 @@ const DashboardOverlay = ({
             <Text style={styles.time}>{timesent}</Text>
           </View>
         </View>
-      </ScrollView>
+        {agency?.id && (
+          <>
+            <View
+              style={{
+                flexDirection: "row",
+                marginVertical: 20,
+                justifyContent: "center",
+              }}
+            >
+              <Button
+                titleStyle={[styles.font, { color: "#e02e49" }]}
+                containerStyle={styles.solidbtn}
+                title="Decline"
+                type="clear"
+                onPress={() => {
+                  setModalVisible(true);
+                }}
+                buttonStyle={styles.decline}
+              />
+              <Button
+                titleStyle={styles.font}
+                raised={true}
+                buttonStyle={styles.accept}
+                containerStyle={styles.clrbtn}
+                title="Accept"
+              />
+            </View>
+            <Button
+              titleStyle={[styles.font, { color: "#214151" }]}
+              title="Request to reschedule"
+              type="clear"
+            />
+          </>
+        )}
+      </Animated.ScrollView>
     </Overlay>
   );
 };
@@ -140,5 +201,17 @@ const styles = StyleSheet.create({
   time: {
     fontFamily: "EBGaramond-Bold",
     color: "#839b97",
+  },
+  solidbtn: {
+    width: width / 2,
+  },
+  clrbtn: {
+    width: width / 2,
+  },
+  accept: {
+    backgroundColor: "#214151",
+  },
+  font: {
+    fontFamily: "EBGaramond-Bold",
   },
 });
