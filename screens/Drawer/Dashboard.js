@@ -107,16 +107,16 @@ const Dashboard = ({ navigation }) => {
           let res = await agencyConsultations(userId, token);
           if (res) {
             setLoading(false);
-            dispatchConsultation({
-              consultations: res.consultations,
-              consultationId: res.id,
-            });
-            // dispatch(
-            //   consultationActions.storeAllConsultations({
-            //     consultations: res.consultations,
-            //     consultationId: res.id,
-            //   })
-            // );
+            // dispatchConsultation({
+            //   consultations: res.consultations,
+            //   consultationId: res.id,
+            // });
+            dispatch(
+              consultationActions.storeAllConsultations({
+                consultations: res.consultations,
+                consultationId: res.id,
+              })
+            );
           }
         })();
       } else {
@@ -124,21 +124,21 @@ const Dashboard = ({ navigation }) => {
           let res = await userConsultations(userId, token);
           if (res) {
             setLoading(false);
-            dispatchConsultation({
-              consultations: res.consultations,
-              consultationId: res.id,
-            });
-            // dispatch(
-            //   consultationActions.storeAllConsultations({
-            //     consultations: res.consultations,
-            //     consultationId: res.id,
-            //   })
-            // );
+            // dispatchConsultation({
+            //   consultations: res.consultations,
+            //   consultationId: res.id,
+            // });
+            dispatch(
+              consultationActions.storeAllConsultations({
+                consultations: res.consultations,
+                consultationId: res.id,
+              })
+            );
           }
         })();
       }
       return () => {
-        dispatchConsultation({});
+        // dispatchConsultation({});
       };
     }, [refreshing])
   );
@@ -188,7 +188,7 @@ const Dashboard = ({ navigation }) => {
     }
     return (
       <Item
-        customer={item.customer.email}
+        customer={item.customer.id}
         agencyId={agency.id}
         agencyName={item.agency?.name}
         title={item.title}
@@ -224,7 +224,7 @@ const Dashboard = ({ navigation }) => {
               titleColor="#214151"
             />
           }
-          data={consultations}
+          data={consultationsStored}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />

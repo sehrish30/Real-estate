@@ -75,5 +75,9 @@ export function useSocket(user, dispatch) {
     dispatch(notifyActions.requestConsultation(data));
   });
 
+  socket.on("declineNotification", (data) => {
+    dispatch(notifyActions.decline(data));
+  });
+
   socket.connect;
 }

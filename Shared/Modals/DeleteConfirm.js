@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  Modal,
-  Pressable,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, Text, View, Alert, Modal, Dimensions } from "react-native";
 import { Button } from "react-native-elements";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { declineConsultation } from "../../Shared/Services/NotificationServices";
+import * as notifyActions from "../../Redux/Actions/consultation";
 var { height, width } = Dimensions.get("screen");
 const DeleteConfirm = ({
   modalVisible,
@@ -19,9 +12,12 @@ const DeleteConfirm = ({
   agencyId,
   customer,
   consultationId,
+  toggleOverlay,
 }) => {
   const token = useSelector((state) => state.auth.token);
   const socket = useSelector((state) => state.chat.socket);
+  let dispatch = useDispatch();
+
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -53,8 +49,7 @@ const DeleteConfirm = ({
                 containerStyle={styles.outlinebtn}
                 buttonStyle={styles.outline}
                 onPress={async () => {
-                  console.error(agencyName, agencyId, customer, consultationId);
-                  declineConsultation(
+                  const res = await declineConsultation(
                     {
                       id: consultationId,
                       customer,
@@ -63,6 +58,24 @@ const DeleteConfirm = ({
                     },
                     token
                   );
+
+                  // socket send
+                  if (res) {
+                    setModalVisible(!modalVisible);
+                    toggleOverlay();
+
+                    socket.emit("declineNotification", {
+                      ...res.notification,
+                      customer,
+                    });
+
+                    dispatch(
+                      notifyActions.updateConsultations({
+                        id: consultationId,
+                        status: "declined",
+                      })
+                    );
+                  }
                 }}
               />
               <Button

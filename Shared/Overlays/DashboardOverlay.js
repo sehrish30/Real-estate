@@ -25,7 +25,7 @@ const DashboardOverlay = ({
   timesent,
   animatedValue,
   setModalVisible,
-  modalVisible,
+  status,
 }) => {
   let agency = useSelector((state) => state.auth.agency);
   return (
@@ -141,7 +141,7 @@ const DashboardOverlay = ({
             <Text style={styles.time}>{timesent}</Text>
           </View>
         </View>
-        {agency?.id && (
+        {agency?.id && status == "pending" && (
           <>
             <View
               style={{

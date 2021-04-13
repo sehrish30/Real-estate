@@ -32,6 +32,8 @@ const DashboardList = ({
   customer,
   agencyId,
   agencyName,
+  dispatchConsultation,
+  consultations,
 }) => {
   const [visible, setVisible] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -178,6 +180,7 @@ const DashboardList = ({
         animatedValue={animatedValue}
         setModalVisible={setModalVisible}
         modalVisible={modalVisible}
+        status={status}
       />
       <DeleteConfirm
         modalVisible={modalVisible}
@@ -186,6 +189,10 @@ const DashboardList = ({
         customer={customer}
         agencyId={agencyId}
         agencyName={agencyName}
+        toggleOverlay={toggleOverlay}
+        status={status}
+        dispatchConsultation={dispatchConsultation}
+        consultations={consultations}
       />
     </ListItem>
   );

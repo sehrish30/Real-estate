@@ -244,6 +244,18 @@ const SocketServer = (server) => {
     });
 
     /*-----------------------------------------
+          AGENCY DECLINED CONSULTATION REQUEST
+      ---------------------------------------- */
+    socket.on("declineNotification", async (data) => {
+      console.log(data, "DECLINE NOTIFICATION", users.has(data.customer));
+      if (users.has(data.customer)) {
+        users.get(data.customer).sockets.forEach((socket) => {
+          io.to(socket).emit("declineNotification", data);
+        });
+      }
+    });
+
+    /*-----------------------------------------
              User Disconnected
     ---------------------------------------- */
 

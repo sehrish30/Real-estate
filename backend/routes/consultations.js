@@ -199,7 +199,7 @@ router.put("/decline-consultation-request", async (req, res) => {
             status: "declined",
           },
           { new: true }
-        ).exec((err, consultation) => {
+        ).exec(async (err, consultation) => {
           if (err) {
             return res.status(422).send(err);
           }
@@ -212,9 +212,12 @@ router.put("/decline-consultation-request", async (req, res) => {
             content: `${req.body.agencyName} has declined your consultation request`,
           });
 
-          notification = notification.save();
+          notification = await notification.save();
+          console.log("NOTIFICATION", notification);
           if (notification) {
-            return res.status(200).send(notification);
+            return res
+              .status(200)
+              .send({ notification, consultations: consultation });
           }
         });
       } else {

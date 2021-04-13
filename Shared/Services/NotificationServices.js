@@ -121,6 +121,13 @@ export async function declineConsultation(data, token) {
       }
     );
     if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Consultation declined`,
+        text2: `We have notified them`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
       return res.data;
     }
     if (res.status == 401) {
