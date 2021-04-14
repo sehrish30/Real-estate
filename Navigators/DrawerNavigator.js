@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import Home from "../screens/Drawer/Home";
 import HomeNavigator from "./HomeNavigator";
 import Dashboard from "../screens/Drawer/Dashboard";
+import DashboardNavigator from "./DashboardNavigator";
 
 const Drawer = createDrawerNavigator();
 
@@ -36,7 +37,7 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
       {(isLoggedInAgency || isLoggedIn) && (
-        <Drawer.Screen name="Dashboard" component={Dashboard} />
+        <Drawer.Screen name="Dashboard" component={DashboardNavigator} />
       )}
 
       <Drawer.Screen name="Register Agency" component={RegisterAgent} />

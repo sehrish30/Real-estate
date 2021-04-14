@@ -210,7 +210,7 @@ const Dashboard = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomHeader title={"Dashboard"} showMenu={showMenu} />
+      {/* <CustomHeader title={"Dashboard"} showMenu={showMenu} /> */}
       {loading ? (
         <Loading />
       ) : (
