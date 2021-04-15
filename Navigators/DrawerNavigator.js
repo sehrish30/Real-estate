@@ -29,7 +29,7 @@ const DrawerNavigator = () => {
         itemStyle: { marginVertical: 5 },
       }}
       drawerStyle={{
-        backgroundColor: "#a2d0c1",
+        backgroundColor: "#fff",
         width: 240,
       }}
       drawerPosition="right"

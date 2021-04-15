@@ -257,23 +257,23 @@ const AffordibilityCalculator = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         <LinearGradient
           // Button Linear Gradient
-          colors={["#214151", "#8dadb3", "#a2d0c1"]}
+          colors={["#fff", "#e4fbff"]}
           style={styles.background}
         >
           <KeyboardAwareScrollView
             style={{ marginHorizontal: 10, marginTop: 20 }}
           >
             <Input
-              label="Annual income"
+              label="Annual income (BD)"
               value={annualIncome}
               inputStyle={{
                 color: "blue",
               }}
               inputContainerStyle={{
-                backgroundColor: "#a2d0c1",
+                backgroundColor: "#BCD7D2",
                 padding: 5,
               }}
-              labelStyle={{ color: "#eff7e1" }}
+              labelStyle={{ color: "#214151" }}
               style={styles.input}
               keyboardType={"numeric"}
               onChangeText={(value) => setAnnualIncome(value)}
@@ -281,11 +281,11 @@ const AffordibilityCalculator = ({ navigation }) => {
 
             <Input
               value={monthlyexp}
-              label="Monthly expenditure"
-              labelStyle={{ color: "#eff7e1" }}
+              label="Monthly expenditure (BD)"
+              labelStyle={{ color: "#214151" }}
               style={styles.input}
               inputContainerStyle={{
-                backgroundColor: "#a2d0c1",
+                backgroundColor: "#BCD7D2",
                 padding: 5,
               }}
               keyboardType={"numeric"}
@@ -310,11 +310,11 @@ const AffordibilityCalculator = ({ navigation }) => {
             </View>
             <Input
               value={mortgage}
-              label="Mortgage rate"
-              labelStyle={{ color: "#eff7e1" }}
+              label="Mortgage rate (BD)"
+              labelStyle={{ color: "#214151" }}
               style={styles.input}
               inputContainerStyle={{
-                backgroundColor: "#a2d0c1",
+                backgroundColor: "#BCD7D2",
                 padding: 5,
               }}
               keyboardType={"numeric"}
@@ -324,6 +324,7 @@ const AffordibilityCalculator = ({ navigation }) => {
           <TouchableOpacity style={{ alignItems: "center" }}>
             <Button
               buttonStyle={{
+                elevation: 2,
                 borderRadius: 50,
                 width: 90,
                 height: 90,
@@ -352,6 +353,7 @@ const AffordibilityCalculator = ({ navigation }) => {
           backgroundColor: "#e4fbff",
           padding: 20,
           width: width / 1.2,
+          elevation: 2,
         }}
         isVisible={visible}
         onBackdropPress={toggleOverlay}
@@ -393,5 +395,5 @@ const styles = StyleSheet.create({
     margin: 20,
     fontSize: 20,
   },
-  input: { color: "#eff7e1" },
+  input: { color: "#214151" },
 });
