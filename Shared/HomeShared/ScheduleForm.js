@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  useReducer,
-} from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,7 +14,9 @@ import { Ionicons, Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { consultationRequest } from "../Services/NotificationServices";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import * as notifyActions from "../../Redux/Actions/consultation";
+import { rescheduleConsultationRequest } from "../Services/NotificationServices";
 
 const ScheduleForm = ({
   showDatepicker,
@@ -49,29 +45,44 @@ const ScheduleForm = ({
   setStartTimeZone,
   startTimeZone,
   internalRef,
+  dateRef,
   navigation: { goBack },
+  navigation,
 }) => {
   const [refreshing, setRefreshing] = useState(false);
+  let dispatch = useDispatch();
 
   // const [startTimeZone, setStartTimeZone] = useState("");
   const [loading, setLoading] = useState(false);
   // const [endTimeZone, setEndTimeZone] = useState("");
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
+  let agency = useSelector((state) => state.auth.agency);
   let socket = useSelector((state) => state.chat.socket);
   let userId;
-  if (user.decoded.userId) {
+  if (user.decoded?.userId) {
     userId = user.decoded.userId;
+  } else {
+    userId = agency.id;
   }
 
   const handleConsultation = async () => {
+    console.error("DEKH LE", errors);
     const checkProceed = () => {
       return Object.keys(errors).every(function (x) {
         return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
       });
     };
 
-    if (checkProceed() && Object.keys(errors).length > 2 && userDate) {
+    if (
+      checkProceed() &&
+      Object.keys(errors).length > 3 &&
+      date &&
+      startTime &&
+      endTime &&
+      email &&
+      phoneNumber
+    ) {
       setLoading(true);
       let isVirtual = true;
       if (checkedVirtual) {
@@ -103,9 +114,62 @@ const ScheduleForm = ({
       if (res) {
         socket.emit("notifyConsultationRequest", res);
         goBack();
+
         setLoading(false);
       } else {
         setLoading(false);
+      }
+    }
+  };
+
+  const handleReschedule = async () => {
+    const checkProceed = () => {
+      return Object.keys(errors).every(function (x) {
+        return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
+      });
+    };
+
+    if (
+      checkProceed() &&
+      Object.keys(errors).length > 0 &&
+      email &&
+      date &&
+      startTime &&
+      endTime
+    ) {
+      const res = await rescheduleConsultationRequest(
+        {
+          agencyId: agency.id,
+          id: params.consultationId,
+          customer: params.customerId,
+          agencyName: agency.name,
+          startTime: `${formatISO9075(startTime, {
+            representation: "time",
+          }).substr(0, 5)}${startTimeZone}`,
+          endTime: `${formatISO9075(endTime, {
+            representation: "time",
+          }).substr(0, 5)}${endTimeZone}`,
+          message,
+          date: formatISO9075(userDate, { representation: "date" }),
+          duration,
+        },
+        token
+      );
+      if (res) {
+        socket.emit("notification", {
+          ...res.notification,
+          customer: params.customerId,
+        });
+        dispatch(
+          notifyActions.updateConsultations({
+            id: params.consultationId,
+            status: "reschedule",
+          })
+        );
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Dashboard" }],
+        });
       }
     }
   };
@@ -172,6 +236,8 @@ const ScheduleForm = ({
       />
 
       <Input
+        ref={dateRef}
+        errorMessage={errors?.date}
         inputStyle={styles.inputStyle}
         label="Date"
         labelStyle={styles.fieldLabels}
@@ -179,7 +245,14 @@ const ScheduleForm = ({
         value={
           userDate ? formatISO9075(userDate, { representation: "date" }) : null
         }
-        rightIcon={<Fontisto name="date" size={24} color="#214151" />}
+        rightIcon={
+          <Fontisto
+            name="date"
+            size={24}
+            color="#214151"
+            onPress={showDatepicker}
+          />
+        }
         onPress={showDatepicker}
       />
       <View
@@ -205,6 +278,10 @@ const ScheduleForm = ({
               name="clock-outline"
               size={24}
               color="#214151"
+              onPress={() => {
+                setLevel(1);
+                showTimepicker();
+              }}
             />
           }
           onPress={() => {
@@ -232,6 +309,10 @@ const ScheduleForm = ({
               name="clock-time-eight-outline"
               size={24}
               color="#214151"
+              onPress={() => {
+                setLevel(2);
+                showTimepicker();
+              }}
             />
           }
         />
@@ -293,8 +374,8 @@ const ScheduleForm = ({
         containerStyle={styles.schedulebtn}
         buttonStyle={styles.schedulebtninputContainer}
         titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
-        title={params?.email ? "Reschedule" : "Request consultation"}
-        onPress={handleConsultation}
+        title={params.email ? "Reschedule" : "Request consultation"}
+        onPress={params.email ? handleReschedule : handleConsultation}
         loading={loading}
         disabled={loading}
       />

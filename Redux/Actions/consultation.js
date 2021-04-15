@@ -3,6 +3,7 @@ import {
   STORE_ALL_CONSULTATIONS,
   DECLINE_CONSULTATION,
   UPDATE,
+  NOTIFY,
 } from "../constants";
 
 export const requestConsultation = (payload) => (dispatch) => {
@@ -19,4 +20,8 @@ export const decline = (data) => (dispatch) => {
 
 export const updateConsultations = (data) => (dispatch) => {
   dispatch({ type: UPDATE, payload: data });
+};
+
+export const notification = (data) => (dispatch) => {
+  dispatch({ type: NOTIFY, payload: data });
 };

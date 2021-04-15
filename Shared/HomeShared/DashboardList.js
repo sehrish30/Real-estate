@@ -13,8 +13,9 @@ import {
 } from "@expo/vector-icons";
 import DashboardOverlay from "../Overlays/DashboardOverlay";
 import DeleteConfirm from "../Modals/DeleteConfirm";
+import Price from "../Modals/Price";
 
-var { width, height } = Dimensions.get("screen");
+var { width } = Dimensions.get("screen");
 const DashboardList = ({
   title,
   date,
@@ -34,6 +35,7 @@ const DashboardList = ({
   agencyName,
   dispatchConsultation,
   consultations,
+  navigation,
 }) => {
   const [visible, setVisible] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -43,6 +45,7 @@ const DashboardList = ({
     setVisible(!visible);
   };
   const [modalVisible, setModalVisible] = useState(false);
+  const [priceVisible, setPriceVisible] = useState(false);
   return (
     <ListItem
       onPress={() => {
@@ -80,22 +83,28 @@ const DashboardList = ({
             <Tooltip
               overlayColor="rgba(239, 247, 225, 0.4)"
               backgroundColor="#f8dc81"
-              containerStyle={styles.tooltip}
               popover={<Text style={styles.popoverText}>{status}</Text>}
             >
               {status == "pending" && (
                 <MaterialIcons
+                  style={styles.statusIcon}
                   name="pending-actions"
                   size={25}
                   color="#214151"
                 />
               )}
               {status == "declined" && (
-                <MaterialIcons name="event-busy" size={25} color="#214151" />
+                <MaterialIcons
+                  style={styles.statusIcon}
+                  name="event-busy"
+                  size={25}
+                  color="#214151"
+                />
               )}
 
               {status == "accepted" && (
                 <MaterialCommunityIcons
+                  style={styles.statusIcon}
                   name="progress-check"
                   size={25}
                   color="#214151"
@@ -103,11 +112,17 @@ const DashboardList = ({
               )}
 
               {status == "reschedule" && (
-                <Feather name="loader" size={25} color="#214151" />
+                <Feather
+                  style={styles.statusIcon}
+                  name="loader"
+                  size={25}
+                  color="#214151"
+                />
               )}
 
               {status == "paid" && (
                 <MaterialCommunityIcons
+                  style={styles.statusIcon}
                   name="check-circle-outline"
                   size={25}
                   color="#214151"
@@ -115,6 +130,7 @@ const DashboardList = ({
               )}
               {status == "done" && (
                 <Ionicons
+                  style={styles.statusIcon}
                   name="ios-checkmark-done-circle-outline"
                   size={25}
                   color="#214151"
@@ -168,6 +184,7 @@ const DashboardList = ({
         </View>
       </ListItem.Content>
       <DashboardOverlay
+        consultationId={consultationId}
         consultationType={consultationType}
         dp={dp}
         phoneNumber={phoneNumber}
@@ -180,7 +197,12 @@ const DashboardList = ({
         animatedValue={animatedValue}
         setModalVisible={setModalVisible}
         modalVisible={modalVisible}
+        setPriceVisible={setPriceVisible}
+        priceVisible={priceVisible}
         status={status}
+        navigation={navigation}
+        title={title}
+        customer={customer}
       />
       <DeleteConfirm
         modalVisible={modalVisible}
@@ -191,8 +213,16 @@ const DashboardList = ({
         agencyName={agencyName}
         toggleOverlay={toggleOverlay}
         status={status}
-        dispatchConsultation={dispatchConsultation}
-        consultations={consultations}
+      />
+
+      <Price
+        toggleOverlay={toggleOverlay}
+        priceVisible={priceVisible}
+        setPriceVisible={setPriceVisible}
+        consultationId={consultationId}
+        customer={customer}
+        agencyId={agencyId}
+        agencyName={agencyName}
       />
     </ListItem>
   );
@@ -223,5 +253,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignItems: "center",
     width: width / 2.5,
+  },
+  tooltip: {
+    backgroundColor: "red",
+    padding: 20,
+  },
+  statusIcon: {
+    padding: 5,
+    borderRadius: 50,
+    elevation: 1,
   },
 });

@@ -49,6 +49,8 @@ const DeleteConfirm = ({
                 containerStyle={styles.outlinebtn}
                 buttonStyle={styles.outline}
                 onPress={async () => {
+                  setModalVisible(!modalVisible);
+                  toggleOverlay();
                   const res = await declineConsultation(
                     {
                       id: consultationId,
@@ -61,10 +63,7 @@ const DeleteConfirm = ({
 
                   // socket send
                   if (res) {
-                    setModalVisible(!modalVisible);
-                    toggleOverlay();
-
-                    socket.emit("declineNotification", {
+                    socket.emit("notification", {
                       ...res.notification,
                       customer,
                     });

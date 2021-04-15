@@ -4,9 +4,11 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import Dashboard from "../screens/Drawer/Dashboard";
 import CustomHeader from "../Shared/HomeShared/CustomHeader";
 const Tab = createMaterialTopTabNavigator();
+import { useNavigation } from "@react-navigation/native";
 
 var { height } = Dimensions.get("screen");
-function MyTabs({ navigation }) {
+function MyTabs() {
+  const navigation = useNavigation();
   const showMenu = () => {
     navigation.toggleDrawer();
   };

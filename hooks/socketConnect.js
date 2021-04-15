@@ -79,5 +79,9 @@ export function useSocket(user, dispatch) {
     dispatch(notifyActions.decline(data));
   });
 
+  socket.on("notification", (data) => {
+    dispatch(notifyActions.notification(data));
+  });
+
   socket.connect;
 }

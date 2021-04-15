@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 
 let { width, height } = Dimensions.get("screen");
 const DashboardOverlay = ({
+  consultationId,
   visible,
   toggleOverlay,
   consultationType,
@@ -26,6 +27,11 @@ const DashboardOverlay = ({
   animatedValue,
   setModalVisible,
   status,
+  priceVisible,
+  setPriceVisible,
+  navigation,
+  title,
+  customer,
 }) => {
   let agency = useSelector((state) => state.auth.agency);
   return (
@@ -81,7 +87,7 @@ const DashboardOverlay = ({
             />
             <View style={{ width: width / 1.1 }}>
               <Text ellipsizeMode="tail" numberOfLines={2} style={styles.email}>
-                sehrishwaheed98@gmail.com
+                {title}
               </Text>
             </View>
           </View>
@@ -166,12 +172,24 @@ const DashboardOverlay = ({
                 buttonStyle={styles.accept}
                 containerStyle={styles.clrbtn}
                 title="Accept"
+                onPress={() => {
+                  setPriceVisible(true);
+                }}
               />
             </View>
             <Button
               titleStyle={[styles.font, { color: "#214151" }]}
               title="Request to reschedule"
               type="clear"
+              onPress={() => {
+                toggleOverlay();
+                navigation.navigate("ScheduleConsultationForm", {
+                  email: title,
+                  phoneNumber: phoneNumber,
+                  customerId: customer,
+                  consultationId: consultationId,
+                });
+              }}
             />
           </>
         )}

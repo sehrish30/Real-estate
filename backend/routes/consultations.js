@@ -215,9 +215,7 @@ router.put("/decline-consultation-request", async (req, res) => {
           notification = await notification.save();
           console.log("NOTIFICATION", notification);
           if (notification) {
-            return res
-              .status(200)
-              .send({ notification, consultations: consultation });
+            return res.status(200).send({ notification });
           }
         });
       } else {
@@ -242,7 +240,7 @@ router.put("/accept-consultation-request", async (req, res) => {
         return res.status(401).json({ error: err });
       }
       const { agencyId } = decoded;
-      if (agencyId) {
+      if (agencyId == req.body.agencyId) {
         Consultation.findByIdAndUpdate(
           req.body.id,
           {
@@ -250,11 +248,24 @@ router.put("/accept-consultation-request", async (req, res) => {
             payment: req.body.payment,
           },
           { new: true }
-        ).exec((err, consultation) => {
+        ).exec(async (err, consultation) => {
           if (err) {
             return res.status(422).send(err);
           }
-          return res.status(200).send(consultation);
+          // Save the notification
+          let notification = new Notification({
+            customer: req.body.customer,
+            agency: req.body.agencyId,
+            consultationId: consultation._id,
+            content: `${req.body.agencyName} has accepted your consultation request`,
+          });
+
+          notification = await notification.save();
+
+          if (notification) {
+            return res.status(200).send({ notification });
+          }
+          // return res.status(200).send(consultation);
         });
       } else {
         return res.status(401).send("You aren't authorized");
@@ -268,7 +279,7 @@ router.put("/accept-consultation-request", async (req, res) => {
 /*----------------------------------------
  AGENCY REQUESTING FOR RESCHEDULE
 ----------------------------------------- */
-router.put("/accept-consultation-request", async (req, res) => {
+router.put("/reschedule-consultation-request", async (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(` `)[1];
@@ -278,17 +289,33 @@ router.put("/accept-consultation-request", async (req, res) => {
         return res.status(401).json({ error: err });
       }
       const { agencyId } = decoded;
-      if (agencyId) {
+      if (agencyId == req.body.agencyId) {
         Consultation.findByIdAndUpdate(
           req.body.id,
           {
             status: "reschedule",
-            rescdheuleMessage: "Thanks for the reschedule",
+            startTime: req.body.startTime,
+            endTime: req.body.endTime,
+            date: req.body.date,
+            rescdheuleMessage: req.body.message,
           },
           { new: true }
-        ).exec((err, consultation) => {
+        ).exec(async (err, consultation) => {
           if (err) {
             return res.status(422).send(err);
+          }
+          // Save the notification
+          let notification = new Notification({
+            customer: req.body.customer,
+            agency: req.body.agencyId,
+            consultationId: consultation._id,
+            content: `${req.body.agencyName} has requested to reschedule your consultation request from ${consultation.startTime} to ${consultation.endTime}`,
+          });
+
+          notification = await notification.save();
+
+          if (notification) {
+            return res.status(200).send({ notification });
           }
           return res.status(200).send(consultation);
         });

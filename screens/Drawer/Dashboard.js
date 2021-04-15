@@ -51,8 +51,10 @@ const Item = ({
   customerMessage,
   agencyMessage,
   timesent,
+  navigation,
 }) => (
   <DashboardList
+    navigation={navigation}
     customer={customer}
     agencyId={agencyId}
     agencyName={agencyName}
@@ -204,6 +206,7 @@ const Dashboard = ({ navigation }) => {
         agencyMessage={item.rescdheuleMessage || null}
         timesent={item.timesent}
         consultationId={item.id}
+        navigation={navigation}
       />
     );
   };
@@ -238,7 +241,7 @@ export default Dashboard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    // marginTop: StatusBar.currentHeight || 0,
     backgroundColor: "#fff",
   },
 });

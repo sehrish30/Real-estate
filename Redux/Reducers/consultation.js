@@ -3,6 +3,7 @@ import {
   STORE_ALL_CONSULTATIONS,
   DECLINE_CONSULTATION,
   UPDATE,
+  NOTIFY,
 } from "../constants";
 
 const initialState = {
@@ -26,11 +27,10 @@ const consultation = (state = initialState, action) => {
         consultations: payload.consultations,
       };
     case UPDATE:
-      console.log("");
       let consultationsCopy = state.consultations.map((cons) => {
         console.log("CONS", cons.id, payload.id);
         if (cons.id == payload.id) {
-          cons.status = "declined";
+          cons.status = payload.status;
           return cons;
         }
         return cons;
@@ -40,6 +40,12 @@ const consultation = (state = initialState, action) => {
         consultations: consultationsCopy,
       };
     case DECLINE_CONSULTATION:
+      return {
+        ...state,
+        notifications: [payload, ...state.notifications],
+        new: true,
+      };
+    case NOTIFY:
       return {
         ...state,
         notifications: [payload, ...state.notifications],

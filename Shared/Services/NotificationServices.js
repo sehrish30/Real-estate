@@ -140,7 +140,7 @@ export async function declineConsultation(data, token) {
     } else {
       Toast.show({
         type: "error",
-        text1: `agency couldn't be declined`,
+        text1: `Consultation couldn't be declined`,
         text2: `Try again`,
         visibilityTime: 4000,
         topOffset: 30,
@@ -148,5 +148,74 @@ export async function declineConsultation(data, token) {
     }
   } catch (err) {
     console.error(err);
+  }
+}
+
+export async function acceptConsultationRequest(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}consultations/accept-consultation-request`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Consultation request accepted`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+      return res.data;
+    }
+    if (res.status == 422) {
+      Toast.show({
+        type: "error",
+        text1: `Consultation couldn't be accepted`,
+        text2: `Try again`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function rescheduleConsultationRequest(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}consultations/reschedule-consultation-request`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `We have notified customer`,
+        text2: `about your reschedule consultation request`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+      return res.data;
+    }
+    if (res.status == 422) {
+      Toast.show({
+        type: "error",
+        text1: `Consultation couldn't be reschduled`,
+        text2: `Try again`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 }

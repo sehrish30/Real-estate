@@ -53,6 +53,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   const emailRef = useRef();
   const phonenoRef = useRef();
   const internalRef = useRef();
+  const dateRef = useRef();
 
   useFocusEffect(
     useCallback(() => {
@@ -100,8 +101,27 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
           },
         });
       }
+
+      if (dateRef.current.isFocused() || userDate.length > 0) {
+        let difference = userDate - new Date();
+        if (difference < 0) {
+          dispatchErrors({
+            errors: {
+              ...errors,
+              date: "You have chosen past date",
+            },
+          });
+        } else {
+          dispatchErrors({
+            errors: {
+              ...errors,
+              date: null,
+            },
+          });
+        }
+      }
       return () => {};
-    }, [email, phoneNumber])
+    }, [email, phoneNumber, userDate])
   );
 
   const [duration, setDuration] = useState("");
@@ -215,6 +235,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         endTimeZone={endTimeZone}
         setEndTimeZone={setEndTimeZone}
         internalRef={internalRef}
+        dateRef={dateRef}
       />
       {show && (
         <DateTimePicker
