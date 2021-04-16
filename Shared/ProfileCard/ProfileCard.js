@@ -17,6 +17,7 @@ import {
   SimpleLineIcons,
   MaterialCommunityIcons,
   EvilIcons,
+  AntDesign,
 } from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
@@ -191,6 +192,7 @@ const ProfileCard = ({
             keyExtractor={(item) => item.id}
           />
         </View>
+
         <View
           style={{ marginTop: 30, flexDirection: "row", paddingBottom: 20 }}
         >
@@ -293,8 +295,27 @@ const ProfileCard = ({
             />
           </>
         )}
-
         <Card.Divider />
+        {agency.id && agency.officeTimingStart && (
+          <>
+            <View style={[styles.locationRow, { marginVertical: 10 }]}>
+              <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
+                <View>
+                  <AntDesign
+                    style={{
+                      marginRight: 8,
+                    }}
+                    name="clockcircleo"
+                    color={"#214151"}
+                    size={15}
+                  />
+                </View>
+                {agency.officeTimingStart}-{agency.officeTimingEnd}
+              </Text>
+            </View>
+            <Card.Divider />
+          </>
+        )}
 
         <RatingsReviews url={logo?.url} id={id} />
         <Button

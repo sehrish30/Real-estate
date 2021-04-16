@@ -317,7 +317,7 @@ router.put("/reschedule-consultation-request", async (req, res) => {
           if (notification) {
             return res.status(200).send({ notification });
           }
-          return res.status(200).send(consultation);
+          // return res.status(200).send(consultation);
         });
       } else {
         return res.status(401).send("You aren't authorized");
@@ -331,7 +331,7 @@ router.put("/reschedule-consultation-request", async (req, res) => {
 /*----------------------------------------
     AGENCY REQUESTING FOR PAID
 ----------------------------------------- */
-router.put("/payment-consultation-request", async (req, res) => {
+router.put("/paid-consultation-request", async (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(` `)[1];
@@ -350,11 +350,23 @@ router.put("/payment-consultation-request", async (req, res) => {
             rescdheuleMessage: undefined,
           },
           { new: true }
-        ).exec((err, consultation) => {
+        ).exec(async (err, consultation) => {
           if (err) {
             return res.status(422).send(err);
           }
-          return res.status(200).send(consultation);
+          // Save the notification
+          let notification = new Notification({
+            customer: req.body.customer,
+            agency: req.body.agencyId,
+            consultationId: consultation._id,
+            content: `Amazing! Your consultation session is finalized by ${req.body.agencyName} from ${consultation.startTime} to ${consultation.endTime}`,
+          });
+
+          notification = await notification.save();
+
+          if (notification) {
+            return res.status(200).send({ notification });
+          }
         });
       } else {
         return res.status(401).send("You aren't authorized");

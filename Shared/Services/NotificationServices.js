@@ -219,3 +219,44 @@ export async function rescheduleConsultationRequest(data, token) {
     console.log(err);
   }
 }
+
+export async function markPayedConsultation(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}consultations/paid-consultation-request`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `Consultation marked as paid`,
+        text2: `Keep it up!`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+      return res.data;
+    }
+    if (res.status == 422) {
+      Toast.show({
+        type: "info",
+        text1: `Please, refresh tha page`,
+        text2: `Try again!`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Our server is down please try again`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+    console.log(err);
+  }
+}

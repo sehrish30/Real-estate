@@ -9,8 +9,10 @@ import {
 } from "react-native";
 import { Overlay, Button, Avatar } from "react-native-elements";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import DeleteConfirm from "../Modals/DeleteConfirm";
-import { useSelector } from "react-redux";
+import { markPayedConsultation } from "../../Shared/Services/NotificationServices";
+import { useSelector, useDispatch } from "react-redux";
+import { AntDesign } from "@expo/vector-icons";
+import * as notifyActions from "../../Redux/Actions/consultation";
 
 let { width, height } = Dimensions.get("screen");
 const DashboardOverlay = ({
@@ -27,13 +29,18 @@ const DashboardOverlay = ({
   animatedValue,
   setModalVisible,
   status,
-  priceVisible,
+
   setPriceVisible,
   navigation,
   title,
   customer,
+  agencyId,
+  agencyName,
 }) => {
   let agency = useSelector((state) => state.auth.agency);
+  let token = useSelector((state) => state.auth.token);
+  let socket = useSelector((state) => state.chat.socket);
+  let dispatch = useDispatch();
   return (
     <Overlay
       overlayStyle={{ width: width, borderRadius: 10 }}
@@ -193,6 +200,43 @@ const DashboardOverlay = ({
             />
           </>
         )}
+        {agency?.id && status == "accepted" && (
+          <Button
+            icon={
+              <AntDesign
+                name="checkcircleo"
+                style={{ marginRight: 15 }}
+                size={15}
+                color="#e4fbff"
+              />
+            }
+            titleStyle={styles.font}
+            raised={true}
+            buttonStyle={styles.accept}
+            containerStyle={styles.acceptbtn}
+            title="Mark as paid"
+            onPress={async () => {
+              const res = await markPayedConsultation(
+                { agencyId, agencyName, customer, id: consultationId },
+                token
+              );
+              toggleOverlay();
+              if (res) {
+                socket.emit("notification", {
+                  ...res.notification,
+                  customer,
+                });
+
+                dispatch(
+                  notifyActions.updateConsultations({
+                    id: consultationId,
+                    status: "paid",
+                  })
+                );
+              }
+            }}
+          />
+        )}
       </Animated.ScrollView>
     </Overlay>
   );
@@ -231,5 +275,8 @@ const styles = StyleSheet.create({
   },
   font: {
     fontFamily: "EBGaramond-Bold",
+  },
+  acceptbtn: {
+    marginTop: 20,
   },
 });

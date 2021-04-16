@@ -198,11 +198,12 @@ const DashboardList = ({
         setModalVisible={setModalVisible}
         modalVisible={modalVisible}
         setPriceVisible={setPriceVisible}
-        priceVisible={priceVisible}
         status={status}
         navigation={navigation}
         title={title}
         customer={customer}
+        agencyId={agencyId}
+        agencyName={agencyName}
       />
       <DeleteConfirm
         modalVisible={modalVisible}

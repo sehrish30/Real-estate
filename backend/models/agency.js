@@ -78,6 +78,12 @@ const agencySchema = mongoose.Schema(
         required: false,
       },
     ],
+    officeTimingStart: String,
+    officeTimingEnd: String,
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
     commercial: [String],
     land: [mongoose.ObjectId],
     residential: [mongoose.ObjectId],

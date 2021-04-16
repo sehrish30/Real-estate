@@ -46,10 +46,10 @@ const AgencyDetail = ({ route, navigation }) => {
   useFocusEffect(
     useCallback(() => {
       const id = route.params.id;
-      console.log(id);
+
       const getService = async () => {
         const res = await getAgencyDetails(id);
-        console.log(res, "GIRL");
+        console.log("HAHAHAHHA", res);
         dispatchProfile({
           profile: res,
           commercial: res.commercial?.length,

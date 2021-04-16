@@ -376,6 +376,29 @@ router.get(`/get/count`, async (req, res) => {
 });
 
 /*----------------------------------------
+        Agency Office Timings
+---------------------------------------- */
+router.put("/set-office-timings", async (req, res) => {
+  try {
+    Agency.findByIdAndUpdate(
+      req.body.id,
+      {
+        officeTimingStart: req.body.startTime,
+        officeTimingEnd: req.body.endTime,
+      },
+      { new: true }
+    ).exec((err, result) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
             Agency REJECTED
 ---------------------------------------- */
 router.delete("/rejected/:id", async (req, res) => {

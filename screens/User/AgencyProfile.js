@@ -127,7 +127,7 @@ const AgencyProfile = ({ navigation }) => {
           token,
           profile.logo.public_id
         );
-        console.error("DATA", data);
+
         if (data) {
           dispatch(updateProfile(data));
           dispatchProfile({
