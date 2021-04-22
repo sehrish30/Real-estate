@@ -113,6 +113,7 @@ const Dashboard = ({ navigation }) => {
             //   consultations: res.consultations,
             //   consultationId: res.id,
             // });
+
             dispatch(
               consultationActions.storeAllConsultations({
                 consultations: res.consultations,
@@ -191,7 +192,7 @@ const Dashboard = ({ navigation }) => {
     return (
       <Item
         customer={item.customer.id}
-        agencyId={agency.id}
+        agencyId={item.agency.id}
         agencyName={item.agency?.name}
         title={item.title}
         date={item.date}

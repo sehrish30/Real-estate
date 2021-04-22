@@ -53,8 +53,6 @@ const Notifications = ({ navigation }) => {
       headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
       headerTintColor: "#2c6e8f",
     });
-
-    return () => {};
   }, [navigation]);
   return (
     <View>

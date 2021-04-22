@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Overlay } from "react-native-elements";
+import { Button, Overlay, Modal } from "react-native-elements";
 import { Dimensions } from "react-native";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { AntDesign } from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
 const CustomOptionsOverlay = ({
@@ -10,6 +11,7 @@ const CustomOptionsOverlay = ({
   toggleOverlay,
   changePassword,
   editAgency,
+  showTiming,
 }) => {
   return (
     <Overlay
@@ -38,10 +40,10 @@ const CustomOptionsOverlay = ({
             style={{ marginRight: 15 }}
             name="pencil-square"
             color={"#214151"}
-            size={30}
+            size={25}
           />
         }
-        title="Edit Profile"
+        title="Profile"
       />
 
       <Button
@@ -69,7 +71,35 @@ const CustomOptionsOverlay = ({
             size={15}
           />
         }
-        title="Change Password"
+        title="Password"
+      />
+
+      <Button
+        onPress={() => {
+          toggleOverlay();
+          showTiming();
+        }}
+        type="outline"
+        buttonStyle={{
+          backgroundColor: "#fff",
+          borderColor: "#214151",
+          height: 50,
+          marginVertical: 5,
+        }}
+        titleStyle={{
+          color: "#214151",
+        }}
+        icon={
+          <AntDesign
+            style={{
+              marginRight: 15,
+            }}
+            name="clockcircle"
+            color={"#214151"}
+            size={15}
+          />
+        }
+        title="Office hours"
       />
 
       <Button

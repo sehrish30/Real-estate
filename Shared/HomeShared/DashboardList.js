@@ -39,6 +39,7 @@ const DashboardList = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
+
   // console.error(customer, agencyId, agencyName, consultationId, "ID");
 
   const toggleOverlay = () => {
@@ -46,6 +47,7 @@ const DashboardList = ({
   };
   const [modalVisible, setModalVisible] = useState(false);
   const [priceVisible, setPriceVisible] = useState(false);
+
   return (
     <ListItem
       onPress={() => {
@@ -79,7 +81,15 @@ const DashboardList = ({
       <ListItem.Content style={styles.list}>
         <View style={{ flexDirection: "row", width: width / 1.1 }}>
           <ListItem.Title style={styles.titleName}>{title}</ListItem.Title>
-          <View style={{ marginLeft: "auto" }}>
+          <Animated.View
+            style={[
+              {
+                marginLeft: "auto",
+
+                borderRadius: 50,
+              },
+            ]}
+          >
             <Tooltip
               overlayColor="rgba(239, 247, 225, 0.4)"
               backgroundColor="#f8dc81"
@@ -90,7 +100,7 @@ const DashboardList = ({
                   style={styles.statusIcon}
                   name="pending-actions"
                   size={25}
-                  color="#214151"
+                  color="#f8dc81"
                 />
               )}
               {status == "declined" && (
@@ -98,7 +108,7 @@ const DashboardList = ({
                   style={styles.statusIcon}
                   name="event-busy"
                   size={25}
-                  color="#214151"
+                  color="#e02e49"
                 />
               )}
 
@@ -107,7 +117,7 @@ const DashboardList = ({
                   style={styles.statusIcon}
                   name="progress-check"
                   size={25}
-                  color="#214151"
+                  color="#2c6e8f"
                 />
               )}
 
@@ -116,7 +126,7 @@ const DashboardList = ({
                   style={styles.statusIcon}
                   name="loader"
                   size={25}
-                  color="#214151"
+                  color="#98ded9"
                 />
               )}
 
@@ -133,11 +143,11 @@ const DashboardList = ({
                   style={styles.statusIcon}
                   name="ios-checkmark-done-circle-outline"
                   size={25}
-                  color="#214151"
+                  color="#a0d3c5"
                 />
               )}
             </Tooltip>
-          </View>
+          </Animated.View>
         </View>
         <View
           style={{

@@ -12,7 +12,6 @@ import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { intervalToDuration, formatDuration } from "date-fns";
 import ScheduleForm from "../../Shared/HomeShared/ScheduleForm";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { SafeAreaView } from "react-native";
 
 const reducer = (state, newState) => ({ ...state, ...newState });

@@ -5,6 +5,7 @@ import {
   Pressable,
   FlatList,
   Dimensions,
+  Modal,
 } from "react-native";
 import { Image, Card, Text, Badge } from "react-native-elements";
 import * as Linking from "expo-linking";
@@ -25,6 +26,7 @@ var { width, height } = Dimensions.get("screen");
 import { Feather } from "@expo/vector-icons";
 import CustomOptionsOverlay from "../Overlays/CustomOptionsOverlay";
 import RatingsReviews from "./RatingsReviews";
+import OfficeTiming from "../Modals/OfficeTiming";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -46,6 +48,8 @@ const ProfileCard = ({
 }) => {
   const [visible, setVisible] = useState(false);
   const [showFullBio, setShowFullBio] = useState(false);
+  const [timing, setTiming] = useState(false);
+
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let userId = null;
@@ -58,6 +62,11 @@ const ProfileCard = ({
 
   const toggleOverlay = () => {
     setVisible(!visible);
+  };
+
+  const showTiming = () => {
+    setTiming(!timing);
+    console.error("OOYE");
   };
 
   const DATA = [
@@ -103,8 +112,20 @@ const ProfileCard = ({
           changePassword={changePassword}
           editAgency={editAgency}
           visible={visible}
+          showTiming={showTiming}
           toggleOverlay={toggleOverlay}
         />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={timing}
+          onRequestClose={() => {
+            console.log("SDSD");
+            setTiming(!timing);
+          }}
+        >
+          <OfficeTiming showTiming={showTiming} />
+        </Modal>
         {showEditbutton && (
           <View style={{ marginLeft: "auto", flexDirection: "row" }}>
             <Pressable

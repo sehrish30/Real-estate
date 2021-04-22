@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  ScrollView,
-  Animated,
-} from "react-native";
+import { StyleSheet, Text, View, Dimensions, Animated } from "react-native";
 import { Overlay, Button, Avatar } from "react-native-elements";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { markPayedConsultation } from "../../Shared/Services/NotificationServices";
@@ -87,6 +80,18 @@ const DashboardOverlay = ({
           >
             <Avatar
               // style={{ alignItems: "center" }}
+              onPress={() => {
+                toggleOverlay();
+
+                navigation.navigate("Chat", {
+                  screen: "ChatMain",
+                  params: {
+                    agency: agencyId,
+                    customer,
+                    notsure: true,
+                  },
+                });
+              }}
               rounded
               source={{
                 uri: dp,
