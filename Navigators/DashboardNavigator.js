@@ -5,6 +5,7 @@ import Dashboard from "../screens/Drawer/Dashboard";
 import CustomHeader from "../Shared/HomeShared/CustomHeader";
 const Tab = createMaterialTopTabNavigator();
 import { useNavigation } from "@react-navigation/native";
+import Statistics from "../screens/Drawer/Statistics";
 
 var { height } = Dimensions.get("screen");
 function MyTabs() {
@@ -42,7 +43,7 @@ function MyTabs() {
           name="Consultation Requests"
           component={Dashboard}
         />
-        <Tab.Screen name="Statistics" component={Dashboard} />
+        <Tab.Screen name="Statistics" component={Statistics} />
       </Tab.Navigator>
     </>
   );

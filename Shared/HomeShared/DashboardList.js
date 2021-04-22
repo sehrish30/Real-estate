@@ -155,14 +155,14 @@ const DashboardList = ({
                     color="#214151"
                   />
                 )}
-                {status == "done" && (
+                {/* {status == "done" && (
                   <Ionicons
                     style={styles.statusIcon}
                     name="ios-checkmark-done-circle-outline"
                     size={25}
                     color="#a0d3c5"
                   />
-                )}
+                )} */}
               </Tooltip>
             </View>
           </View>
