@@ -976,4 +976,32 @@ router.post(`/rate`, async (req, res) => {
   }
 });
 
+/*----------------------------------------
+           CHECK AGENCY HOURS
+----------------------------------------- */
+router.put("/office-hours", async (req, res) => {
+  try {
+    Agency.findByIdAndUpdate(
+      req.body.id,
+      {
+        officeTimingStart: req.body.startTime,
+        officeTimingEnd: req.body.endTime,
+      },
+      {
+        new: true,
+      }
+    ).exec((err, result) => {
+      console.log(req.body);
+      if (err) {
+        return res.status(422).send("WTF");
+      } else {
+        result.rating = undefined;
+        return res.status(200).send(result);
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router;

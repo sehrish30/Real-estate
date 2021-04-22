@@ -5,6 +5,10 @@ import { Button, Input } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { intervalToDuration, formatDuration, formatISO9075 } from "date-fns";
+import { changeOfficeTiming } from "../Services/AgencyServices";
+import { useSelector, useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateProfile } from "../../Redux/Actions/auth";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -12,6 +16,7 @@ const initialState = {
 };
 var { width } = Dimensions.get("screen");
 const OfficeTiming = ({ showTiming }) => {
+  let dispatch = useDispatch();
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
@@ -19,6 +24,8 @@ const OfficeTiming = ({ showTiming }) => {
   const [date, setDate] = useState(new Date());
   const [endTimeZone, setEndTimeZone] = useState("");
   const [startTimeZone, setStartTimeZone] = useState("");
+  const agency = useSelector((state) => state.auth.agency);
+  const token = useSelector((state) => state.auth.token);
 
   const [mode, setMode] = useState("date");
   const [level, setLevel] = useState(1);
@@ -185,15 +192,33 @@ const OfficeTiming = ({ showTiming }) => {
         >
           <Button
             type="clear"
-            titleStyle={{ fontFamily: "EBGaramond-Bold", color: "#839b97" }}
+            titleStyle={{ fontFamily: "EBGaramond-Bold", color: "#34626c" }}
             onPress={showTiming}
             buttonStyle={styles.solid}
             title="Close"
             buttonStyle={{ marginRight: 10 }}
           />
           <Button
+            disabled={
+              startTime && endTime && !errors.timeInterval ? false : true
+            }
             titleStyle={styles.font}
-            onPress={showTiming}
+            onPress={async () => {
+              let data = {
+                id: agency.id,
+                startTime: `${formatISO9075(startTime, {
+                  representation: "time",
+                }).substr(0, 5)} ${startTimeZone}`,
+                endTime: `${formatISO9075(endTime, {
+                  representation: "time",
+                }).substr(0, 5)} ${endTimeZone}`,
+              };
+              const res = await changeOfficeTiming(data, token);
+              AsyncStorage.setItem("agency", JSON.stringify(res)).then(() => {
+                dispatch(updateProfile(res));
+              });
+              showTiming();
+            }}
             buttonStyle={{ backgroundColor: "#214151" }}
             title="Save"
           />

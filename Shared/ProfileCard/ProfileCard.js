@@ -43,6 +43,8 @@ const ProfileCard = ({
   id,
   phoneNumber,
   name,
+  startTiming,
+  endTiming,
   // rating,
   // reviews,
 }) => {
@@ -52,6 +54,7 @@ const ProfileCard = ({
 
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
+  console.log("AGENCY", agency);
   let userId = null;
 
   if (agency?.id) {
@@ -66,7 +69,6 @@ const ProfileCard = ({
 
   const showTiming = () => {
     setTiming(!timing);
-    console.error("OOYE");
   };
 
   const DATA = [
@@ -278,6 +280,8 @@ const ProfileCard = ({
               onPress={() => {
                 navigation.navigate("ScheduleConsultationForm", {
                   agencyId: id,
+                  startTiming,
+                  endTiming,
                 });
               }}
             />
@@ -331,6 +335,10 @@ const ProfileCard = ({
                     size={15}
                   />
                 </View>
+                Consultation hours
+              </Text>
+              <Text style={{ marginTop: 10, color: "#214151" }}>
+                {" "}
                 {agency.officeTimingStart}-{agency.officeTimingEnd}
               </Text>
             </View>

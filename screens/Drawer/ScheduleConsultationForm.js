@@ -57,7 +57,6 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   useFocusEffect(
     useCallback(() => {
       if (emailRef.current.isFocused() && email.length < 1) {
-        console.log(emailRef.current.isFocused());
         dispatchErrors({
           errors: {
             ...errors,
@@ -68,7 +67,6 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email) &&
         emailRef.current.isFocused()
       ) {
-        console.log("INVALID");
         dispatchErrors({
           errors: {
             ...errors,
@@ -146,7 +144,6 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
   useEffect(() => {
     (() => {
       if (startTime && endTime) {
-        console.error(startTime, endTime);
         let timedurationcheck = intervalToDuration({
           start: startTime,
           end: endTime,

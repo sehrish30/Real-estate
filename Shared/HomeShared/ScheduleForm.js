@@ -67,7 +67,6 @@ const ScheduleForm = ({
   }
 
   const handleConsultation = async () => {
-    console.error("DEKH LE", errors);
     const checkProceed = () => {
       return Object.keys(errors).every(function (x) {
         return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
@@ -202,7 +201,6 @@ const ScheduleForm = ({
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      {/* {console.error(errors.email)} */}
       <Input
         disabled={params?.email}
         inputStyle={styles.inputStyle}
@@ -255,6 +253,9 @@ const ScheduleForm = ({
         }
         onPress={showDatepicker}
       />
+      <Text style={styles.suggestion}>
+        Consultation hours {params.startTiming} - {params.endTiming}
+      </Text>
       <View
         style={{
           flexDirection: "row",
@@ -433,6 +434,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     borderColor: "#214151",
+    color: "#214151",
+  },
+  suggestion: {
+    marginBottom: 10,
     color: "#214151",
   },
 });

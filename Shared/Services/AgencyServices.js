@@ -185,3 +185,32 @@ export async function enterpassword(data, token) {
     console.error(err);
   }
 }
+
+export async function changeOfficeTiming(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}agencies/office-hours`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `Office hours updated`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+      return res.data;
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Office hours couldn't be updated`,
+      text2: `Try again`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+    console.error(err);
+  }
+}

@@ -49,7 +49,7 @@ const AgencyDetail = ({ route, navigation }) => {
 
       const getService = async () => {
         const res = await getAgencyDetails(id);
-        console.log("HAHAHAHHA", res);
+        console.error(res);
         dispatchProfile({
           profile: res,
           commercial: res.commercial?.length,
@@ -57,6 +57,7 @@ const AgencyDetail = ({ route, navigation }) => {
           industrial: res.industrial?.length,
           land: res.land?.length,
         });
+
         setLoading(false);
       };
       getService();
@@ -89,6 +90,8 @@ const AgencyDetail = ({ route, navigation }) => {
           navigation={navigation}
           phoneNumber={profile.phoneNumber}
           name={profile.name}
+          startTiming={profile.officeTimingStart}
+          endTiming={profile.officeTimingEnd}
         />
       )}
     </ScrollView>

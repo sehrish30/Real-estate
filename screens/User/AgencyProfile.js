@@ -72,6 +72,7 @@ const AgencyProfile = ({ navigation }) => {
   const storeUserInfo = async () => {
     let token = await AsyncStorage.getItem("jwt");
     let res;
+    console.error("HEHE");
 
     if (chosenLocations.length === 0) {
       res = await editAgencyProfile(
