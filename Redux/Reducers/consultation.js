@@ -29,7 +29,6 @@ const consultation = (state = initialState, action) => {
       };
     case UPDATE:
       let consultationsCopy = state.consultations.map((cons) => {
-        console.log("CONS", cons.id, payload.id);
         if (cons.id == payload.id) {
           cons.status = payload.status;
           return cons;
@@ -41,7 +40,6 @@ const consultation = (state = initialState, action) => {
         consultations: consultationsCopy,
       };
     case DELETE_CONSULTATION:
-      console.error("PAYLOAD", payload);
       consultationsCopy = state.consultations.filter(
         (cons) => cons.id != payload.id
       );

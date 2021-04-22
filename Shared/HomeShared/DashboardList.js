@@ -47,6 +47,10 @@ const DashboardList = ({
   };
   const [modalVisible, setModalVisible] = useState(false);
   const [priceVisible, setPriceVisible] = useState(false);
+  const [mainIndex, setMainIndex] = useState(null);
+
+  const deleteConsultation = useRef(new Animated.ValueXY({ x: 0, y: 0 }))
+    .current;
 
   return (
     <ListItem
@@ -79,105 +83,118 @@ const DashboardList = ({
       containerStyle={styles.listContainer}
     >
       <ListItem.Content style={styles.list}>
-        <View style={{ flexDirection: "row", width: width / 1.1 }}>
-          <ListItem.Title style={styles.titleName}>{title}</ListItem.Title>
-          <Animated.View
-            style={[
-              {
-                marginLeft: "auto",
-
-                borderRadius: 50,
-              },
-            ]}
-          >
-            <Tooltip
-              overlayColor="rgba(239, 247, 225, 0.4)"
-              backgroundColor="#f8dc81"
-              popover={<Text style={styles.popoverText}>{status}</Text>}
-            >
-              {status == "pending" && (
-                <MaterialIcons
-                  style={styles.statusIcon}
-                  name="pending-actions"
-                  size={25}
-                  color="#f8dc81"
-                />
-              )}
-              {status == "declined" && (
-                <MaterialIcons
-                  style={styles.statusIcon}
-                  name="event-busy"
-                  size={25}
-                  color="#e02e49"
-                />
-              )}
-
-              {status == "accepted" && (
-                <MaterialCommunityIcons
-                  style={styles.statusIcon}
-                  name="progress-check"
-                  size={25}
-                  color="#2c6e8f"
-                />
-              )}
-
-              {status == "reschedule" && (
-                <Feather
-                  style={styles.statusIcon}
-                  name="loader"
-                  size={25}
-                  color="#98ded9"
-                />
-              )}
-
-              {status == "paid" && (
-                <MaterialCommunityIcons
-                  style={styles.statusIcon}
-                  name="check-circle-outline"
-                  size={25}
-                  color="#214151"
-                />
-              )}
-              {status == "done" && (
-                <Ionicons
-                  style={styles.statusIcon}
-                  name="ios-checkmark-done-circle-outline"
-                  size={25}
-                  color="#a0d3c5"
-                />
-              )}
-            </Tooltip>
-          </Animated.View>
-        </View>
-        <View
+        <Animated.View
           style={{
-            flexDirection: "row",
-            paddingVertical: 10,
-            paddingHorizontal: 10,
-
-            borderColor: "#214151",
+            transform: [
+              {
+                translateX:
+                  consultationId == mainIndex ? deleteConsultation.x : 0,
+              },
+              {
+                translateY:
+                  consultationId == mainIndex ? deleteConsultation.y : 0,
+              },
+            ],
           }}
         >
-          <ListItem.Subtitle style={styles.date}>
-            <Ionicons
-              name="ios-calendar"
-              size={15}
-              color="#839b97"
-              style={{ marginRight: 5, marginTop: 5 }}
-            />
-            {/* {date
+          <View style={{ flexDirection: "row", width: width / 1.1 }}>
+            <ListItem.Title style={styles.titleName}>{title}</ListItem.Title>
+            <View
+              style={[
+                {
+                  marginLeft: "auto",
+                  borderRadius: 50,
+                },
+              ]}
+            >
+              <Tooltip
+                overlayColor="rgba(239, 247, 225, 0.4)"
+                backgroundColor="#f8dc81"
+                popover={<Text style={styles.popoverText}>{status}</Text>}
+              >
+                {status == "pending" && (
+                  <MaterialIcons
+                    style={styles.statusIcon}
+                    name="pending-actions"
+                    size={25}
+                    color="#f8dc81"
+                  />
+                )}
+                {status == "declined" && (
+                  <MaterialIcons
+                    style={styles.statusIcon}
+                    name="event-busy"
+                    size={25}
+                    color="#e02e49"
+                  />
+                )}
+
+                {status == "accepted" && (
+                  <MaterialCommunityIcons
+                    style={styles.statusIcon}
+                    name="progress-check"
+                    size={25}
+                    color="#2c6e8f"
+                  />
+                )}
+
+                {status == "reschedule" && (
+                  <Feather
+                    style={styles.statusIcon}
+                    name="loader"
+                    size={25}
+                    color="#98ded9"
+                  />
+                )}
+
+                {status == "paid" && (
+                  <MaterialCommunityIcons
+                    style={styles.statusIcon}
+                    name="check-circle-outline"
+                    size={25}
+                    color="#214151"
+                  />
+                )}
+                {status == "done" && (
+                  <Ionicons
+                    style={styles.statusIcon}
+                    name="ios-checkmark-done-circle-outline"
+                    size={25}
+                    color="#a0d3c5"
+                  />
+                )}
+              </Tooltip>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              paddingVertical: 10,
+              paddingHorizontal: 10,
+
+              borderColor: "#214151",
+            }}
+          >
+            <ListItem.Subtitle style={styles.date}>
+              <Ionicons
+                name="ios-calendar"
+                size={15}
+                color="#839b97"
+                style={{ marginRight: 5, marginTop: 5 }}
+              />
+              {/* {date
               ? formatISO9075(Date.parse(date), { representation: "date" })
               : null} */}
-            {date}
-          </ListItem.Subtitle>
-          <ListItem.Subtitle style={[styles.date, { marginLeft: 20 }]}>
-            <MaterialCommunityIcons
-              name="clock-time-three"
-              size={15}
-              color="#839b97"
-              style={{ marginRight: 5 }}
-            />
-            {/* {startTime
+              {date}
+            </ListItem.Subtitle>
+            <ListItem.Subtitle style={[styles.date, { marginLeft: 20 }]}>
+              <MaterialCommunityIcons
+                name="clock-time-three"
+                size={15}
+                color="#839b97"
+                style={{ marginRight: 5 }}
+              />
+              {/* {startTime
               ? formatISO9075(Date.parse(startTime), {
                   representation: "time",
                 }).slice(0, 5)
@@ -189,9 +206,10 @@ const DashboardList = ({
                 }).slice(0, 5)
               : null}{" "}
             {parseInt(endTime.slice(0, 2)) / 12 >= 1 ? "pm" : "am"} */}
-            {startTime} - {endTime}
-          </ListItem.Subtitle>
-        </View>
+              {startTime} - {endTime}
+            </ListItem.Subtitle>
+          </View>
+        </Animated.View>
       </ListItem.Content>
       <DashboardOverlay
         consultationId={consultationId}
@@ -214,6 +232,9 @@ const DashboardList = ({
         customer={customer}
         agencyId={agencyId}
         agencyName={agencyName}
+        deleteConsultation={deleteConsultation}
+        mainIndex={mainIndex}
+        setMainIndex={setMainIndex}
       />
       <DeleteConfirm
         modalVisible={modalVisible}

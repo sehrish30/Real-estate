@@ -261,7 +261,7 @@ export async function markPayedConsultation(data, token) {
   }
 }
 
-export async function deleteConsultation(id, token) {
+export async function deleteConsultationService(id, token) {
   try {
     const res = await axios.delete(
       `${baseURL}consultations/delete-consultation/${id}`,

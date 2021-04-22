@@ -14,7 +14,6 @@ import {
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
-
 import { useSelector, useDispatch } from "react-redux";
 import { Icon } from "react-native-elements";
 

@@ -1,13 +1,23 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Dimensions, Animated } from "react-native";
-import { Overlay, Button, Avatar } from "react-native-elements";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Animated,
+  LayoutAnimation,
+  UIManager,
+} from "react-native";
+import { Overlay, Button, Avatar, Platform } from "react-native-elements";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { markPayedConsultation } from "../../Shared/Services/NotificationServices";
 import { useSelector, useDispatch } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import * as notifyActions from "../../Redux/Actions/consultation";
-
+import Agree from "../Modals/Agree";
+import { deleteConsultationService } from "../../Shared/Services/NotificationServices";
 let { width, height } = Dimensions.get("screen");
+
 const DashboardOverlay = ({
   consultationId,
   visible,
@@ -22,18 +32,54 @@ const DashboardOverlay = ({
   animatedValue,
   setModalVisible,
   status,
-
+  deleteConsultation,
   setPriceVisible,
   navigation,
   title,
   customer,
   agencyId,
   agencyName,
+  mainIndex,
+  setMainIndex,
 }) => {
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
   let socket = useSelector((state) => state.chat.socket);
+  let consultations = useSelector((state) => state.consultation.consultations);
   let dispatch = useDispatch();
+
+  const deleteAction = async () => {
+    const res = await deleteConsultationService(consultationId, token);
+    if (true) {
+      setModalVisibleConfirm(false);
+      toggleOverlay();
+      setMainIndex(consultationId);
+
+      Animated.timing(deleteConsultation, {
+        toValue: { x: 500, y: -100 },
+        duration: 500,
+        useNativeDriver: true,
+      }).start(() => {
+        dispatch(notifyActions.deleteConsultation({ id: consultationId }));
+        LayoutAnimation.spring();
+        Animated.timing(deleteConsultation, {
+          toValue: { x: 0, y: 0 },
+          duration: 500,
+          useNativeDriver: true,
+        }).start(() => {
+          LayoutAnimation.spring();
+          setMainIndex("");
+        });
+      });
+
+      socket.emit("deleteConsultation", {
+        agencyId,
+        id: consultationId,
+      });
+    }
+  };
+
+  const [modalVisibleConfirm, setModalVisibleConfirm] = useState(false);
   return (
     <Overlay
       overlayStyle={{ width: width, borderRadius: 10 }}
@@ -267,19 +313,19 @@ const DashboardOverlay = ({
             // buttonStyle={styles.accept}
             containerStyle={{ marginLeft: "auto" }}
             onPress={async () => {
-              toggleOverlay();
-              const res = await deleteConsultation(consultationId, token);
-              if (res) {
-                notifyActions.deleteConsultation({ id: consultationId });
-                socket.emit("deleteConsultation", {
-                  agencyId,
-                  id: consultationId,
-                });
-              }
+              setModalVisibleConfirm(true);
             }}
           />
         )}
       </Animated.ScrollView>
+      <Agree
+        modalVisible={modalVisibleConfirm}
+        setModalVisible={setModalVisibleConfirm}
+        msg="Are you sure you want to delete this consultation request?"
+        cancelbtn="Yes, delete"
+        yesbtn="Nope"
+        deleteAction={deleteAction}
+      />
     </Overlay>
   );
 };
