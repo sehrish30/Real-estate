@@ -4,6 +4,7 @@ import {
   DECLINE_CONSULTATION,
   UPDATE,
   NOTIFY,
+  DELETE_CONSULTATION,
 } from "../constants";
 
 const initialState = {
@@ -35,6 +36,15 @@ const consultation = (state = initialState, action) => {
         }
         return cons;
       });
+      return {
+        ...state,
+        consultations: consultationsCopy,
+      };
+    case DELETE_CONSULTATION:
+      console.error("PAYLOAD", payload);
+      consultationsCopy = state.consultations.filter(
+        (cons) => cons.id != payload.id
+      );
       return {
         ...state,
         consultations: consultationsCopy,

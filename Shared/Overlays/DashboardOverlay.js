@@ -140,20 +140,20 @@ const DashboardOverlay = ({
             </View>
           </View>
           <View style={{ paddingHorizontal: 5 }}>
-            {customerMessage && (
+            {customerMessage ? (
               <>
                 <Text style={styles.message}>Customer's Message</Text>
                 <Text style={{ color: "#214151" }}>{customerMessage}</Text>
               </>
-            )}
-            {agencyMessage && (
+            ) : null}
+            {agencyMessage ? (
               <>
                 <Text style={[styles.message, { marginTop: 10 }]}>
                   Agency's Response
                 </Text>
                 <Text style={{ color: "#214151" }}>{agencyMessage}</Text>
               </>
-            )}
+            ) : null}
           </View>
           <View style={styles.timesent}>
             <Text style={styles.time}>{timesent}</Text>
@@ -238,6 +238,43 @@ const DashboardOverlay = ({
                     status: "paid",
                   })
                 );
+              }
+            }}
+          />
+        )}
+
+        {status == "reschedule" && !agency?.id && (
+          <Button
+            titleStyle={styles.font}
+            raised={true}
+            buttonStyle={styles.accept}
+            containerStyle={styles.acceptbtn}
+            title="Reschedule"
+            onPress={() => {
+              toggleOverlay();
+              navigation.navigate("AgencyDetail", {
+                id: agencyId,
+              });
+            }}
+          />
+        )}
+        {status == "pending" && !agency?.id && (
+          <Button
+            type="clear"
+            icon={<FontAwesome5 name="trash" size={15} color="#D65A50" />}
+            titleStyle={styles.font}
+            raised={true}
+            // buttonStyle={styles.accept}
+            containerStyle={{ marginLeft: "auto" }}
+            onPress={async () => {
+              toggleOverlay();
+              const res = await deleteConsultation(consultationId, token);
+              if (res) {
+                notifyActions.deleteConsultation({ id: consultationId });
+                socket.emit("deleteConsultation", {
+                  agencyId,
+                  id: consultationId,
+                });
               }
             }}
           />

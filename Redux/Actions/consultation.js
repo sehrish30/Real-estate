@@ -4,6 +4,7 @@ import {
   DECLINE_CONSULTATION,
   UPDATE,
   NOTIFY,
+  DELETE_CONSULTATION,
 } from "../constants";
 
 export const requestConsultation = (payload) => (dispatch) => {
@@ -24,4 +25,8 @@ export const updateConsultations = (data) => (dispatch) => {
 
 export const notification = (data) => (dispatch) => {
   dispatch({ type: NOTIFY, payload: data });
+};
+
+export const deleteConsultation = (payload) => (dispatch) => {
+  dispatch({ type: DELETE_CONSULTATION, payload });
 };

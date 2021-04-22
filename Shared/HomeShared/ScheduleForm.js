@@ -76,7 +76,6 @@ const ScheduleForm = ({
     if (
       checkProceed() &&
       Object.keys(errors).length > 3 &&
-      date &&
       startTime &&
       endTime &&
       email &&

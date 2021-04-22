@@ -268,6 +268,18 @@ const SocketServer = (server) => {
     });
 
     /*-----------------------------------------
+          CONSULTATION DELETED
+      ---------------------------------------- */
+    socket.on("deleteConsultation", async (data) => {
+      console.log(data, "DELETE", users.has(data.agencyId));
+      if (users.has(data.agencyId)) {
+        users.get(data.agencyId).sockets.forEach((socket) => {
+          io.to(socket).emit("deleteConsultation", data);
+        });
+      }
+    });
+
+    /*-----------------------------------------
              User Disconnected
     ---------------------------------------- */
 

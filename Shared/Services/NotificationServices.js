@@ -260,3 +260,23 @@ export async function markPayedConsultation(data, token) {
     console.log(err);
   }
 }
+
+export async function deleteConsultation(id, token) {
+  try {
+    const res = await axios.delete(
+      `${baseURL}consultations/delete-consultation/${id}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}

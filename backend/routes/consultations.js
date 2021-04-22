@@ -419,4 +419,27 @@ router.put("/done-consultation-request", async (req, res) => {
   }
 });
 
+router.delete("/delete-consultation/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    Consultation.findOneAndDelete(
+      {
+        _id: req.params.id,
+        status: "pending",
+      },
+      (err, data) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
+        if (data) {
+          return res.status(200).send(true);
+        }
+        return res.status(200).send(false);
+      }
+    );
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = router;

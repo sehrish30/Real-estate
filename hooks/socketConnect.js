@@ -83,5 +83,9 @@ export function useSocket(user, dispatch) {
     dispatch(notifyActions.notification(data));
   });
 
+  socket.on("deleteConsultation", (data) => {
+    dispatch(notifyActions.deleteConsultation(data));
+  });
+
   socket.connect;
 }
