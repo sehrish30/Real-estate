@@ -421,7 +421,6 @@ router.put("/done-consultation-request", async (req, res) => {
 
 router.delete("/delete-consultation/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     Consultation.findOneAndDelete(
       {
         _id: req.params.id,
@@ -439,6 +438,82 @@ router.delete("/delete-consultation/:id", async (req, res) => {
     );
   } catch (err) {
     return res.status(500).send(err);
+  }
+});
+
+router.get("/statistics-report/customer", async (req, res) => {
+  try {
+    const res1 = Consultation.countDocuments({
+      status: "pending",
+      customer: req.query.userId,
+    });
+    const res2 = Consultation.countDocuments({
+      status: "reschedule",
+      customer: req.query.userId,
+    });
+    const res3 = Consultation.countDocuments({
+      status: "paid",
+      customer: req.query.userId,
+    });
+    const res4 = Consultation.countDocuments({
+      status: "declined",
+      customer: req.query.userId,
+    });
+    const res5 = Consultation.countDocuments({
+      status: "accepted",
+      customer: req.query.userId,
+    });
+    const [
+      totalPending,
+      reschedule,
+      paid,
+      declined,
+      accepted,
+    ] = await Promise.all([res1, res2, res3, res4, res5]);
+    console.log("GOING");
+    return res
+      .status(200)
+      .json({ totalPending, reschedule, paid, declined, accepted });
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+router.get("/statistics-report/agency", async (req, res) => {
+  try {
+    const res1 = Consultation.countDocuments({
+      status: "pending",
+      agency: req.query.userId,
+    });
+    const res2 = Consultation.countDocuments({
+      status: "reschedule",
+      agency: req.query.userId,
+    });
+    const res3 = Consultation.countDocuments({
+      status: "paid",
+      agency: req.query.userId,
+    });
+    const res4 = Consultation.countDocuments({
+      status: "declined",
+      agency: req.query.userId,
+    });
+    const res5 = Consultation.countDocuments({
+      status: "accepted",
+      agency: req.query.userId,
+    });
+    const [
+      totalPending,
+      reschedule,
+      paid,
+      declined,
+      accepted,
+    ] = await Promise.all([res1, res2, res3, res4, res5]);
+    console.log("GOING");
+    return res
+      .status(200)
+      .json({ totalPending, reschedule, paid, declined, accepted });
+  } catch (err) {
+    return res.status(500).json(err);
   }
 });
 
