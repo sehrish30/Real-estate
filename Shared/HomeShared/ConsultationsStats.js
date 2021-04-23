@@ -1,26 +1,36 @@
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import { Text, Badge } from "react-native-elements";
-import { VictoryPie } from "victory-native";
+import { VictoryPie, VictoryLabel } from "victory-native";
 
-const ConsultationsStats = ({ graphicData, graphicColor }) => {
+let { width } = Dimensions.get("screen");
+const ConsultationsStats = ({ graphicData, endAngle }) => {
   return (
     <View>
       <Text h4 h4Style={{ color: "#214151" }}>
         Consultation Requests
       </Text>
       <VictoryPie
+        style={{
+          data: {
+            fill: ({ datum }) => datum.fill,
+          },
+        }}
+        padAngle={({ datum }) => datum.y}
+        innerRadius={100}
+        labelComponent={<VictoryLabel angle={45} />}
         animate={{ easing: "exp" }}
         data={graphicData}
         width={250}
         height={250}
-        colorScale={graphicColor}
+        // colorScale={graphicColor}
         innerRadius={50}
         orientation="top"
         pointerLength={0}
         cornerRadius={4}
+        endAngle={endAngle}
       />
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", marginTop: 10 }}>
         <Badge
           value="pending"
           badgeStyle={[{ backgroundColor: "#faeda5" }, styles.badge]}

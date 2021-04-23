@@ -280,3 +280,50 @@ export async function deleteConsultationService(id, token) {
     console.log(err);
   }
 }
+
+export async function getConsultationStatsForCustomer(userId, token) {
+  try {
+    const res = await axios.get(
+      `${baseURL}consultations/statistics-report/customer`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function getConsultationStatsForAgency(userId, token) {
+  try {
+    const res = await axios.get(
+      `${baseURL}consultations/statistics-report/agency`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      console.log("SENDING", res.data);
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}

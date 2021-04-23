@@ -463,17 +463,17 @@ router.get("/statistics-report/customer", async (req, res) => {
       status: "accepted",
       customer: req.query.userId,
     });
-    const [
-      totalPending,
-      reschedule,
-      paid,
-      declined,
-      accepted,
-    ] = await Promise.all([res1, res2, res3, res4, res5]);
-    console.log("GOING");
+    const [pending, reschedule, paid, declined, accepted] = await Promise.all([
+      res1,
+      res2,
+      res3,
+      res4,
+      res5,
+    ]);
+
     return res
       .status(200)
-      .json({ totalPending, reschedule, paid, declined, accepted });
+      .json({ pending, reschedule, paid, declined, accepted });
   } catch (err) {
     return res.status(500).json(err);
   }
@@ -501,17 +501,17 @@ router.get("/statistics-report/agency", async (req, res) => {
       status: "accepted",
       agency: req.query.userId,
     });
-    const [
-      totalPending,
-      reschedule,
-      paid,
-      declined,
-      accepted,
-    ] = await Promise.all([res1, res2, res3, res4, res5]);
-    console.log("GOING");
+    const [pending, reschedule, paid, declined, accepted] = await Promise.all([
+      res1,
+      res2,
+      res3,
+      res4,
+      res5,
+    ]);
+
     return res
       .status(200)
-      .json({ totalPending, reschedule, paid, declined, accepted });
+      .json({ pending, reschedule, paid, declined, accepted });
   } catch (err) {
     return res.status(500).json(err);
   }
