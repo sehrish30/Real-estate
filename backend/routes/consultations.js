@@ -152,6 +152,7 @@ router.post("/customer-requesting-consultation", async (req, res) => {
         customer,
         agency,
         consultationId: consultation._id,
+        receiver: agency,
         content: `${email} wants to schedule ${meetingType} meeting with you`,
       });
 
@@ -209,6 +210,7 @@ router.put("/decline-consultation-request", async (req, res) => {
             customer: req.body.customer,
             agency: req.body.agencyId,
             consultationId: consultation._id,
+            receiver: req.body.customer,
             content: `${req.body.agencyName} has declined your consultation request`,
           });
 
@@ -257,6 +259,7 @@ router.put("/accept-consultation-request", async (req, res) => {
             customer: req.body.customer,
             agency: req.body.agencyId,
             consultationId: consultation._id,
+            receiver: req.body.customer,
             content: `${req.body.agencyName} has accepted your consultation request`,
           });
 
@@ -309,6 +312,7 @@ router.put("/reschedule-consultation-request", async (req, res) => {
             customer: req.body.customer,
             agency: req.body.agencyId,
             consultationId: consultation._id,
+            receiver: req.body.customer,
             content: `${req.body.agencyName} has requested to reschedule your consultation request from ${consultation.startTime} to ${consultation.endTime}`,
           });
 
@@ -359,6 +363,7 @@ router.put("/paid-consultation-request", async (req, res) => {
             customer: req.body.customer,
             agency: req.body.agencyId,
             consultationId: consultation._id,
+            receiver: req.body.customer,
             content: `Amazing! Your consultation session is finalized by ${req.body.agencyName} from ${consultation.startTime} to ${consultation.endTime}`,
           });
 
@@ -419,6 +424,10 @@ router.put("/done-consultation-request", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+         DELETE CONSULTATION
+----------------------------------------- */
+
 router.delete("/delete-consultation/:id", async (req, res) => {
   try {
     Consultation.findOneAndDelete(
@@ -441,6 +450,9 @@ router.delete("/delete-consultation/:id", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+  CONSULTATION STATS FOR CUSTOMERS
+----------------------------------------- */
 router.get("/statistics-report/customer", async (req, res) => {
   try {
     const res1 = Consultation.countDocuments({
@@ -479,6 +491,9 @@ router.get("/statistics-report/customer", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+  CONSULTATION STATS FOR AGENCIES
+----------------------------------------- */
 router.get("/statistics-report/agency", async (req, res) => {
   try {
     const res1 = Consultation.countDocuments({

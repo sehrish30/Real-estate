@@ -5,6 +5,7 @@ import {
   UPDATE,
   NOTIFY,
   DELETE_CONSULTATION,
+  STORE_NOTIFICATIONS,
 } from "../constants";
 
 export const requestConsultation = (payload) => (dispatch) => {
@@ -29,4 +30,8 @@ export const notification = (data) => (dispatch) => {
 
 export const deleteConsultation = (payload) => (dispatch) => {
   dispatch({ type: DELETE_CONSULTATION, payload });
+};
+
+export const storeAllNotifications = (payload) => (dispatch) => {
+  dispatch({ type: STORE_NOTIFICATIONS, payload });
 };

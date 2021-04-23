@@ -23,6 +23,7 @@ import { useSocket } from "../../hooks/socketConnect";
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
   const showNewNotification = useSelector((state) => state.consultation.new);
+  const tokenAvailable = useSelector((state) => state.auth.token);
 
   /*--------------------------------------
              ENDPOINT
@@ -111,25 +112,27 @@ const Home = ({ navigation }) => {
           }}
           leftComponent={
             <View style={styles.rightNav}>
-              <TouchableOpacity style={styles.menu} onPress={showMenu}>
-                <Icon
-                  name="notifications"
-                  color={"#214151"}
-                  size={30}
-                  onPress={() => {
-                    navigation.navigate("Notifications");
-                  }}
-                />
-                {showNewNotification && (
-                  <Badge
-                    badgeStyle={{
-                      marginLeft: 10,
-                      top: -33,
+              {tokenAvailable ? (
+                <TouchableOpacity style={styles.menu} onPress={showMenu}>
+                  <Icon
+                    name="notifications"
+                    color={"#214151"}
+                    size={30}
+                    onPress={() => {
+                      navigation.navigate("Notifications");
                     }}
-                    status="warning"
                   />
-                )}
-              </TouchableOpacity>
+                  {showNewNotification && (
+                    <Badge
+                      badgeStyle={{
+                        marginLeft: 10,
+                        top: -33,
+                      }}
+                      status="warning"
+                    />
+                  )}
+                </TouchableOpacity>
+              ) : null}
               <TouchableOpacity
                 style={styles.menu}
                 onPress={() => {

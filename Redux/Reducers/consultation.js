@@ -5,6 +5,7 @@ import {
   UPDATE,
   NOTIFY,
   DELETE_CONSULTATION,
+  STORE_NOTIFICATIONS,
 } from "../constants";
 
 const initialState = {
@@ -58,6 +59,11 @@ const consultation = (state = initialState, action) => {
         ...state,
         notifications: [payload, ...state.notifications],
         new: true,
+      };
+    case STORE_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: payload,
       };
     default:
       return state;

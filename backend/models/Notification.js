@@ -26,6 +26,9 @@ const notificationSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Consultation",
     },
+    receiver: {
+      type: Schema.Types.ObjectId,
+    },
   },
   {
     timestamps: true,

@@ -7,10 +7,11 @@ import NotificationsOverlay from "../Overlays/NotificationsOverlay";
 
 const NotificationCard = ({
   navigation,
-  notificationContent,
+  content,
   author,
   dp,
   time,
+  isSeen,
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -49,7 +50,7 @@ const NotificationCard = ({
               {author}{" "}
             </Text>
 
-            {notificationContent}
+            {content}
           </ListItem.Title>
           <ListItem.Subtitle
             style={{ color: "#839b97", fontSize: 10, marginTop: 5 }}
@@ -58,17 +59,19 @@ const NotificationCard = ({
           </ListItem.Subtitle>
         </ListItem.Content>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Badge
-            value="New"
-            badgeStyle={{
-              backgroundColor: "#f8dc81",
-              paddingVertical: 10,
-            }}
-            containerStyle={{
-              borderRadius: 100,
-            }}
-            textStyle={{ color: "#214151" }}
-          />
+          {!isSeen && (
+            <Badge
+              value="New"
+              badgeStyle={{
+                backgroundColor: "#f8dc81",
+                paddingVertical: 10,
+              }}
+              containerStyle={{
+                borderRadius: 100,
+              }}
+              textStyle={{ color: "#214151" }}
+            />
+          )}
         </View>
 
         {/* <ListItem.Chevron color="white" /> */}

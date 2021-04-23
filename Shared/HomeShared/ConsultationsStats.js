@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Dimensions } from "react-native";
 import { Text, Badge } from "react-native-elements";
-import { VictoryPie, VictoryLabel } from "victory-native";
+// import { VictoryPie, VictoryLabel } from "victory-native";
 
 let { width } = Dimensions.get("screen");
 const ConsultationsStats = ({ graphicData, endAngle }) => {
@@ -10,7 +10,7 @@ const ConsultationsStats = ({ graphicData, endAngle }) => {
       <Text h4 h4Style={{ color: "#214151" }}>
         Consultation Requests
       </Text>
-      <VictoryPie
+      {/* <VictoryPie
         style={{
           data: {
             fill: ({ datum }) => datum.fill,
@@ -29,7 +29,7 @@ const ConsultationsStats = ({ graphicData, endAngle }) => {
         pointerLength={0}
         cornerRadius={4}
         endAngle={endAngle}
-      />
+      /> */}
       <View style={{ flexDirection: "row", marginTop: 10 }}>
         <Badge
           value="pending"

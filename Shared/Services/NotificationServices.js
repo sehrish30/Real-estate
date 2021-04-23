@@ -327,3 +327,81 @@ export async function getConsultationStatsForAgency(userId, token) {
     console.log(err);
   }
 }
+
+export async function getAllAgencyNotifications(userId, token) {
+  try {
+    const res = await axios.get(
+      `${baseURL}notifications/agency-notifications`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+}
+
+export async function getAllCustomerNotifications(userId, token) {
+  try {
+    const res = await axios.get(
+      `${baseURL}notifications/customer-notifications`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+}
+
+export async function setAllNotificationsSeenCustomer(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}notifications/seen-notifications/customer`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function setAllNotificationsSeenAgency(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}notifications/seen-notifications/agency`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
