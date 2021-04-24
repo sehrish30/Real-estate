@@ -3,6 +3,7 @@ import React, {
   useState,
   useReducer,
   useCallback,
+  useRef,
 } from "react";
 
 import {
@@ -13,6 +14,7 @@ import {
   FlatList,
   StatusBar,
   RefreshControl,
+  Animated,
 } from "react-native";
 import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
@@ -22,10 +24,11 @@ import {
   userConsultations,
 } from "../../Shared/Services/NotificationServices";
 import * as consultationActions from "../../Redux/Actions/consultation";
-
+import { Feather } from "@expo/vector-icons";
 import DashboardList from "../../Shared/HomeShared/DashboardList";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
 import Loading from "../../Shared/Loading";
+import { Button } from "react-native-elements";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -86,6 +89,7 @@ const Dashboard = ({ navigation }) => {
   // States
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [limit, setLimit] = useState(10);
   let token = useSelector((state) => state.auth.token);
   let userId;
   let user = useSelector((state) => state.auth.user);
@@ -95,7 +99,7 @@ const Dashboard = ({ navigation }) => {
   } else {
     userId = user?.decoded?.userId;
   }
-
+  let scrollViewRef = useRef(null);
   const consultationsStored = useSelector(
     (state) => state.consultation.consultations
   );
@@ -110,7 +114,8 @@ const Dashboard = ({ navigation }) => {
     useCallback(() => {
       if (agency.id) {
         (async () => {
-          let res = await agencyConsultations(userId, token);
+          let res = await agencyConsultations(userId, limit, token);
+
           if (res) {
             setLoading(false);
             // dispatchConsultation({
@@ -128,7 +133,8 @@ const Dashboard = ({ navigation }) => {
         })();
       } else {
         (async () => {
-          let res = await userConsultations(userId, token);
+          let res = await userConsultations(userId, limit, token);
+
           if (res) {
             setLoading(false);
             // dispatchConsultation({
@@ -147,7 +153,7 @@ const Dashboard = ({ navigation }) => {
       return () => {
         // dispatchConsultation({});
       };
-    }, [refreshing])
+    }, [refreshing, limit])
   );
 
   useLayoutEffect(() => {
@@ -224,7 +230,8 @@ const Dashboard = ({ navigation }) => {
       {loading ? (
         <Loading />
       ) : (
-        <FlatList
+        <Animated.FlatList
+          ref={scrollViewRef}
           refreshControl={
             <RefreshControl
               tintColor="#214151"
@@ -237,6 +244,33 @@ const Dashboard = ({ navigation }) => {
           data={consultationsStored}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+        />
+      )}
+
+      {!loading && limit <= consultationsStored.length && (
+        <Button
+          icon={
+            <Feather
+              name="plus"
+              size={15}
+              color="#839b97"
+              style={{ marginRight: 5 }}
+            />
+          }
+          buttonStyle={{ borderColor: "#214151" }}
+          titleStyle={{
+            fontFamily: "EBGaramond-Bold",
+            color: "#839b97",
+          }}
+          title="See more"
+          type="outline"
+          onPress={() => {
+            scrollViewRef.current.scrollToEnd({
+              animated: true,
+              duration: 500,
+            });
+            setLimit(limit + 10);
+          }}
         />
       )}
     </SafeAreaView>

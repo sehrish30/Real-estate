@@ -40,9 +40,8 @@ const DashboardList = ({
   navigation,
 }) => {
   const [visible, setVisible] = useState(false);
-  const animatedValue = useRef(new Animated.Value(0)).current;
 
-  // console.error(customer, agencyId, agencyName, consultationId, "ID");
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   const toggleOverlay = () => {
     setVisible(!visible);

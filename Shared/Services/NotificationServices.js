@@ -54,7 +54,7 @@ export async function consultationRequest(data, token) {
   }
 }
 
-export async function agencyConsultations(agencyId, token) {
+export async function agencyConsultations(agencyId, limit, token) {
   try {
     const res = await axios.get(
       `${baseURL}consultations/agency-consultations/${agencyId}`,
@@ -63,6 +63,9 @@ export async function agencyConsultations(agencyId, token) {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit,
         },
       }
     );
@@ -82,7 +85,7 @@ export async function agencyConsultations(agencyId, token) {
   }
 }
 
-export async function userConsultations(userId, token) {
+export async function userConsultations(userId, limit, token) {
   try {
     const res = await axios.get(
       `${baseURL}consultations/user-consultations/${userId}`,
@@ -91,6 +94,9 @@ export async function userConsultations(userId, token) {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit,
         },
       }
     );

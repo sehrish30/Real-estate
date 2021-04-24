@@ -50,6 +50,7 @@ router.get("/user-consultations/:id", async (req, res) => {
         ],
         options: {
           sort: { updatedAt: -1 },
+          limit: req.query.limit,
         },
       })
 
@@ -92,6 +93,7 @@ router.get("/agency-consultations/:id", async (req, res) => {
         ],
         options: {
           sort: { updatedAt: -1 },
+          limit: req.query.limit,
         },
       })
       .exec((err, consultation) => {
