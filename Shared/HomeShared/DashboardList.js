@@ -17,6 +17,8 @@ import Price from "../Modals/Price";
 
 var { width } = Dimensions.get("screen");
 const DashboardList = ({
+  officeTimingStart,
+  officeTimingEnd,
   title,
   date,
   startTime,
@@ -212,6 +214,8 @@ const DashboardList = ({
         </Animated.View>
       </ListItem.Content>
       <DashboardOverlay
+        officeTimingStart={officeTimingStart}
+        officeTimingEnd={officeTimingEnd}
         consultationId={consultationId}
         consultationType={consultationType}
         dp={dp}

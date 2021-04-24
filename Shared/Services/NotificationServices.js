@@ -261,7 +261,7 @@ export async function markPayedConsultation(data, token) {
   }
 }
 
-export async function deleteConsultationService(id, token) {
+export async function deleteConsultationService(id, agencyId, customer, token) {
   try {
     const res = await axios.delete(
       `${baseURL}consultations/delete-consultation/${id}`,
@@ -270,6 +270,10 @@ export async function deleteConsultationService(id, token) {
           Accept: "application/json",
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+        },
+        params: {
+          customerId: customer,
+          agencyId,
         },
       }
     );
@@ -403,5 +407,45 @@ export async function setAllNotificationsSeenAgency(data, token) {
     );
   } catch (err) {
     console.error(err);
+  }
+}
+export async function getAllNotificationDetails(notificationId, token) {
+  try {
+    const res = await axios.get(`${baseURL}notifications/notification-detail`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        id: notificationId,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function showNotifications(userId, token) {
+  try {
+    const res = await axios.get(`${baseURL}notifications/new-notification`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        userId,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      console.log("RES", res.data);
+      return res.data;
+    }
+  } catch (err) {
+    console.log(err);
   }
 }

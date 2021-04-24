@@ -14,11 +14,9 @@ router.get("/customer-notifications", async (req, res) => {
         {
           path: "agency",
           select: "name logo",
-          options: {
-            sort: { createdAt: -1 },
-          },
         },
       ])
+      .sort({ createdAt: -1 })
       .exec((err, result) => {
         if (err) {
           return res.status(401).send(err);
@@ -40,14 +38,15 @@ router.get("/agency-notifications", async (req, res) => {
         {
           path: "customer",
           select: "email dp",
-          options: {
-            sort: { createdAt: -1 },
-          },
+          // options: {
+          //   sort: { createdAt: -1 },
+          // },
         },
         // {
         //   path: "consultationId",
         // },
       ])
+      .sort({ createdAt: -1 })
       .exec((err, result) => {
         if (err) {
           return res.status(401).send(err);
@@ -95,6 +94,51 @@ router.put("/seen-notifications/agency", async (req, res) => {
     return res.status(200).json(data.nModified);
   } catch (err) {
     return res.status(500).json(err);
+  }
+});
+
+/*----------------------------------------
+  NOTIFICATIONS DETAILS
+----------------------------------------- */
+router.get("/notification-detail", async (req, res) => {
+  try {
+    const data = await Notification.findById(req.query.id).populate([
+      {
+        path: "customer",
+        select: "dp email",
+      },
+      {
+        path: "agency",
+        select: "name logo",
+      },
+      {
+        path: "consultationId",
+      },
+    ]);
+
+    return res.status(200).send(data);
+  } catch (err) {
+    return res.status(500).json(err);
+  }
+});
+
+/*----------------------------------------
+         NEW NOTIFICATION
+----------------------------------------- */
+router.get(`/new-notification`, async (req, res) => {
+  try {
+    await Notification.countDocuments({
+      receiver: req.query.userId,
+      isSeen: false,
+    }).exec((err, result) => {
+      if (err) {
+        return res.status(401).json(err);
+      }
+      console.log("RESULT", result);
+      return res.status(200).json(result);
+    });
+  } catch (err) {
+    console.error(err);
   }
 });
 

@@ -35,6 +35,8 @@ const initialState = {
 var { width, height } = Dimensions.get("screen");
 
 const Item = ({
+  officeTimingStart,
+  officeTimingEnd,
   customer,
   agencyId,
   agencyName,
@@ -54,6 +56,8 @@ const Item = ({
   navigation,
 }) => (
   <DashboardList
+    officeTimingStart={officeTimingStart}
+    officeTimingEnd={officeTimingEnd}
     navigation={navigation}
     customer={customer}
     agencyId={agencyId}
@@ -191,6 +195,8 @@ const Dashboard = ({ navigation }) => {
     }
     return (
       <Item
+        officeTimingStart={item.agency.officeTimingStart}
+        officeTimingEnd={item.agency.officeTimingEnd}
         customer={item.customer.id}
         agencyId={item.agency.id}
         agencyName={item.agency?.name}

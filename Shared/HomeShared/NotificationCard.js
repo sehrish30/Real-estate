@@ -1,11 +1,19 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import { StyleSheet, Text, View, Animated } from "react-native";
 import { Avatar, ListItem, Badge, Overlay } from "react-native-elements";
 import { LinearGradient } from "expo-linear-gradient";
 // import TouchableScale from "react-native-touchable-scale";
 import NotificationsOverlay from "../Overlays/NotificationsOverlay";
+import { formatISO9075, formatDistanceToNow } from "date-fns";
+import { useSelector } from "react-redux";
+import { getAllNotificationDetails } from "../../Shared/Services/NotificationServices";
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  details: {},
+};
 
 const NotificationCard = ({
+  id,
   navigation,
   content,
   author,
@@ -14,10 +22,19 @@ const NotificationCard = ({
   isSeen,
 }) => {
   const [visible, setVisible] = useState(false);
+  const [{ details }, dispatch] = useReducer(reducer, initialState);
 
+  let token = useSelector((state) => state.auth.token);
   const toggleOverlay = () => {
-    setVisible(!visible);
+    (async () => {
+      const data = await getAllNotificationDetails(id, token);
+      if (data) {
+        dispatch({ details: data });
+        setVisible(!visible);
+      }
+    })();
   };
+
   return (
     <View style={[styles.card]}>
       <ListItem
@@ -55,7 +72,7 @@ const NotificationCard = ({
           <ListItem.Subtitle
             style={{ color: "#839b97", fontSize: 10, marginTop: 5 }}
           >
-            {time}
+            {formatDistanceToNow(Date.parse(time), { includeSeconds: true })}
           </ListItem.Subtitle>
         </ListItem.Content>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -81,6 +98,7 @@ const NotificationCard = ({
           navigation={navigation}
           visible={visible}
           toggleOverlay={toggleOverlay}
+          details={details}
         />
       )}
     </View>

@@ -6,6 +6,7 @@ import {
   NOTIFY,
   DELETE_CONSULTATION,
   STORE_NOTIFICATIONS,
+  SEEN_ALL_NOTIFY,
 } from "../constants";
 
 const initialState = {
@@ -20,7 +21,7 @@ const consultation = (state = initialState, action) => {
     case REQUEST_CONSULTATION:
       return {
         ...state,
-        notifications: [payload, ...state.notifications],
+        // notifications: [payload, ...state.notifications],
         new: true,
       };
     case STORE_ALL_CONSULTATIONS:
@@ -51,19 +52,24 @@ const consultation = (state = initialState, action) => {
     case DECLINE_CONSULTATION:
       return {
         ...state,
-        notifications: [payload, ...state.notifications],
+        // notifications: [payload, ...state.notifications],
         new: true,
       };
     case NOTIFY:
       return {
         ...state,
-        notifications: [payload, ...state.notifications],
+        // notifications: [payload, ...state.notifications],
         new: true,
       };
     case STORE_NOTIFICATIONS:
       return {
         ...state,
         notifications: payload,
+      };
+    case SEEN_ALL_NOTIFY:
+      return {
+        ...state,
+        new: false,
       };
     default:
       return state;

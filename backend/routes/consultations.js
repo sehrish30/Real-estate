@@ -41,7 +41,7 @@ router.get("/user-consultations/:id", async (req, res) => {
         populate: [
           {
             path: "agency",
-            select: "name logo",
+            select: "name logo officeTimingStart officeTimingEnd",
           },
           {
             path: "customer",
@@ -83,7 +83,7 @@ router.get("/agency-consultations/:id", async (req, res) => {
         populate: [
           {
             path: "agency",
-            select: "name logo",
+            select: "name logo officeTimingStart officeTimingEnd",
           },
           {
             path: "customer",
@@ -153,6 +153,7 @@ router.post("/customer-requesting-consultation", async (req, res) => {
         agency,
         consultationId: consultation._id,
         receiver: agency,
+        timesent: new Date().toISOString(),
         content: `${email} wants to schedule ${meetingType} meeting with you`,
       });
 
@@ -211,6 +212,7 @@ router.put("/decline-consultation-request", async (req, res) => {
             agency: req.body.agencyId,
             consultationId: consultation._id,
             receiver: req.body.customer,
+            timesent: new Date().toISOString(),
             content: `${req.body.agencyName} has declined your consultation request`,
           });
 
@@ -260,6 +262,7 @@ router.put("/accept-consultation-request", async (req, res) => {
             agency: req.body.agencyId,
             consultationId: consultation._id,
             receiver: req.body.customer,
+            timesent: new Date().toISOString(),
             content: `${req.body.agencyName} has accepted your consultation request`,
           });
 
@@ -313,6 +316,7 @@ router.put("/reschedule-consultation-request", async (req, res) => {
             agency: req.body.agencyId,
             consultationId: consultation._id,
             receiver: req.body.customer,
+            timesent: new Date().toISOString(),
             content: `${req.body.agencyName} has requested to reschedule your consultation request from ${consultation.startTime} to ${consultation.endTime}`,
           });
 
@@ -364,6 +368,7 @@ router.put("/paid-consultation-request", async (req, res) => {
             agency: req.body.agencyId,
             consultationId: consultation._id,
             receiver: req.body.customer,
+            timesent: new Date().toISOString(),
             content: `Amazing! Your consultation session is finalized by ${req.body.agencyName} from ${consultation.startTime} to ${consultation.endTime}`,
           });
 
@@ -430,6 +435,30 @@ router.put("/done-consultation-request", async (req, res) => {
 
 router.delete("/delete-consultation/:id", async (req, res) => {
   try {
+    Agency.findByIdAndUpdate(
+      req.query.agencyId,
+      {
+        $pull: { consultations: req.params.id },
+      },
+      { new: true }
+    ).exec((err, result) => {
+      if (err) {
+        console.log("ERRR", err);
+      }
+    });
+
+    User.findByIdAndUpdate(
+      req.query.customerId,
+      {
+        $pull: { consultations: req.params.id },
+      },
+      { new: true }
+    ).exec((err, result) => {
+      if (err) {
+        console.log("ERRR", err);
+      }
+    });
+
     Consultation.findOneAndDelete(
       {
         _id: req.params.id,

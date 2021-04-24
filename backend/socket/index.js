@@ -259,8 +259,8 @@ const SocketServer = (server) => {
           CONSULTATION REQUEST
       ---------------------------------------- */
     socket.on("notification", async (data) => {
-      console.log(data, "DECLINE NOTIFICATION", users.has(data.customer));
-      if (users.has(data.customer)) {
+      console.log(data, "DECLINE NOTIFICATION", users.has(data.receiver));
+      if (users.has(data.receiver)) {
         users.get(data.customer).sockets.forEach((socket) => {
           io.to(socket).emit("notification", data);
         });

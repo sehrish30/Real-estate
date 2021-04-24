@@ -6,10 +6,11 @@ import {
   NOTIFY,
   DELETE_CONSULTATION,
   STORE_NOTIFICATIONS,
+  SEEN_ALL_NOTIFY,
 } from "../constants";
 
-export const requestConsultation = (payload) => (dispatch) => {
-  dispatch({ type: REQUEST_CONSULTATION, payload });
+export const requestConsultation = () => (dispatch) => {
+  dispatch({ type: REQUEST_CONSULTATION });
 };
 
 export const storeAllConsultations = (payload) => (dispatch) => {
@@ -34,4 +35,8 @@ export const deleteConsultation = (payload) => (dispatch) => {
 
 export const storeAllNotifications = (payload) => (dispatch) => {
   dispatch({ type: STORE_NOTIFICATIONS, payload });
+};
+
+export const seenAllNotifications = () => (dispatch) => {
+  dispatch({ type: SEEN_ALL_NOTIFY });
 };

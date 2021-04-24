@@ -10,7 +10,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import socketIOClient from "socket.io-client";
 import baseURL from "../../assets/common/baseUrl";
 import { Badge } from "react-native-elements";
-
+import { showNotifications } from "../../Shared/Services/NotificationServices";
+import * as notificationConsultation from "../../Redux/Actions/consultation";
 import Icon from "react-native-vector-icons/Ionicons";
 
 // import jwt from "jsonwebtoken";
@@ -85,6 +86,31 @@ const Home = ({ navigation }) => {
             );
 
             useSocket({ user: user.decoded ? user : agency }, dispatch);
+
+            (async () => {
+              if (agency.id) {
+                let data = await showNotifications(agency.id, tokenAvailable);
+                console.error(data);
+                if (data > 0) {
+                  dispatch(notificationConsultation.requestConsultation());
+                }
+              } else {
+                let data = await showNotifications(user.decoded.userId, jwt);
+
+                if (data > 0) {
+                  dispatch(notificationConsultation.requestConsultation());
+                }
+              }
+            })();
+          }
+
+          // Check to show notifications
+          let userId;
+
+          if (agency.id) {
+            userId = agency.id;
+          } else {
+            userId = user.decoded.userId;
           }
         } catch (e) {
           console.error(e);

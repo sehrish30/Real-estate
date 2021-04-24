@@ -55,6 +55,7 @@ const Notifications = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <NotificationCard
+      id={item.id}
       author={item.agency.name || item.customer.email}
       content={item.content}
       dp={item.agency.logo?.url || item.customer.dp}
@@ -73,6 +74,8 @@ const Notifications = ({ navigation }) => {
     });
     let notifications;
     (async () => {
+      console.log("LENGTH", DATA.length);
+
       if (agency.id) {
         notifications = await getAllAgencyNotifications(agency.id, token);
 
@@ -84,6 +87,7 @@ const Notifications = ({ navigation }) => {
         );
         dispatch(notificationsActions.storeAllNotifications(notifications));
       }
+      dispatch(notificationsActions.seenAllNotifications());
     })();
   }, [navigation]);
 

@@ -110,6 +110,7 @@ const ScheduleForm = ({
       const res = await consultationRequest(data, token);
 
       if (res) {
+        console.error(res);
         socket.emit("notifyConsultationRequest", res);
         goBack();
 
@@ -131,7 +132,6 @@ const ScheduleForm = ({
       checkProceed() &&
       Object.keys(errors).length > 0 &&
       email &&
-      date &&
       startTime &&
       endTime
     ) {

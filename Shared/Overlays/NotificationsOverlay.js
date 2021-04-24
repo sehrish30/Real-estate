@@ -9,12 +9,20 @@ import {
 } from "react-native";
 import { Avatar, Overlay, Card, Button } from "react-native-elements";
 import { Entypo, Fontisto } from "@expo/vector-icons";
-
+import { useSelector } from "react-redux";
+import { formatISO9075 } from "date-fns";
 var { width, height } = Dimensions.get("screen");
 
-const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
+const NotificationsOverlay = ({
+  visible,
+  toggleOverlay,
+  navigation,
+  details,
+}) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
+  let agency = useSelector((state) => state.auth.agency);
+  let user = useSelector((state) => state.auth.user);
   return (
     <View>
       <Overlay
@@ -67,13 +75,18 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                 size="medium"
                 rounded
                 source={{
-                  uri:
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+                  uri: agency.id
+                    ? details.customer.dp
+                    : details.agency.logo.url,
                 }}
               />
               <View>
-                <Text style={styles.name}>{"sehrishwaheed98@gmail.com"}</Text>
-                <Text style={styles.name}>{"3585225"}</Text>
+                <Text style={styles.name}>
+                  {agency.id ? details.customer.email : details.agency.name}
+                </Text>
+                <Text style={styles.name}>
+                  {details.consultationId.phoneNumber}
+                </Text>
               </View>
             </View>
 
@@ -94,7 +107,12 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                       { marginVertical: "auto", color: "#214151" },
                     ]}
                   >
-                    23/19/2020
+                    {formatISO9075(
+                      Date.parse(details.consultationId.timesent),
+                      {
+                        representation: "date",
+                      }
+                    )}
                   </Text>
                 </View>
 
@@ -107,17 +125,19 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                     onPress={toggleOverlay}
                   />
                   <Text style={{ color: "#214151" }}>
-                    <Text style={styles.font}> 8:00</Text> AM to
-                    <Text style={styles.font}> 9:00 </Text>
+                    <Text style={styles.font}>
+                      {" "}
+                      {details.consultationId.startTime}
+                    </Text>
+                    <Text style={styles.font}>
+                      {" - "}
+                      {details.consultationId.endTime}{" "}
+                    </Text>
                   </Text>
                 </View>
               </View>
             </View>
-            <Text style={styles.message}>
-              Lorem Epsuum Lorem Epsuum Lorem Epsuum Lorem Epsuum Lorem Epsuum
-              Lorem Epsuum Lorem Epsuum Lorem Epsuum Lorem Epsuum Lorem Epsuum
-              Lorem Epsuum Lorem Epsuum
-            </Text>
+            <Text style={styles.message}>{details.consultationId.content}</Text>
 
             <View style={styles.type}>
               <Fontisto
@@ -136,11 +156,13 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                   },
                 ]}
               >
-                Wants to meet in person
+                {details.consultationId.isVirtual
+                  ? "Virtual Consultation"
+                  : "In person Consultation"}
               </Text>
             </View>
             <View style={styles.cta}>
-              <Button
+              {/* <Button
                 onPress={() => {
                   Alert.alert(
                     "Decline Request",
@@ -177,7 +199,7 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                     toggleOverlay();
                   });
                 }}
-              />
+              /> */}
             </View>
 
             <View style={{ marginTop: 20 }}>
@@ -188,7 +210,7 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                   fontFamily: "EBGaramond-Regular",
                   fontSize: 18,
                 }}
-                title="Want to reschedule?"
+                title="Go to consultations"
                 type="outline"
                 // onPress={() => {
                 //   setShowDetails(false);
@@ -202,9 +224,9 @@ const NotificationsOverlay = ({ visible, toggleOverlay, navigation }) => {
                 // }}
                 onPress={() => {
                   toggleOverlay();
-                  navigation.navigate("ScheduleConsultationForm", {
-                    email: "sehrishwaheed98@gmail.com",
-                    phoneNumber: "36522522",
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Dashboard" }],
                   });
                 }}
               />

@@ -41,6 +41,8 @@ const DashboardOverlay = ({
   agencyName,
   mainIndex,
   setMainIndex,
+  officeTimingEnd,
+  officeTimingStart,
 }) => {
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
@@ -49,8 +51,13 @@ const DashboardOverlay = ({
   let dispatch = useDispatch();
 
   const deleteAction = async () => {
-    const res = await deleteConsultationService(consultationId, token);
-    if (true) {
+    const res = await deleteConsultationService(
+      consultationId,
+      agencyId,
+      customer,
+      token
+    );
+    if (res) {
       setModalVisibleConfirm(false);
       toggleOverlay();
       setMainIndex(consultationId);
@@ -246,6 +253,8 @@ const DashboardOverlay = ({
                   phoneNumber: phoneNumber,
                   customerId: customer,
                   consultationId: consultationId,
+                  startTiming: officeTimingEnd,
+                  endTiming: officeTimingStart,
                 });
               }}
             />
