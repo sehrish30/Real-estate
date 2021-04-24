@@ -141,6 +141,7 @@ const Dashboard = ({ navigation }) => {
             //   consultations: res.consultations,
             //   consultationId: res.id,
             // });
+
             dispatch(
               consultationActions.storeAllConsultations({
                 consultations: res.consultations,
