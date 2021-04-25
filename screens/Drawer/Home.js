@@ -13,6 +13,8 @@ import { Badge } from "react-native-elements";
 import { showNotifications } from "../../Shared/Services/NotificationServices";
 import * as notificationConsultation from "../../Redux/Actions/consultation";
 import Icon from "react-native-vector-icons/Ionicons";
+import NetInfo from "@react-native-community/netinfo";
+import Toast from "react-native-toast-message";
 
 // import jwt from "jsonwebtoken";
 import jwt_decode from "jwt-decode";
@@ -23,6 +25,7 @@ import { useSocket } from "../../hooks/socketConnect";
 
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
+
   const showNewNotification = useSelector((state) => state.consultation.new);
   const tokenAvailable = useSelector((state) => state.auth.token);
 
@@ -56,7 +59,23 @@ const Home = ({ navigation }) => {
     useCallback(() => {
       const time = setTimeout(function () {
         setBootSplashIsVisible(false);
+
+        NetInfo.fetch().then((state) => {
+          console.error("Connection type", state.type);
+          console.error("Is connected?", state.isConnected);
+          if (!state.isConnected) {
+            Toast.show({
+              position: "bottom",
+              type: "info",
+              text1: `No internet connection available`,
+              text2: `Swipe down to remove it`,
+              autoHide: false,
+              topOffset: 100,
+            });
+          }
+        });
       }, 4000);
+
       return () => {
         clearTimeout(time);
       };
@@ -128,6 +147,7 @@ const Home = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {}
       {bootSplashIsVisible ? (
         <Splash bootSplashIsVisible={bootSplashIsVisible} />
       ) : (

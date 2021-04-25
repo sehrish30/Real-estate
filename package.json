@@ -58,7 +58,8 @@
     "redux-thunk": "^2.3.0",
     "socket.io-client": "^4.0.0",
     "victory": "^35.5.1",
-    "victory-native": "^35.3.2"
+    "victory-native": "^35.3.2",
+    "@react-native-community/netinfo": "5.9.7"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0"
