@@ -92,6 +92,7 @@ const AgencyDetail = ({ route, navigation }) => {
           name={profile.name}
           startTiming={profile.officeTimingStart}
           endTiming={profile.officeTimingEnd}
+          isVerified={profile.isVerified}
         />
       )}
     </ScrollView>

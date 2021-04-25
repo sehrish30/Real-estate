@@ -90,6 +90,10 @@ const agencySchema = mongoose.Schema(
     industrial: [mongoose.ObjectId],
     resetToken: String,
     expireToken: Date,
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   {

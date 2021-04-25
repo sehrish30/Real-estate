@@ -9,12 +9,11 @@ import React, {
 import {
   StyleSheet,
   SafeAreaView,
-  TouchableOpacity,
   Dimensions,
-  FlatList,
-  StatusBar,
+  Text,
   RefreshControl,
   Animated,
+  View,
 } from "react-native";
 import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
@@ -28,8 +27,8 @@ import { Feather } from "@expo/vector-icons";
 import DashboardList from "../../Shared/HomeShared/DashboardList";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
 import Loading from "../../Shared/Loading";
-import { Button } from "react-native-elements";
-
+import { Button, Image } from "react-native-elements";
+let noConsultation = require("../../assets/meeting.png");
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
   consultation: {},
@@ -200,10 +199,10 @@ const Dashboard = ({ navigation }) => {
     }
     return (
       <Item
-        officeTimingStart={item.agency.officeTimingStart}
-        officeTimingEnd={item.agency.officeTimingEnd}
+        officeTimingStart={item.agency?.officeTimingStart || "-"}
+        officeTimingEnd={item.agency?.officeTimingEnd || "-"}
         customer={item.customer.id}
-        agencyId={item.agency.id}
+        agencyId={item.agency?.id}
         agencyName={item.agency?.name}
         title={item.title}
         date={item.date}
@@ -229,21 +228,47 @@ const Dashboard = ({ navigation }) => {
       {loading ? (
         <Loading />
       ) : (
-        <Animated.FlatList
-          ref={scrollViewRef}
-          refreshControl={
-            <RefreshControl
-              tintColor="#214151"
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              title="Refresh"
-              titleColor="#214151"
+        <>
+          {consultationsStored.length < 1 && !loading ? (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: height / 5,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "EBGaramond-Bold",
+                  color: "#214151",
+                  fontSize: 20,
+                }}
+              >
+                No consultations yet
+              </Text>
+              <Image
+                source={noConsultation}
+                style={{ width: width, height: 200 }}
+              />
+            </View>
+          ) : (
+            <Animated.FlatList
+              ref={scrollViewRef}
+              refreshControl={
+                <RefreshControl
+                  tintColor="#214151"
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  title="Refresh"
+                  titleColor="#214151"
+                />
+              }
+              data={consultationsStored}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
             />
-          }
-          data={consultationsStored}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
+          )}
+        </>
       )}
 
       {!loading && limit <= consultationsStored.length && (

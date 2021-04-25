@@ -280,6 +280,7 @@ const RegisterAgent = ({ navigation }) => {
         />
         <ScrollView contentContainerStyle={styles.form}>
           <Input
+            inputStyle={{ color: "#214151" }}
             label="Name"
             labelStyle={[styles.font, { color: "#a2d0c1" }]}
             leftIcon={<Icon name="people" size={24} color="#f8dc81" />}
@@ -287,6 +288,7 @@ const RegisterAgent = ({ navigation }) => {
             value={name}
           />
           <Input
+            inputStyle={{ color: "#214151" }}
             labelStyle={[styles.font, { color: "#a2d0c1" }]}
             label="Email"
             leftIcon={<MaterialIcon name="email" size={24} color="#f8dc81" />}
@@ -294,6 +296,7 @@ const RegisterAgent = ({ navigation }) => {
             value={email}
           />
           <Input
+            inputStyle={{ color: "#214151" }}
             labelStyle={[styles.font, { color: "#a2d0c1" }]}
             label="Phone"
             keyboardType={"numeric"}
@@ -333,9 +336,10 @@ const RegisterAgent = ({ navigation }) => {
           <View style={styles.attachments}>
             <Text
               h4
-              style={[styles.font, { color: "#a2d0c1", marginBottom: 10 }]}
+              style={[styles.font, { color: "#5D746E", marginBottom: 10 }]}
             >
-              You can upload photos of your documents below*
+              Upload photos of documents for registered agencies in Bahrain to
+              have verified Agency account
             </Text>
             <Button
               titleStyle={styles.buttonStyle}

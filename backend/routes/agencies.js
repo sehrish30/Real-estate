@@ -498,6 +498,7 @@ router.put("/approved", async (req, res) => {
             $set: {
               password: passwordHash,
               isApproved: true,
+              isVerified: req.body.isVerified,
               attachments: [],
             },
           }
@@ -505,7 +506,7 @@ router.put("/approved", async (req, res) => {
         )
           .then((result, err) => {
             let mailOptions = {
-              from: process.env.EMAIL,
+              from: process.env.SENDGRI_EMAIL,
               to: req.body.email,
               subject: "Iconic Real Estate ✔",
               template: "agency",
@@ -514,7 +515,7 @@ router.put("/approved", async (req, res) => {
               },
             };
 
-            transporter.sendMail(mailOptions, (err, data) => {
+            sendtransporter.sendMail(mailOptions, (err, data) => {
               if (err) {
                 console.log(err);
                 return res.status(401).send(err);
@@ -794,6 +795,7 @@ router.post("/reset-password", async (req, res) => {
         if (err) {
           return res.status(500).send(err);
         }
+        console.log("SEND", data);
         return res.status(200).send({ code, token });
       });
       console.log(agency.email, "EMAIL");

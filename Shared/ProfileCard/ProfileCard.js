@@ -45,6 +45,7 @@ const ProfileCard = ({
   name,
   startTiming,
   endTiming,
+  isVerified,
   // rating,
   // reviews,
 }) => {
@@ -153,7 +154,20 @@ const ProfileCard = ({
             source={{ uri: logo?.url }}
           />
 
-          <Text style={[styles.font, styles.userText]}>{name}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={[styles.font, styles.userText]}>{name}</Text>
+            {isVerified && (
+              <Image
+                source={require("../../assets/verify.png")}
+                style={{
+                  width: 20,
+                  height: 20,
+                  marginTop: 10,
+                  marginHorizontal: 10,
+                }}
+              />
+            )}
+          </View>
         </View>
         <Card.Divider />
         {bio?.length > 100 && !showFullBio ? (
@@ -272,19 +286,22 @@ const ProfileCard = ({
         </View>
         {customer?.decoded?.userId && id && (
           <>
-            <Button
-              buttonStyle={{ backgroundColor: "#f8dc81" }}
-              titleStyle={{ color: "#214151" }}
-              icon={<EvilIcons name="calendar" size={30} color="#214151" />}
-              title="Schedule Consultation"
-              onPress={() => {
-                navigation.navigate("ScheduleConsultationForm", {
-                  agencyId: id,
-                  startTiming,
-                  endTiming,
-                });
-              }}
-            />
+            {isVerified && (
+              <Button
+                buttonStyle={{ backgroundColor: "#f8dc81" }}
+                titleStyle={{ color: "#214151" }}
+                icon={<EvilIcons name="calendar" size={30} color="#214151" />}
+                title="Schedule Consultation"
+                onPress={() => {
+                  navigation.navigate("ScheduleConsultationForm", {
+                    agencyId: id,
+                    startTiming,
+                    endTiming,
+                  });
+                }}
+              />
+            )}
+
             <Button
               buttonStyle={{ marginVertical: 10, borderColor: "#214151" }}
               titleStyle={{

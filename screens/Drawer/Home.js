@@ -61,8 +61,6 @@ const Home = ({ navigation }) => {
         setBootSplashIsVisible(false);
 
         NetInfo.fetch().then((state) => {
-          console.error("Connection type", state.type);
-          console.error("Is connected?", state.isConnected);
           if (!state.isConnected) {
             Toast.show({
               position: "bottom",
@@ -109,7 +107,7 @@ const Home = ({ navigation }) => {
             (async () => {
               if (agency.id) {
                 let data = await showNotifications(agency.id, tokenAvailable);
-                console.error(data);
+
                 if (data > 0) {
                   dispatch(notificationConsultation.requestConsultation());
                 }

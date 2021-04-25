@@ -3,12 +3,13 @@ import { StyleSheet, Text, View } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { Card, Button, Image, Badge } from "react-native-elements";
+import { Card, Button, Image, Badge, CheckBox } from "react-native-elements";
 
 import ImagesOverlay from "../Overlays/ImagesOverlay";
 
 const AgencyPending = ({ agency, rejectService, acceptService }) => {
   const [visible, setVisible] = useState(false);
+  const [verified, setVerified] = useState(false);
 
   return (
     <Card containerStyle={styles.card}>
@@ -100,6 +101,15 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
       </View>
       <Card.Divider />
       <View style={{ marginTop: 10 }}>
+        <CheckBox
+          containerStyle={{ backgroundColor: "transparent" }}
+          center
+          title="Verify agency"
+          uncheckedColor="#839b97"
+          checked={verified}
+          checkedColor="#214151"
+          onPress={() => setVerified(!verified)}
+        />
         <Button
           icon={
             <FontAwesome5
@@ -119,7 +129,13 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
             color: "#e4fbff",
           }}
           title="Accept"
-          onPress={() => acceptService({ id: agency.id, email: agency.email })}
+          onPress={() =>
+            acceptService({
+              id: agency.id,
+              email: agency.email,
+              isVerified: verified,
+            })
+          }
         />
         <Button
           icon={

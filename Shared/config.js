@@ -57,7 +57,7 @@ export const toastConfig = {
       // text2={null}
     />
   ),
-  success: ({ text1, ...rest }) => (
+  error: ({ text1, ...rest }) => (
     <BaseToast
       {...rest}
       style={{ borderLeftColor: "#e02e49" }}
