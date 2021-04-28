@@ -7,22 +7,27 @@ const propertySchema = mongoose.Schema(
       required: true,
     },
     cost: {
-      type: String,
+      type: Number,
     },
     location: {
-      type: String,
+      type: Object,
     },
-    network: [String],
-    images: [
-      {
-        type: Object,
-        default: {
-          public_id: Date.now,
-          url:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-        },
-      },
-    ],
+    network: [Object],
+    // images: [
+    //   {
+    //     type: Object,
+    //     default: {
+    //       public_id: Date.now,
+    //       url:
+    //         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+    //     },
+    //   },
+    // ],
+    images: {
+      type: [String],
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+    },
     bathrooms: {
       type: Number,
       default: 1,
@@ -51,16 +56,18 @@ const propertySchema = mongoose.Schema(
     area: {
       type: Number,
     },
-    agency: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Agency",
-      required: true,
+    city: {
+      type: String,
     },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    isReported: {
+      type: Boolean,
+      default: false,
     },
-    isReported: false,
+    // agency: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Agency",
+    //   required: true,
+    // },
   },
   {
     timestamps: true,
