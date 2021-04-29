@@ -279,27 +279,28 @@ router.post("/check-code", async (req, res) => {
         SEARCH USER BY ID
 ----------------------------------------- */
 
-router.get("/:id", async (req, res) => {
+router.get("/getuser", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select("-password");
+    console.log("USERID", req.query);
+    const user = await User.findById(req.query.userId).select("-password");
     if (!user) {
       return res
         .status(500)
         .json({ message: "The user with the given ID was not found" });
     }
 
-    return res.status(200).send(true);
+    return res.status(200).send(user);
   } catch (e) {
     console.error(e);
   }
 });
 
 /*----------------------------------------
-        GET ALL USERS
+        GET USER details
 ----------------------------------------- */
 router.get(`/`, async (req, res) => {
   try {
-    const userList = await User.find().select("-password");
+    const userList = await User.find(req.params.userId).select("-password");
 
     if (!userList) {
       return res.status(500).json({ success: false });
@@ -364,6 +365,52 @@ router.put(`/change-password`, async (req, res) => {
     });
   } catch (error) {
     res.status(400).send(error);
+  }
+});
+
+/*----------------------------------------
+            ENABLE NOTIFICATION
+----------------------------------------- */
+router.put(`/update-token`, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.body.id,
+      {
+        notificationToken: req.body.pushtoken,
+        enableNotification: true,
+      },
+      { new: true }
+    ).exec((err, result) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    res.status(400).send(err);
+  }
+});
+
+/*----------------------------------------
+            TURN OFF NOTIFICATION
+----------------------------------------- */
+router.put(`/remove-token`, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(
+      req.body.id,
+      {
+        notificationToken: undefined,
+        enableNotification: false,
+      },
+      { new: true }
+    ).exec((err, result) => {
+      if (err) {
+        return res.status(400).send(err);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    res.status(400).send(err);
   }
 });
 

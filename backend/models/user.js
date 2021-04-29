@@ -28,6 +28,11 @@ const userSchema = mongoose.Schema({
 
   resetToken: String,
   expireToken: Date,
+  notificationToken: String,
+  enableNotification: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 userSchema.virtual("id").get(function () {

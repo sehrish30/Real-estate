@@ -265,3 +265,58 @@ export async function changeUserPasswordSrv(data, token) {
     });
   }
 }
+
+export async function updateToken(data, token) {
+  try {
+    const res = axios.put(`${baseURL}users/update-token`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function removeToken(data, token) {
+  try {
+    const res = axios.put(`${baseURL}users/remove-token`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getUserInfo(userId, token) {
+  try {
+    const res = await axios.get(`${baseURL}users/getuser`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        userId,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
