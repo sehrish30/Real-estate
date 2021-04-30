@@ -7,7 +7,7 @@ import React, {
   useCallback,
 } from "react";
 
-import { StyleSheet, ScrollView } from "react-native";
+import { StyleSheet } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { intervalToDuration, formatDuration } from "date-fns";

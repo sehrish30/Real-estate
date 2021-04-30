@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState, useReducer } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,8 +7,9 @@ import {
   Switch,
   View,
   Alert,
+  Modal,
 } from "react-native";
-import { Card } from "react-native-elements";
+import { Card, Button, CheckBox } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
@@ -20,14 +21,23 @@ import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
 import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
+import { Entypo } from "@expo/vector-icons";
+
 import {
   updateToken,
   removeToken,
   getUserInfo,
 } from "../../Shared/Services/AuthServices";
+import SubscribeLocations from "../../Shared/Modals/SubscribeLocations";
 var { height, width } = Dimensions.get("screen");
 
+// Reducer for checked locations
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  locations: [],
+};
 const Profile = ({ navigation }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState("");
   const [isEnabled, setIsEnabled] = useState(false);
@@ -40,6 +50,7 @@ const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
   let token = useSelector((state) => state.auth.token);
   let cuser = useSelector((state) => state.auth.user);
+  const [{ locations }, dispatchLocations] = useReducer(reducer, initialState);
 
   const logout = async () => {
     try {
@@ -126,7 +137,7 @@ const Profile = ({ navigation }) => {
 
       setPushToken(pushtokenCrude.substring(18, 40));
 
-      console.error(pushtokenCrude.substring(18, 40), finalStatus, cuser);
+      // console.error(pushtokenCrude.substring(18, 40), finalStatus, cuser);
       updateToken(
         {
           id: cuser.decoded.userId,
@@ -209,11 +220,36 @@ const Profile = ({ navigation }) => {
           value={isEnabled}
         />
       </View>
+      <Button
+        icon={
+          <Entypo
+            style={{ marginRight: 15 }}
+            name="location"
+            size={15}
+            color="#214151"
+          />
+        }
+        iconLeft
+        title="Subscribe Locations"
+        buttonStyle={styles.subscribe}
+        titleStyle={styles.subscribeText}
+        containerStyle={{ marginTop: 15, marginHorizontal: 10 }}
+        onPress={() => {
+          setModalVisible(!modalVisible);
+        }}
+      />
       <CustomModalPassword
         showPasswordModal={showPasswordModal}
         setShowPasswordModal={setShowPasswordModal}
         userPassword={true}
         userId={userId}
+      />
+
+      <SubscribeLocations
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        dispatchLocations={dispatchLocations}
+        locations={locations}
       />
     </ScrollView>
   );
@@ -255,4 +291,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginRight: 10,
   },
+  subscribe: {
+    backgroundColor: "#f8dc81",
+  },
+  subscribeText: { fontFamily: "EBGaramond-Bold", color: "#214151" },
 });

@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const { Agency } = require("../models/agency");
+const { Expo } = require("expo-server-sdk");
+const { User } = require("../models/user");
+const expo = new Expo();
 
 /*----------------------------------------
       Get all reported properties
@@ -104,4 +107,47 @@ router.put(`/undo-report`, async (req, res) => {
   }
 });
 
+/*----------------------------------------
+     SEND NOTIFICATION
+---------------------------------------- */
+router.get(`/send-notifications`, async (req, res) => {
+  try {
+    User.find({ enableNotification: true }).exec((err, result) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      let message = "New property arrived";
+      for (let user = 0; user < result.length; user++) {
+        const chunks = expo.chunkPushNotifications([
+          {
+            to: result[user].notificationToken,
+            sound: "default",
+            body: message,
+          },
+        ]);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+});
+
+/*----------------------------------------
+     CHOOSE LOCATION
+---------------------------------------- */
+router.post("/choose-location", async (req, res) => {
+  try {
+    User.findByIdAndUpdate(req.body.userId, {
+      locations: req.body.locations,
+    }).exec((err, result) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
 module.exports = router;

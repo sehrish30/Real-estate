@@ -33,6 +33,7 @@ const userSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  locations: [],
 });
 
 userSchema.virtual("id").get(function () {
