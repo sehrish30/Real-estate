@@ -56,3 +56,37 @@ export async function undoReport(data, token) {
     console.error(err);
   }
 }
+
+export async function propertyLocation(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}properties/choose-location`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function propertyNotifications(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}properties/choose-location`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

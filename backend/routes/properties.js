@@ -84,7 +84,7 @@ router.put(`/undo-report`, async (req, res) => {
         return res.status(401).json({ error: err });
       }
       const { isAdmin } = decoded;
-      console.log("ISADMIN", isAdmin);
+
       if (isAdmin) {
         await Property.findByIdAndUpdate(
           req.body.id,
@@ -110,22 +110,114 @@ router.put(`/undo-report`, async (req, res) => {
 /*----------------------------------------
      SEND NOTIFICATION
 ---------------------------------------- */
-router.get(`/send-notifications`, async (req, res) => {
+router.post(`/send-notifications`, async (req, res) => {
   try {
-    User.find({ enableNotification: true }).exec((err, result) => {
+    User.find({
+      enableNotification: true,
+      locations: { $in: [req.body.location] },
+    }).exec((err, result) => {
       if (err) {
+        console.log("HERE");
         return res.status(500).send(err);
       }
-      let message = "New property arrived";
+      let message = "New properties arrived";
       for (let user = 0; user < result.length; user++) {
+        // Check valid push token
+        // Check that all your push tokens appear to be valid Expo push tokens
+        if (!Expo.isExpoPushToken(result[user].notificationToken)) {
+          console.log(
+            `Push token ${result[user].notificationToken} is not a valid Expo push token`
+          );
+        }
         const chunks = expo.chunkPushNotifications([
           {
             to: result[user].notificationToken,
             sound: "default",
             body: message,
+            data: { property: req.body.propertyId },
+            ttl: 86400,
+            title: "ICONIC properties",
           },
         ]);
+        let tickets = [];
+        console.log(chunks);
+        for (let chunk of chunks) {
+          try {
+            (async () => await expo.sendPushNotificationsAsync(chunk))().then(
+              (ticketChunk) => {
+                console.log("TICKET CHUNK", ticketChunk);
+                tickets.push(...ticketChunk);
+                console.log("TICKETS", tickets);
+              }
+            );
+
+            // Handling the receipt ID
+            let receiptIds = [];
+            for (let ticket of tickets) {
+              if (ticket.id) {
+                receiptIds.push(ticket.id);
+              }
+            }
+            let receiptIdChunks = expo.chunkPushNotificationReceiptIds(
+              receiptIds
+            );
+
+            (async () => {
+              // Like sending notifications, there are different strategies you could use
+              // to retrieve batches of receipts from the Expo service.
+              for (let chunk of receiptIdChunks) {
+                try {
+                  let receipts = await expo.getPushNotificationReceiptsAsync(
+                    chunk
+                  );
+                  console.log(receipts);
+
+                  // The receipts specify whether Apple or Google successfully received the
+                  // notification and information about an error, if one occurred.
+                  for (let receiptId in receipts) {
+                    let { status, message, details } = receipts[receiptId];
+                    if (status === "ok") {
+                      continue;
+                    } else if (status === "error") {
+                      console.error(
+                        `There was an error sending a notification: ${message}`
+                      );
+                      if (details && details.error) {
+                        console.error(`The error code is ${details.error}`);
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.error(error);
+                }
+              }
+            })();
+          } catch (err) {
+            return res.status(500).send(err);
+          }
+        }
       }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+});
+
+/*----------------------------------------
+     SEND NOTIFICATION WITHOUT ALERT
+---------------------------------------- */
+router.post(`/send-customer-notifications`, async (req, res) => {
+  try {
+    User.find({
+      enableNotification: true,
+      locations: { $in: [req.body.location] },
+    }).exec((err, result) => {
+      if (err) {
+        console.log("HERE");
+        return res.status(500).send(err);
+      }
+
       return res.status(200).send(result);
     });
   } catch (err) {
@@ -136,7 +228,7 @@ router.get(`/send-notifications`, async (req, res) => {
 /*----------------------------------------
      CHOOSE LOCATION
 ---------------------------------------- */
-router.post("/choose-location", async (req, res) => {
+router.put("/choose-location", async (req, res) => {
   try {
     User.findByIdAndUpdate(req.body.userId, {
       locations: req.body.locations,

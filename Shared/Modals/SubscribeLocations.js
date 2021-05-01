@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, Modal, Dimensions } from "react-native";
 import { CheckBox, Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import { items } from "../Cities";
+import { useSelector } from "react-redux";
+import { propertyLocation } from "../Services/PropertyServices";
 
 let { width } = Dimensions.get("screen");
 const SubscribeLocations = ({
@@ -11,6 +13,8 @@ const SubscribeLocations = ({
   dispatchLocations,
   locations,
 }) => {
+  let token = useSelector((state) => state.auth.token);
+  let user = useSelector((state) => state.auth.user);
   // const [{ locations }, dispatchLocations] = useReducer(reducer, initialState);
   return (
     <Modal
@@ -57,7 +61,7 @@ const SubscribeLocations = ({
             <Button
               type="clear"
               title="Close "
-              titleStyle={{ color: "#839b97" }}
+              titleStyle={{ color: "#214151" }}
               buttonStyle={{ marginRight: 15 }}
               onPress={() => setModalVisible(false)}
             />
@@ -65,7 +69,22 @@ const SubscribeLocations = ({
               title="Subscribe "
               titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
               buttonStyle={{ marginRight: 15, backgroundColor: "#214151" }}
-              onPress={() => setModalVisible(false)}
+              onPress={() => {
+                let sendLocations = [];
+                locations.map((location, index) =>
+                  location ? sendLocations.push(items[index].item) : null
+                );
+                console.error(sendLocations);
+                let data = {
+                  userId: user.decoded.userId,
+                  locations: sendLocations,
+                };
+                propertyLocation(data, token);
+                setModalVisible(false);
+                dispatchLocations({
+                  locations: [],
+                });
+              }}
             />
           </View>
         </View>

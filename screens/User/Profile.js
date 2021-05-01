@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState, useReducer } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useReducer,
+  useRef,
+} from "react";
 import {
   StyleSheet,
   Text,
@@ -47,10 +53,14 @@ const Profile = ({ navigation }) => {
   const [userId, setUserId] = useState("");
   const [isGoogle, setIsGoogle] = useState("");
   const [pushtoken, setPushToken] = useState("");
+  const [notify, setNotify] = useState("");
   const dispatch = useDispatch();
   let token = useSelector((state) => state.auth.token);
   let cuser = useSelector((state) => state.auth.user);
   const [{ locations }, dispatchLocations] = useReducer(reducer, initialState);
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
   const logout = async () => {
     try {
@@ -141,7 +151,7 @@ const Profile = ({ navigation }) => {
       updateToken(
         {
           id: cuser.decoded.userId,
-          pushtoken: pushtokenCrude.substring(18, 40),
+          pushtoken: pushtokenCrude,
         },
         token
       );
@@ -154,7 +164,7 @@ const Profile = ({ navigation }) => {
         name: "default",
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#FF231F7C",
+        lightColor: "red",
       });
     }
   };
@@ -173,6 +183,83 @@ const Profile = ({ navigation }) => {
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
   };
+
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+    registerForPushNotificationsAsync().then((token) => {
+      setPushToken(token);
+    });
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        setNotification(notification.request.content.data);
+      }
+    );
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.error("REALESTATE", response);
+        navigation.navigate("Notifications");
+      }
+    );
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
+  async function schedulePushNotification() {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "ICONIC properties",
+        body: "Here is the notification body",
+        data: { data: "goes here" },
+      },
+      trigger: { seconds: 2 },
+    });
+  }
+
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const {
+        status: existingStatus,
+      } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert("Must use physical device for Push Notifications");
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "red",
+      });
+    }
+
+    return token;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -207,7 +294,12 @@ const Profile = ({ navigation }) => {
         >
           {user}
         </Text>
-
+        <Button
+          title="Send notification"
+          onPress={async () => {
+            await schedulePushNotification();
+          }}
+        />
         <Card.Divider />
       </Card>
       <View style={styles.enableNotification}>
@@ -220,24 +312,26 @@ const Profile = ({ navigation }) => {
           value={isEnabled}
         />
       </View>
-      <Button
-        icon={
-          <Entypo
-            style={{ marginRight: 15 }}
-            name="location"
-            size={15}
-            color="#214151"
-          />
-        }
-        iconLeft
-        title="Subscribe Locations"
-        buttonStyle={styles.subscribe}
-        titleStyle={styles.subscribeText}
-        containerStyle={{ marginTop: 15, marginHorizontal: 10 }}
-        onPress={() => {
-          setModalVisible(!modalVisible);
-        }}
-      />
+      {isEnabled && (
+        <Button
+          icon={
+            <Entypo
+              style={{ marginRight: 15 }}
+              name="location"
+              size={15}
+              color="#214151"
+            />
+          }
+          iconLeft
+          title="Subscribe Locations"
+          buttonStyle={styles.subscribe}
+          titleStyle={styles.subscribeText}
+          containerStyle={{ marginTop: 15, marginHorizontal: 10 }}
+          onPress={() => {
+            setModalVisible(!modalVisible);
+          }}
+        />
+      )}
       <CustomModalPassword
         showPasswordModal={showPasswordModal}
         setShowPasswordModal={setShowPasswordModal}
