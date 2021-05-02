@@ -235,6 +235,7 @@ const Profile = ({ navigation }) => {
     };
   }, []);
 
+  // ZAHRA - Remove it enough demo
   async function schedulePushNotification() {
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -312,13 +313,12 @@ const Profile = ({ navigation }) => {
         >
           {user}
         </Text>
-        <Button
+        {/* <Button
           title="Send notification"
           onPress={async () => {
             await schedulePushNotification();
           }}
-        />
-        <Card.Divider />
+        /> */}
       </Card>
       <View style={styles.enableNotification}>
         <Text style={styles.textNotify}>Enable Notifications</Text>

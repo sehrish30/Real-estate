@@ -56,6 +56,7 @@ export default function App() {
             response.notification.request.content.data,
             navigationRef.current?.getCurrentRoute()
           );
+          // ZAHRA
           // route you want to navigate to
           navigationRef.current?.navigate("Notifications", data);
         }
@@ -65,7 +66,7 @@ export default function App() {
 
   useEffect(() => {
     const subscribe = Notifications.addListener(handleNotification);
-    console.log("UNSUB", subscribe);
+
     return () => {
       subscribe.remove();
       Notification.removeNotificationSubscription(responseListener.current);
