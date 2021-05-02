@@ -81,23 +81,6 @@ export async function propertyLocation(data, token) {
   }
 }
 
-export async function propertyNotifications(data, token) {
-  try {
-    const res = await axios.put(`${baseURL}properties/choose-location`, data, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.status == 200 || res.status == 201) {
-      return res.data;
-    }
-  } catch (err) {
-    console.error(err);
-  }
-}
-
 export async function getSubscribedLocations(userId, token) {
   try {
     const res = await axios.get(`${baseURL}properties/subscribed-locations`, {
@@ -111,6 +94,27 @@ export async function getSubscribedLocations(userId, token) {
       },
     });
 
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function sendCustomersPropertyNotifications(data, token) {
+  try {
+    const res = await axios.post(
+      `${baseURL}properties/send-notifications`,
+      data,
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     if (res.status == 200 || res.status == 201) {
       return res.data;
     }
