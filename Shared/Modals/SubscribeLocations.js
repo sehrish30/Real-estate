@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useCallback } from "react";
 import { StyleSheet, Text, View, Modal, Dimensions } from "react-native";
 import { CheckBox, Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
@@ -12,16 +12,16 @@ const SubscribeLocations = ({
   setModalVisible,
   dispatchLocations,
   locations,
+  originalLocations,
 }) => {
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
-  // const [{ locations }, dispatchLocations] = useReducer(reducer, initialState);
+
   return (
     <Modal
       presentationStyle="fullScreen"
       style={{ margin: 0 }}
       animationType="slide"
-      // transparent={true}
       visible={modalVisible}
       onRequestClose={() => {
         Alert.alert("Modal has been closed.");
@@ -63,10 +63,16 @@ const SubscribeLocations = ({
               title="Close "
               titleStyle={{ color: "#214151" }}
               buttonStyle={{ marginRight: 15 }}
-              onPress={() => setModalVisible(false)}
+              onPress={() => {
+                setModalVisible(false);
+
+                dispatchLocations({
+                  locations: originalLocations,
+                });
+              }}
             />
             <Button
-              title="Subscribe "
+              title="Subscribe"
               titleStyle={{ color: "#fff", fontFamily: "EBGaramond-Bold" }}
               buttonStyle={{ marginRight: 15, backgroundColor: "#214151" }}
               onPress={() => {
@@ -74,16 +80,12 @@ const SubscribeLocations = ({
                 locations.map((location, index) =>
                   location ? sendLocations.push(items[index].item) : null
                 );
-                console.error(sendLocations);
                 let data = {
                   userId: user.decoded.userId,
                   locations: sendLocations,
                 };
-                propertyLocation(data, token);
+                (async () => await propertyLocation(data, token))();
                 setModalVisible(false);
-                dispatchLocations({
-                  locations: [],
-                });
               }}
             />
           </View>

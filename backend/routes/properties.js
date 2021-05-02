@@ -226,7 +226,7 @@ router.post(`/send-customer-notifications`, async (req, res) => {
 });
 
 /*----------------------------------------
-     CHOOSE LOCATION
+     SUBSCRIBE LOCATION
 ---------------------------------------- */
 router.put("/choose-location", async (req, res) => {
   try {
@@ -236,8 +236,27 @@ router.put("/choose-location", async (req, res) => {
       if (err) {
         return res.status(422).send(err);
       }
-      return res.status(200).send(result);
+
+      return res.status(200).send(true);
     });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+     GET SUBSCRIBED LOCATIONS
+---------------------------------------- */
+router.get("/subscribed-locations", async (req, res) => {
+  try {
+    User.findById(req.query.userId)
+      .select("locations")
+      .exec((err, result) => {
+        if (err) {
+          return res.status(422).send(err);
+        }
+        return res.status(200).send(result);
+      });
   } catch (err) {
     return res.status(500).send(err);
   }

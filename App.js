@@ -20,7 +20,6 @@ export default function App() {
     "EBGaramond-Italic": require("./assets/fonts/EBGaramond-Italic.ttf"),
   });
   const handleNotification = (notification) => {
-    console.error("ME");
     Vibration.vibrate();
     const { data } = notification;
     // A simple example of passing data as the value
@@ -39,7 +38,7 @@ export default function App() {
             shouldSetBadge: false,
           }),
         });
-        console.error("HAAN");
+
         const indentifier = await Notification.scheduleNotificationAsync({
           content: {
             title: "ICONIC properties",
@@ -57,6 +56,7 @@ export default function App() {
             response.notification.request.content.data,
             navigationRef.current?.getCurrentRoute()
           );
+          // route you want to navigate to
           navigationRef.current?.navigate("Notifications", data);
         }
       );
@@ -64,10 +64,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    const unsubscribe = Notifications.addListener(handleNotification);
-
+    const subscribe = Notifications.addListener(handleNotification);
+    console.log("UNSUB", subscribe);
     return () => {
-      unsubscribe.remove();
+      subscribe.remove();
       Notification.removeNotificationSubscription(responseListener.current);
     };
   }, []);

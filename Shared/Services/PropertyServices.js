@@ -1,5 +1,6 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
+import Toast from "react-native-toast-message";
 
 export async function listAllReportedProperties(token) {
   try {
@@ -67,6 +68,12 @@ export async function propertyLocation(data, token) {
       },
     });
     if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Subscribed locations updated`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
       return res.data;
     }
   } catch (err) {
@@ -83,6 +90,27 @@ export async function propertyNotifications(data, token) {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getSubscribedLocations(userId, token) {
+  try {
+    const res = await axios.get(`${baseURL}properties/subscribed-locations`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        userId,
+      },
+    });
+
     if (res.status == 200 || res.status == 201) {
       return res.data;
     }

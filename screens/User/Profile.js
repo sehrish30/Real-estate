@@ -13,9 +13,8 @@ import {
   Switch,
   View,
   Alert,
-  Modal,
 } from "react-native";
-import { Card, Button, CheckBox } from "react-native-elements";
+import { Card, Button } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
@@ -24,7 +23,6 @@ import { logoutUser } from "../../Redux/Actions/auth";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import UserProfileMenuOverlay from "../../Shared/Overlays/UserProfileMenuOverlay";
 import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
-import * as Permissions from "expo-permissions";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import { Entypo } from "@expo/vector-icons";
@@ -36,6 +34,8 @@ import {
 } from "../../Shared/Services/AuthServices";
 import SubscribeLocations from "../../Shared/Modals/SubscribeLocations";
 var { height, width } = Dimensions.get("screen");
+import { getSubscribedLocations } from "../../Shared/Services/PropertyServices";
+import { items } from "../../Shared/Cities";
 
 // Reducer for checked locations
 const reducer = (state, newState) => ({ ...state, ...newState });
@@ -54,6 +54,7 @@ const Profile = ({ navigation }) => {
   const [isGoogle, setIsGoogle] = useState("");
   const [pushtoken, setPushToken] = useState("");
   const [notify, setNotify] = useState("");
+  const [originalLocations, setOriginalLocations] = useState([]);
   const dispatch = useDispatch();
   let token = useSelector((state) => state.auth.token);
   let cuser = useSelector((state) => state.auth.user);
@@ -177,6 +178,23 @@ const Profile = ({ navigation }) => {
     if (!isEnabled && !loading) {
       removeToken({ id: cuser.decoded.userId }, token);
       (async () => await AsyncStorage.removeItem("isEnabled", null))();
+    }
+
+    if (!loading) {
+      (async () => {
+        let data = await getSubscribedLocations(cuser.decoded.userId, token);
+        // console.error(data);
+        let value = [];
+        data.locations.map((location) => {
+          let index = items.findIndex((item) => item.item === location);
+          value[index] = true;
+        });
+        // console.error("VALUE", value);
+        dispatchLocations({
+          locations: value,
+        });
+        setOriginalLocations(value);
+      })();
     }
   }, [isEnabled]);
 
@@ -344,6 +362,7 @@ const Profile = ({ navigation }) => {
         setModalVisible={setModalVisible}
         dispatchLocations={dispatchLocations}
         locations={locations}
+        originalLocations={originalLocations}
       />
     </ScrollView>
   );
