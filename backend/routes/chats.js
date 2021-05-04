@@ -96,6 +96,7 @@ router.post("/send", async (req, res) => {
           type,
           author: req.body.author,
           timesent: req.body.timesent,
+          location: req.body.location,
           // user: req.body.user,
         });
         msg = await msg.save();

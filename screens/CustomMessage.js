@@ -3,12 +3,14 @@ import { StyleSheet, View, Image, Dimensions } from "react-native";
 import { Button, Overlay, Text } from "react-native-elements";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import Agree from "../Shared/Modals/Agree";
 
 var { width, height } = Dimensions.get("window");
 const CustomMessage = ({ heading, message, visible, setVisible, shortMsg }) => {
   const toggleOverlay = () => {
     setVisible(!visible);
   };
+
   return (
     <>
       <Overlay

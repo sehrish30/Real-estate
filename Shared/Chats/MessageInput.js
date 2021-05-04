@@ -8,23 +8,32 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useSelector, useDispatch } from "react-redux";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { sendChat } from "../../Shared/Services/ChatServices";
 import { SafeAreaView } from "react-native";
 import { uploadToCloudinary } from "../../Shared/services";
+import Agree from "../Modals/Agree";
+import * as Location from "expo-location";
+var { width } = Dimensions.get("window");
 
-var { width, height } = Dimensions.get("window");
-const MessageInput = ({ chatSend, chatId }) => {
+const MessageInput = ({
+  chatSend,
+  chatId,
+  sendCurrentLocationToUser,
+  location,
+  setLocation,
+  setModalVisible,
+  modalVisible,
+}) => {
   const [message, setMessage] = useState("");
-  const [image, setImage] = useState(null);
 
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let socket = useSelector((state) => state.chat.socket);
-  let dispatch = useDispatch();
+
   let userId;
   if (agency.id) {
     userId = chatSend.customer;
@@ -72,6 +81,52 @@ const MessageInput = ({ chatSend, chatId }) => {
     setMessage("");
   };
 
+  const sendMessageLocationService = async () => {
+    let data = {};
+    let { status } = await Location.requestPermissionsAsync();
+
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    } else {
+      let location = await Location.getCurrentPositionAsync({});
+      data = {
+        customer: chatSend.customer,
+        agency: chatSend.agency,
+        author: loggedInuser,
+        type: "location",
+        content: "Location",
+        seen: false,
+        chatId: chatId,
+        timesent: new Date().toISOString(),
+        location: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          // latitude: 26.05111474346075,
+          // longitude: 50.513465912995706,
+        },
+      };
+      setModalVisible(false);
+      const chatSendReponse = await sendChat(data, token);
+
+      if (agency.id) {
+        socket.emit("newMessage", {
+          toUserId: chatSend.customer,
+          ...data,
+          id: chatSendReponse,
+        });
+      } else {
+        socket.emit("newMessage", {
+          toUserId: chatSend.agency,
+          ...data,
+          id: chatSendReponse,
+        });
+      }
+
+      setMessage("");
+    }
+  };
+
   const uploadImage = async () => {
     if (Platform.OS !== "web") {
       const {
@@ -112,7 +167,8 @@ const MessageInput = ({ chatSend, chatId }) => {
 
   const sendMessageService = async () => {
     let data = {};
-    setMessage("");
+    let location = await Location.getCurrentPositionAsync({});
+
     if (agency.id) {
       data = {
         customer: chatSend.customer,
@@ -136,18 +192,17 @@ const MessageInput = ({ chatSend, chatId }) => {
         timesent: new Date().toISOString(),
       };
     }
-    console.log("DATA I AM SENDING", data);
     const chatSendReponse = await sendChat(data, token);
 
     if (agency.id) {
+      setMessage("");
       socket.emit("newMessage", {
         toUserId: chatSend.customer,
         ...data,
         id: chatSendReponse,
       });
     } else {
-      console.log("COUNT");
-
+      setMessage("");
       socket.emit("newMessage", {
         toUserId: chatSend.agency,
         ...data,
@@ -169,6 +224,16 @@ const MessageInput = ({ chatSend, chatId }) => {
   return (
     <View style={{ flexDirection: "column" }}>
       <SafeAreaView style={{ flexDirection: "row" }}>
+        {modalVisible && (
+          <Agree
+            // modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            msg="Do you want to send your current location?"
+            yesbtn="Nope"
+            cancelbtn="Send"
+            deleteAction={sendMessageLocationService}
+          />
+        )}
         {/* <TouchableOpacity
           onPress={() => setEmojiSelector(!emojiSelector)}
           style={{ marginTop: 15, marginLeft: 10 }}
@@ -199,19 +264,8 @@ const MessageInput = ({ chatSend, chatId }) => {
           placeholder="Type a message"
         />
 
-        <TouchableOpacity style={{ marginTop: 12, marginRight: 5 }}>
-          <Ionicons
-            onPress={() => {
-              uploadImage();
-            }}
-            name="ios-camera-outline"
-            size={26}
-            color="#8dadb3"
-          />
-        </TouchableOpacity>
-
         {message.length > 0 ? (
-          <TouchableOpacity style={{ marginTop: 15, marginLeft: 12 }}>
+          <TouchableOpacity style={{ marginTop: 15, marginLeft: 50 }}>
             <Ionicons
               onPress={sendMessageService}
               name="send"
@@ -220,9 +274,32 @@ const MessageInput = ({ chatSend, chatId }) => {
             />
           </TouchableOpacity>
         ) : (
-          <View style={{ marginTop: 15, marginLeft: 12 }}>
-            <Ionicons name="send" size={24} color="#839b97" />
-          </View>
+          <>
+            <TouchableOpacity style={{ marginTop: 12, marginRight: 5 }}>
+              <Ionicons
+                onPress={() => {
+                  uploadImage();
+                }}
+                name="ios-camera-outline"
+                size={26}
+                color="#34626c"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={{ marginTop: 13, marginLeft: 12 }}>
+              <MaterialIcons
+                name="add-location-alt"
+                size={24}
+                color="#34626c"
+                // onPress={sendCurrentLocationToUser}
+                onPress={() => {
+                  setModalVisible(true);
+                }}
+              />
+            </TouchableOpacity>
+            {/* <View style={{ marginTop: 15, marginLeft: 12 }}>
+              <Ionicons name="send" size={24} color="#839b97" />
+            </View> */}
+          </>
         )}
       </SafeAreaView>
     </View>

@@ -20,6 +20,9 @@ const chatMsgSchema = mongoose.Schema(
       default: new Date().toISOString(),
     },
     contentImgPublicId: String,
+    location: {
+      type: Object,
+    },
   },
   {
     timestamps: true,

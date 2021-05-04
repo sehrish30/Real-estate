@@ -27,19 +27,19 @@ const Agree = ({
             <View style={styles.button}>
               <Button
                 type="clear"
-                title={cancelbtn}
                 titleStyle={[{ color: "#214151" }, styles.font]}
-                style={styles.clear}
+                title={yesbtn}
+                buttonStyle={styles.clear}
                 onPress={() => {
-                  deleteAction();
+                  setModalVisible(false);
                 }}
               />
               <Button
+                title={cancelbtn}
                 titleStyle={styles.font}
-                title={yesbtn}
                 buttonStyle={styles.allow}
                 onPress={() => {
-                  setModalVisible(false);
+                  deleteAction();
                 }}
               />
             </View>

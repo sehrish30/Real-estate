@@ -12,6 +12,8 @@ import {
   View,
   Platform,
 } from "react-native";
+import MapView, { Polyline } from "react-native-maps";
+import Constants from "expo-constants";
 
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
@@ -31,7 +33,10 @@ import * as actions from "../../Redux/Actions/chat";
 import Loading from "../../Shared/Loading";
 import store from "../../Redux/store";
 import ChatsContent from "../../Shared/Chats/ChatsContent";
-
+import * as Location from "expo-location";
+import { createOpenLink } from "react-native-open-maps";
+import openMap from "react-native-open-maps";
+import Agree from "../../Shared/Modals/Agree";
 var { width, height } = Dimensions.get("window");
 
 if (
@@ -43,6 +48,7 @@ if (
 
 const Chat = ({ navigation, route }) => {
   const [chatId, setChatId] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [mainIndex, setMainIndex] = useState(null);
   const [chatExists, setChatExists] = useState(false);
@@ -52,6 +58,7 @@ const Chat = ({ navigation, route }) => {
   const [chatSend, setChatSend] = useState({});
   const [chatBlocked, setChatBlocked] = useState(false);
   const [personWhoBlocked, setPersonWhoBlocked] = useState("");
+  const [location, setLocation] = useState(null);
 
   // showStates
 
@@ -195,34 +202,14 @@ const Chat = ({ navigation, route }) => {
             comparingOnlineStates(chats);
 
             unsubscribe = store.subscribe(() => {
-              console.log("STORE", store.getState().chat.chats);
-
               const chatterInfo = store.getState().chat.chats;
 
-              // console.log(chatterInfo);
               comparingOnlineStates(chatterInfo);
             });
           })();
-
-          // return () => {};
         }
       })();
       setLoading(false);
-
-      // (async () => {
-      //   console.log("PROBLEM");
-      //   if (agency.id) {
-      //     await seenChat(
-      //       { chatId: route.params?.chatId, person: agency.id },
-      //       token
-      //     );
-      //   } else {
-      //     await seenChat(
-      //       { chatId: route.params?.chatId, person: user.decoded.userId },
-      //       token
-      //     );
-      //   }
-      // })();
 
       return () => {
         unsubscribe();
@@ -290,6 +277,32 @@ const Chat = ({ navigation, route }) => {
     }).start();
   };
 
+  const sendCurrentLocationToUser = async () => {
+    let { status } = await Location.requestPermissionsAsync();
+
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+
+    console.error({
+      latitude: 26.05111474346075,
+      longitude: 50.513465912995706,
+      zoom: 30,
+    });
+    openMap({
+      // latitude: location.coords.latitude,
+      // longitude: location.coords.longitude,
+
+      latitude: 26.05111474346075,
+      longitude: 50.513465912995706,
+      zoom: 30,
+    });
+  };
+
   return (
     <SafeAreaView
       style={{ flex: 1, marginTop: 20, backgroundColor: "#98ded9" }}
@@ -327,7 +340,15 @@ const Chat = ({ navigation, route }) => {
           {chatExists && !route.params.notsure && (
             <KeyboardAvoidingView>
               <View style={styles.chatArea}>
-                <MessageInput chatSend={chatSend} chatId={chatId} />
+                <MessageInput
+                  modalVisible={modalVisible}
+                  chatSend={chatSend}
+                  chatId={chatId}
+                  sendCurrentLocationToUser={sendCurrentLocationToUser}
+                  location={location}
+                  setLocation={setLocation}
+                  setModalVisible={setModalVisible}
+                />
               </View>
             </KeyboardAvoidingView>
           )}

@@ -14,6 +14,9 @@ import { formatDistanceToNow } from "date-fns";
 import { Image } from "react-native-elements";
 import { ActivityIndicator } from "react-native";
 import SingleImageOverlay from "../Overlays/SingleImageOverlay";
+import { Tile } from "react-native-elements";
+import * as Location from "expo-location";
+import openMap from "react-native-open-maps";
 
 var { width, height } = Dimensions.get("window");
 const ChatsContent = ({
@@ -39,6 +42,28 @@ const ChatsContent = ({
 
   const toggleOverlay = () => {
     setVisible(!visible);
+  };
+
+  const sendCurrentLocationToUser = async (location) => {
+    let { status } = await Location.requestPermissionsAsync();
+
+    if (status !== "granted") {
+      console.error("Permission to access location was denied");
+      return;
+    }
+    console.error({
+      latitude: location.latitude,
+      longitude: location.longitude,
+    });
+
+    openMap({
+      // latitude: location.coords.latitude,
+      // longitude: location.coords.longitude,
+
+      latitude: location.latitude,
+      longitude: location.longitude,
+      zoom: 60,
+    });
   };
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -154,27 +179,57 @@ const ChatsContent = ({
                               {item.content}
                             </Text>
                           ) : (
-                            <Image
-                              onPress={() => {
-                                setShowFullScreenImage(item.content);
-                                toggleOverlay();
-                              }}
-                              onLongPress={() => {
-                                setMainIndex(item?.id || item?.msgId);
-                                setShowTrash(true);
-                                setDeluser(item.author);
-                              }}
-                              source={{ uri: item.content }}
-                              style={[
-                                styles.image,
-                                mainIndex === item?.id
-                                  ? { borderColor: "#f8dc81" }
-                                  : null,
-                              ]}
-                              PlaceholderContent={
-                                <ActivityIndicator color="#f8dc81" />
-                              }
-                            />
+                            <>
+                              {item.type === "location" ? (
+                                <Pressable
+                                  style={true}
+                                  onLongPress={() => {
+                                    setMainIndex(item?.id || item?.msgId);
+                                    setShowTrash(true);
+                                    setDeluser(item.author);
+                                  }}
+                                >
+                                  <Tile
+                                    onPress={() => {
+                                      sendCurrentLocationToUser(item.location);
+                                    }}
+                                    width={200}
+                                    imageContainerStyle={[
+                                      styles.locationImage,
+                                      mainIndex === item?.id
+                                        ? { borderColor: "#f8dc81" }
+                                        : null,
+                                    ]}
+                                    containerStyle={[{ height: 150 }]}
+                                    imageSrc={require("../../assets/map.png")}
+                                    title="Tap to see location"
+                                    titleStyle={styles.tileText}
+                                  />
+                                </Pressable>
+                              ) : (
+                                <Image
+                                  onPress={() => {
+                                    setShowFullScreenImage(item.content);
+                                    toggleOverlay();
+                                  }}
+                                  onLongPress={() => {
+                                    setMainIndex(item?.id || item?.msgId);
+                                    setShowTrash(true);
+                                    setDeluser(item.author);
+                                  }}
+                                  source={{ uri: item.content }}
+                                  style={[
+                                    styles.image,
+                                    mainIndex === item?.id
+                                      ? { borderColor: "#f8dc81" }
+                                      : null,
+                                  ]}
+                                  PlaceholderContent={
+                                    <ActivityIndicator color="#f8dc81" />
+                                  }
+                                />
+                              )}
+                            </>
                           )}
                           <Text
                             style={{
@@ -324,5 +379,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "#214151",
     borderWidth: 5,
+    resizeMode: "cover",
+  },
+  locationImage: {
+    width: 200,
+    height: 100,
+    borderRadius: 10,
+    borderColor: "#214151",
+    borderWidth: 5,
+    resizeMode: "cover",
+  },
+  tileText: {
+    fontFamily: "EBGaramond-Regular",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
