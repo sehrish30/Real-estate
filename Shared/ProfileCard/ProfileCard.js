@@ -373,23 +373,39 @@ const ProfileCard = ({
               </Text>
               <Text style={{ marginTop: 10, color: "#214151" }}>
                 {" "}
-                {agency.officeTimingStart}-{agency.officeTimingEnd}
+                {agency.officeTimingStart}
+                {" - "}
+                {agency.officeTimingEnd}
               </Text>
             </View>
-            <Button
-              titleStyle={{
-                color: "#214151",
-                fontFamily: "EBGaramond-Bold",
-              }}
-              title="Property Visit Timings"
-              type="outline"
-              buttonStyle={{
-                borderColor: "#f8dc81",
-              }}
-              containerStyle={{
-                backgroundColor: "#f8dc81",
-              }}
-            />
+
+            <Card.Divider />
+          </>
+        )}
+
+        {agency.id && agency.visitTimingStart && (
+          <>
+            <View style={[styles.locationRow, { marginVertical: 10 }]}>
+              <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
+                <View>
+                  <MaterialCommunityIcons
+                    style={{
+                      marginRight: 8,
+                    }}
+                    name="map-clock-outline"
+                    color={"#214151"}
+                    size={18}
+                  />
+                </View>
+                Property Visit hours
+              </Text>
+              <Text style={{ marginTop: 10, color: "#214151" }}>
+                {" "}
+                {agency.visitTimingStart}
+                {" - "}
+                {agency.visitTimingEnd}
+              </Text>
+            </View>
             <Card.Divider />
           </>
         )}
