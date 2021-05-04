@@ -4,6 +4,7 @@ import { Dimensions } from "react-native";
 import FontIcon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { AntDesign } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 var { width, height } = Dimensions.get("screen");
 const CustomOptionsOverlay = ({
@@ -12,6 +13,7 @@ const CustomOptionsOverlay = ({
   changePassword,
   editAgency,
   showTiming,
+  showVisitTimings,
 }) => {
   return (
     <Overlay
@@ -100,6 +102,34 @@ const CustomOptionsOverlay = ({
           />
         }
         title="Office hours"
+      />
+
+      <Button
+        onPress={() => {
+          toggleOverlay();
+          showVisitTimings();
+        }}
+        type="outline"
+        buttonStyle={{
+          backgroundColor: "#fff",
+          borderColor: "#214151",
+          height: 50,
+          marginVertical: 5,
+        }}
+        titleStyle={{
+          color: "#214151",
+        }}
+        icon={
+          <MaterialCommunityIcons
+            style={{
+              marginRight: 15,
+            }}
+            name="map-clock"
+            size={20}
+            color={"#214151"}
+          />
+        }
+        title="Property visit timings"
       />
 
       <Button

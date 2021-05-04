@@ -94,6 +94,8 @@ const agencySchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    visitTimingStart: String,
+    visitTimingEnd: String,
   },
 
   {

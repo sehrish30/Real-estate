@@ -27,6 +27,7 @@ import { Feather } from "@expo/vector-icons";
 import CustomOptionsOverlay from "../Overlays/CustomOptionsOverlay";
 import RatingsReviews from "./RatingsReviews";
 import OfficeTiming from "../Modals/OfficeTiming";
+import VisitTimings from "../Modals/VisitTimings";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -52,6 +53,7 @@ const ProfileCard = ({
   const [visible, setVisible] = useState(false);
   const [showFullBio, setShowFullBio] = useState(false);
   const [timing, setTiming] = useState(false);
+  const [visit, setVisit] = useState(false);
 
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
@@ -66,6 +68,11 @@ const ProfileCard = ({
 
   const toggleOverlay = () => {
     setVisible(!visible);
+  };
+
+  const showVisitTimings = () => {
+    console.error("DDW");
+    setVisit(!visit);
   };
 
   const showTiming = () => {
@@ -117,17 +124,27 @@ const ProfileCard = ({
           visible={visible}
           showTiming={showTiming}
           toggleOverlay={toggleOverlay}
+          showVisitTimings={showVisitTimings}
         />
         <Modal
           animationType="slide"
           transparent={true}
           visible={timing}
           onRequestClose={() => {
-            console.log("SDSD");
             setTiming(!timing);
           }}
         >
           <OfficeTiming showTiming={showTiming} />
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={visit}
+          onRequestClose={() => {
+            setVisit(!visit);
+          }}
+        >
+          <VisitTimings showTiming={showVisitTimings} />
         </Modal>
         {showEditbutton && (
           <View style={{ marginLeft: "auto", flexDirection: "row" }}>
@@ -359,6 +376,20 @@ const ProfileCard = ({
                 {agency.officeTimingStart}-{agency.officeTimingEnd}
               </Text>
             </View>
+            <Button
+              titleStyle={{
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+              }}
+              title="Property Visit Timings"
+              type="outline"
+              buttonStyle={{
+                borderColor: "#f8dc81",
+              }}
+              containerStyle={{
+                backgroundColor: "#f8dc81",
+              }}
+            />
             <Card.Divider />
           </>
         )}
@@ -387,7 +418,6 @@ const styles = StyleSheet.create({
   },
   imgSection: {
     display: "flex",
-
     flexDirection: "column",
     alignItems: "center",
     marginHorizontal: "auto",

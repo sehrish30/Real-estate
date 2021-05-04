@@ -995,7 +995,7 @@ router.put("/office-hours", async (req, res) => {
     ).exec((err, result) => {
       console.log(req.body);
       if (err) {
-        return res.status(422).send("WTF");
+        return res.status(422).send("Done");
       } else {
         result.rating = undefined;
         return res.status(200).send(result);
@@ -1006,4 +1006,31 @@ router.put("/office-hours", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+       CHECK AGENCY VISIT HOURS
+----------------------------------------- */
+router.put("/visit-hours", async (req, res) => {
+  try {
+    Agency.findByIdAndUpdate(
+      req.body.id,
+      {
+        visitTimingStart: req.body.startTime,
+        visitTimingEnd: req.body.endTime,
+      },
+      {
+        new: true,
+      }
+    ).exec((err, result) => {
+      console.log(req.body);
+      if (err) {
+        return res.status(422).send("Done");
+      } else {
+        result.rating = undefined;
+        return res.status(200).send(result);
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
 module.exports = router;

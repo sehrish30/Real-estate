@@ -51,10 +51,6 @@ const ChatsContent = ({
       console.error("Permission to access location was denied");
       return;
     }
-    console.error({
-      latitude: location.latitude,
-      longitude: location.longitude,
-    });
 
     openMap({
       // latitude: location.coords.latitude,
@@ -62,7 +58,7 @@ const ChatsContent = ({
 
       latitude: location.latitude,
       longitude: location.longitude,
-      zoom: 60,
+      zoom: 30,
     });
   };
 
@@ -273,17 +269,40 @@ const ChatsContent = ({
                               {item.content}
                             </Text>
                           ) : (
-                            <Image
-                              onPress={() => {
-                                setShowFullScreenImage(item.content);
-                                toggleOverlay();
-                              }}
-                              source={{ uri: item.content }}
-                              style={styles.image}
-                              PlaceholderContent={
-                                <ActivityIndicator color="#f8dc81" />
-                              }
-                            />
+                            <>
+                              {item.type === "location" ? (
+                                <Pressable style={true}>
+                                  <Tile
+                                    onPress={() => {
+                                      sendCurrentLocationToUser(item.location);
+                                    }}
+                                    width={200}
+                                    imageContainerStyle={[
+                                      styles.locationImage,
+                                      mainIndex === item?.id
+                                        ? { borderColor: "#f8dc81" }
+                                        : null,
+                                    ]}
+                                    containerStyle={[{ height: 150 }]}
+                                    imageSrc={require("../../assets/map.png")}
+                                    title="Tap to see location"
+                                    titleStyle={styles.tileText}
+                                  />
+                                </Pressable>
+                              ) : (
+                                <Image
+                                  onPress={() => {
+                                    setShowFullScreenImage(item.content);
+                                    toggleOverlay();
+                                  }}
+                                  source={{ uri: item.content }}
+                                  style={styles.image}
+                                  PlaceholderContent={
+                                    <ActivityIndicator color="#f8dc81" />
+                                  }
+                                />
+                              )}
+                            </>
                           )}
                           <Text
                             style={{

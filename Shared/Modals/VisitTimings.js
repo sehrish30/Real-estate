@@ -5,23 +5,26 @@ import { Button, Input } from "react-native-elements";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { intervalToDuration, formatDuration, formatISO9075 } from "date-fns";
-import { changeOfficeTiming } from "../Services/AgencyServices";
+import { changePropertyVisitTimings } from "../Services/AgencyServices";
 import { useSelector, useDispatch } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { updateProfile } from "../../Redux/Actions/auth";
+import { Chip } from "react-native-elements";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
   errors: {},
+  timings: [{}],
 };
 var { width } = Dimensions.get("screen");
-const OfficeTiming = ({ showTiming }) => {
+const VisitTimings = ({ showTiming }) => {
   let dispatch = useDispatch();
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [duration, setDuration] = useState("");
   const [show, setShow] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [numbers, setNumbers] = useState(1);
   const [endTimeZone, setEndTimeZone] = useState("");
   const [startTimeZone, setStartTimeZone] = useState("");
   const agency = useSelector((state) => state.auth.agency);
@@ -168,9 +171,10 @@ const OfficeTiming = ({ showTiming }) => {
             }
           />
         </View>
+
         {duration ? (
           <Text style={styles.duration}>
-            Your office hours are for {duration} from{" "}
+            Property visit time is {duration} from{" "}
             {startTime
               ? formatISO9075(startTime, { representation: "time" }).substr(
                   0,
@@ -213,7 +217,7 @@ const OfficeTiming = ({ showTiming }) => {
                   representation: "time",
                 }).substr(0, 5)} ${endTimeZone}`,
               };
-              const res = await changeOfficeTiming(data, token);
+              const res = await changePropertyVisitTimings(data, token);
               AsyncStorage.setItem("agency", JSON.stringify(res)).then(() => {
                 dispatch(updateProfile(res));
               });
@@ -238,7 +242,7 @@ const OfficeTiming = ({ showTiming }) => {
   );
 };
 
-export default OfficeTiming;
+export default VisitTimings;
 
 const styles = StyleSheet.create({
   inputContainer: {

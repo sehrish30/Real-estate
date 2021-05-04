@@ -24,7 +24,7 @@ import { Pressable } from "react-native";
 import { useSocket } from "../../hooks/socketConnect";
 
 const Home = ({ navigation }) => {
-  let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
+  let [bootSplashIsVisible, setBootSplashIsVisible] = useState(true);
 
   const showNewNotification = useSelector((state) => state.consultation.new);
   const tokenAvailable = useSelector((state) => state.auth.token);

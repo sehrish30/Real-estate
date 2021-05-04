@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import BootSplash from "react-native-bootsplash";
 import { Animated, Dimensions } from "react-native";
 
-let bootSplashLogo = require("../assets/logo.png");
+let bootSplashLogo = require("../assets/iconic.png");
 const Splash = ({ bootSplashIsVisible }) => {
   const [loading, setLoading] = useState(false);
   //   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(true);
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5FCFF",
+    backgroundColor: "#FCFAFE",
   },
   text: {
     fontSize: 24,
@@ -87,10 +87,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#a2d0c1",
+    backgroundColor: "#FCFAFE",
   },
   logo: {
-    height: 250,
-    width: 250,
+    height: 300,
+    width: 300,
   },
 });

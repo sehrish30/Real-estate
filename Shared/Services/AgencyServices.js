@@ -214,3 +214,31 @@ export async function changeOfficeTiming(data, token) {
     console.error(err);
   }
 }
+
+export async function changePropertyVisitTimings(data, token) {
+  try {
+    const res = await axios.put(`${baseURL}agencies/visit-hours`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200) {
+      Toast.show({
+        type: "success",
+        text1: `Property visit hours updated`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
+      return res.data;
+    }
+  } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Property visit time couldn't be updated`,
+      text2: `Try again`,
+      visibilityTime: 4000,
+      topOffset: 30,
+    });
+  }
+}
