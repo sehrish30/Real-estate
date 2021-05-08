@@ -31,6 +31,7 @@ const SubscribeLocations = ({
       <ScrollView contentContainerStyle={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.modalText}>Subscribe to Locations</Text>
+          <Text style={styles.submodalText}>You will be notified for </Text>
           <View
             style={{
               flexDirection: "row",

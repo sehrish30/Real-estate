@@ -62,6 +62,7 @@ const AllChats = ({ navigation, route }) => {
             res = await customerRooms({ customer: user.decoded.userId }, token);
           } else {
             setAllChats(fetchedChats);
+            setSafetyChats(fetchedChats);
           }
 
           if (!res) {
@@ -219,7 +220,7 @@ const AllChats = ({ navigation, route }) => {
           SEARCHING AGENCY CHATS
   ---------------------------------------------- */
   let timer;
-  const useDebounce = (value, delay = 2000) => {
+  const useDebounce = (value, delay = 0) => {
     timer = setTimeout(() => {
       setDebounceValue(value);
     }, delay);
@@ -237,14 +238,15 @@ const AllChats = ({ navigation, route }) => {
           setAllChats(allChats.slice(index, index + 1));
         }
       });
-      if (search.length === 0) {
-        setAllChats(safetyChats);
-      }
     }
   };
 
   useEffect(() => {
+    if (search.length === 0) {
+      setAllChats(safetyChats);
+    }
     searchedAgency(useDebounce(search));
+
     return () => {
       clearTimeout(timer);
     };
@@ -314,7 +316,7 @@ const AllChats = ({ navigation, route }) => {
       {allChats.length !== 0 && !loading ? (
         <View style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
           <FlatList
-            data={fetchedChats}
+            data={allChats}
             renderItem={renderItem}
             keyExtractor={(item) => {
               return item.id;

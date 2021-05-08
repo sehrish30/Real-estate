@@ -41,3 +41,4 @@ export const DELETE_CONSULTATION = "DELETE_CONSULTATION";
 export const NOTIFY = "NOTIFY";
 export const STORE_NOTIFICATIONS = "STORE_NOTIFICATIONS";
 export const SEEN_ALL_NOTIFY = "SEEN_ALL_NOTIFY";
+export const RATE = "RATE";

@@ -13,14 +13,15 @@ import { Button } from "react-native-elements";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import * as MailComposer from "expo-mail-composer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   SimpleLineIcons,
   MaterialCommunityIcons,
   EvilIcons,
   AntDesign,
 } from "@expo/vector-icons";
-
+import { useFocusEffect } from "@react-navigation/native";
+import { allowRateOrReview } from "../../Shared/Services/RateServices";
 var { width, height } = Dimensions.get("screen");
 
 import { Feather } from "@expo/vector-icons";
@@ -54,11 +55,25 @@ const ProfileCard = ({
   const [showFullBio, setShowFullBio] = useState(false);
   const [timing, setTiming] = useState(false);
   const [visit, setVisit] = useState(false);
+  const [showRating, setShowRating] = useState(false);
 
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
-  console.log("AGENCY", agency);
+  let token = useSelector((state) => state.auth.token);
+
   let userId = null;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        let data = await allowRateOrReview(
+          { userId: customer?.decoded?.userId, agencyId: id },
+          token
+        );
+        setShowRating(data);
+      })();
+    }, [])
+  );
 
   if (agency?.id) {
     userId = agency.id;
@@ -71,7 +86,6 @@ const ProfileCard = ({
   };
 
   const showVisitTimings = () => {
-    console.error("DDW");
     setVisit(!visit);
   };
 
@@ -411,15 +425,19 @@ const ProfileCard = ({
         )}
 
         <RatingsReviews url={logo?.url} id={id} />
-        <Button
-          title="Rate"
-          onPress={() => {
-            navigation.navigate("UserRateReview", {
-              id,
-              userId,
-            });
-          }}
-        />
+        {!agency.id && customer?.decoded?.userId && showRating && (
+          <Button
+            buttonStyle={styles.rate}
+            titleStyle={{ fontFamily: "EBGaramond-Bold" }}
+            title="Rate"
+            onPress={() => {
+              navigation.navigate("UserRateReview", {
+                id,
+                userId,
+              });
+            }}
+          />
+        )}
       </Card>
     </>
   );
@@ -492,5 +510,9 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 12,
+  },
+  rate: {
+    backgroundColor: "#214151",
+    marginTop: 10,
   },
 });

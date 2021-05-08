@@ -7,6 +7,8 @@ const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 
 const mongoose = require("mongoose");
+const { Consultation } = require("../models/consultation.js");
+const { Chat } = require("../models/chat.js");
 
 const transporter = nodemailer.createTransport({
   service: "SendinBlue", // no need to set host or port etc.
@@ -47,7 +49,7 @@ router.post("/register", async (req, res) => {
     if (!user) return res.status(400).send("The User couldnot be registered");
     return res.send(user);
   } catch (e) {
-    res.status(500).json({ error: e });
+    return res.status(500).json({ error: e });
   }
 });
 
@@ -70,7 +72,7 @@ router.post("/google-register", async (req, res) => {
     if (!user) return res.status(400).send("The User couldnot be registered");
     return res.send(user);
   } catch (e) {
-    res.status(500).json({ error: e });
+    return res.status(500).json({ error: e });
   }
 });
 
@@ -201,7 +203,7 @@ router.post("/reset-password", async (req, res) => {
       // );
     });
   } catch (err) {
-    res.status(404).json({ error: err });
+    return res.status(500).json({ error: err });
   }
 });
 
@@ -245,7 +247,7 @@ router.post("/enter-password", (req, res) => {
       });
     });
   } catch (e) {
-    res.status(400).send("Something is wrong on our end");
+    return res.status(500).send(e);
   }
 });
 
@@ -291,7 +293,7 @@ router.get("/getuser", async (req, res) => {
 
     return res.status(200).send(user);
   } catch (e) {
-    console.error(e);
+    return res.status(500).send(e);
   }
 });
 
@@ -307,7 +309,7 @@ router.get(`/`, async (req, res) => {
     }
     res.send(userList);
   } catch (e) {
-    console.error(e);
+    return res.status(500).json({ error: e });
   }
 });
 
@@ -364,7 +366,7 @@ router.put(`/change-password`, async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(400).send(error);
+    return res.status(500).send(error);
   }
 });
 
@@ -387,7 +389,7 @@ router.put(`/update-token`, async (req, res) => {
       return res.status(200).send(result);
     });
   } catch (err) {
-    res.status(400).send(err);
+    return res.status(500).send(err);
   }
 });
 
@@ -410,7 +412,35 @@ router.put(`/remove-token`, async (req, res) => {
       return res.status(200).send(result);
     });
   } catch (err) {
-    res.status(400).send(err);
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+        User should rate or not
+----------------------------------------- */
+router.get(`/rate-or-not`, async (req, res) => {
+  try {
+    console.log(req.query);
+    const first = Consultation.findOne({
+      customer: req.query.userId,
+      agency: req.query.agencyId,
+    });
+
+    const second = Chat.findOne({
+      customer: req.query.userId,
+      agency: req.query.agencyId,
+    });
+
+    const [firstData, secondData] = await Promise.all([first, second]);
+    console.log("FINALLY", firstData, secondData);
+    if (firstData || secondData) {
+      return res.status(200).send(true);
+    } else {
+      return res.status(200).send(false);
+    }
+  } catch (err) {
+    return res.status(400).send(firstData, secondData);
   }
 });
 

@@ -129,7 +129,7 @@ const CustomOptionsOverlay = ({
             color={"#214151"}
           />
         }
-        title="Property visit timings"
+        title="Property visit hours"
       />
 
       <Button

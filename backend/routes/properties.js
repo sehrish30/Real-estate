@@ -44,8 +44,8 @@ router.delete(`/reported-property/:id/:agencyId`, async (req, res) => {
       if (req.body.type === "Residential") {
         search = { residential: mongoose.Types.ObjectId(req.params.id) };
       }
-      if (req.body.type === "Commercial") {
-        search = { commercial: mongoose.Types.ObjectId(req.params.id) };
+      if (req.body.type === "Industrial") {
+        search = { industrial: mongoose.Types.ObjectId(req.params.id) };
       }
       if (req.body.type === "Land") {
         search = { land: mongoose.Types.ObjectId(req.params.id) };

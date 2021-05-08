@@ -128,3 +128,19 @@ export async function getAllReviews(data, token) {
     console.error(err);
   }
 }
+
+export async function allowRateOrReview(data, token) {
+  try {
+    const res = await axios.get(`${baseURL}users/rate-or-not`, {
+      params: data,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+}

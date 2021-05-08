@@ -13,17 +13,16 @@ import Toast from "react-native-toast-message";
 import { Button, AirbnbRating, Text } from "react-native-elements";
 import {
   checkUsersRate,
-  checkUsersReview,
   rateService,
 } from "../../Shared/Services/RateServices";
 
 var { width } = Dimensions.get("screen");
-const UserRateReview = ({ navigation, route }) => {
+const UserRateReview = ({ navigation, route, navigation: { goBack } }) => {
   const { id, userId } = route.params;
   let token = useSelector((state) => state.auth.token);
 
   const [rating, setRating] = useState(0);
-  const [review, setReview] = useState("");
+  const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [prevRate, setPrevRate] = useState(0);
   const [prevState, setPrevState] = useState(null);
@@ -59,8 +58,8 @@ const UserRateReview = ({ navigation, route }) => {
   }, [navigation]);
 
   const sendRateAndReview = async () => {
-    navigation.navigate("Home");
     if (review) {
+      goBack();
       const res = await rateService(
         { id, userId, rate: rating, content: review },
         token
@@ -191,8 +190,9 @@ const UserRateReview = ({ navigation, route }) => {
               placeholder={"Review..."}
             />
           </View>
+
           <Button
-            disabled={loading}
+            disabled={!review}
             loading={loading}
             containerStyle={{
               marginHorizontal: 15,
