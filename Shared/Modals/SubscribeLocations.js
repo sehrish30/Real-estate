@@ -31,7 +31,9 @@ const SubscribeLocations = ({
       <ScrollView contentContainerStyle={styles.centeredView}>
         <View style={styles.modalView}>
           <Text style={styles.modalText}>Subscribe to Locations</Text>
-          <Text style={styles.submodalText}>You will be notified for </Text>
+          <Text style={styles.submodalText}>
+            You will be notified for properties in these locations
+          </Text>
           <View
             style={{
               flexDirection: "row",
@@ -141,5 +143,11 @@ const styles = StyleSheet.create({
   containerLocations: {
     backgroundColor: "#e4fbff",
     width: "40%",
+  },
+  submodalText: {
+    color: "#214151",
+    fontFamily: "EBGaramond-Regular",
+    fontSize: 14,
+    marginBottom: 5,
   },
 });

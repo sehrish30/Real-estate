@@ -7,6 +7,7 @@ import AgencyDetail from "../screens/Drawer/AgencyDetail";
 import ScheduleConsultationForm from "../screens/Drawer/ScheduleConsultationForm";
 import UserRateReview from "../screens/User/UserRateReview";
 import Notifications from "../screens/Drawer/Notifications";
+import MapLocations from "../screens/Drawer/MapLocations";
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,13 @@ function MyStack() {
         component={Notifications}
         options={{
           title: "Notifications",
+        }}
+      />
+      <Stack.Screen
+        name="MapLocations"
+        component={MapLocations}
+        options={{
+          title: "All properties",
         }}
       />
     </Stack.Navigator>

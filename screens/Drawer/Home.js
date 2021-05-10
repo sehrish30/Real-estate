@@ -15,6 +15,7 @@ import * as notificationConsultation from "../../Redux/Actions/consultation";
 import Icon from "react-native-vector-icons/Ionicons";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 // import jwt from "jsonwebtoken";
 import jwt_decode from "jwt-decode";
@@ -187,6 +188,19 @@ const Home = ({ navigation }) => {
                   name="person-search"
                   color={"#214151"}
                   size={30}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menu}
+                onPress={() => {
+                  navigation.navigate("MapLocations");
+                }}
+              >
+                <FontAwesome5
+                  name="map-marked"
+                  style={{ marginTop: 5 }}
+                  color={"#214151"}
+                  size={20}
                 />
               </TouchableOpacity>
             </View>
