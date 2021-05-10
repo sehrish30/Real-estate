@@ -122,3 +122,20 @@ export async function sendCustomersPropertyNotifications(data, token) {
     console.error(err);
   }
 }
+
+export async function getAllProperties() {
+  try {
+    const res = await axios.get(`${baseURL}properties/all-properties`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

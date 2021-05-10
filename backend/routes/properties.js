@@ -10,6 +10,23 @@ const { User } = require("../models/user");
 const expo = new Expo();
 
 /*----------------------------------------
+      GET ALL PROPERTIES
+---------------------------------------- */
+router.get(`/all-properties`, async (req, res) => {
+  try {
+    Property.find().exec((err, data) => {
+      if (err) {
+        return res.status(401).send(err);
+      }
+      console.log(data);
+      return res.status(200).send(data);
+    });
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+});
+
+/*----------------------------------------
       Get all reported properties
 ---------------------------------------- */
 

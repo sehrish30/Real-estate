@@ -11,8 +11,9 @@ import {
 import { Image, Icon } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { formatDistanceToNow } from "date-fns";
 let { width, height } = Dimensions.get("screen");
-const MapLocationDetails = ({ setModalVisible, modalVisible }) => {
+const MapLocationDetails = ({ setModalVisible, modalVisible, info }) => {
   return (
     <Modal
       animationType="slide"
@@ -27,7 +28,8 @@ const MapLocationDetails = ({ setModalVisible, modalVisible }) => {
           <Image
             source={{
               uri:
-                "http://res.cloudinary.com/abikhan/image/upload/v1619206515/rbeqffdujaemdhvnc78h.jpg",
+                info.images[0] ||
+                "https://images.unsplash.com/photo-1574786198875-49f5d09fe2d2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=799&q=80",
             }}
             style={{ width: 50, height: 50 }}
             PlaceholderContent={<ActivityIndicator />}
@@ -40,18 +42,30 @@ const MapLocationDetails = ({ setModalVisible, modalVisible }) => {
                 width: width / 1.5,
               }}
             >
-              <Text style={styles.title}>title</Text>
-              <Text style={styles.title}>500 BD</Text>
+              <Text style={styles.title}>{info.title}</Text>
+              <Text style={styles.title}>{info.cost} BD</Text>
             </View>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={styles.category}>Commercial</Text>
-              <Text style={styles.category}>25/13/2021</Text>
+              <Text style={styles.category}>{info.category}</Text>
+              <Text style={styles.category}>
+                {formatDistanceToNow(Date.parse(info.createdAt), {
+                  addSuffix: true,
+                })}
+              </Text>
             </View>
             <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
               <TouchableOpacity style={{ marginTop: 20 }}>
-                <Ionicons name="open-outline" size={24} color="#214151" />
+                <Ionicons
+                  name="open-outline"
+                  size={24}
+                  color="#214151"
+                  onPress={() => {
+                    //ZAHRA
+                    // navigate to property by info._id
+                  }}
+                />
               </TouchableOpacity>
               <TouchableOpacity style={{ marginLeft: 20, marginTop: 20 }}>
                 <Ionicons

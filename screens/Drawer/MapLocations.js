@@ -1,4 +1,9 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, {
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useReducer,
+} from "react";
 import {
   StyleSheet,
   Modal,
@@ -8,11 +13,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { getAllProperties } from "../../Shared/Services/PropertyServices";
+import { useFocusEffect } from "@react-navigation/native";
 
 import MapLocationDetails from "../../Shared/Modals/MapLocationDetails";
 let { width, height } = Dimensions.get("screen");
+
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  details: [],
+  info: {},
+};
+
 const MapLocations = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [{ details, info }, dispatchMap] = useReducer(reducer, initialState);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
@@ -21,6 +37,18 @@ const MapLocations = ({ navigation }) => {
       headerTitle: "Search Properties",
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        let data = await getAllProperties();
+
+        dispatchMap({
+          details: data,
+        });
+      })();
+    }, [])
+  );
   return (
     <View style={styles.container}>
       <MapView
@@ -40,43 +68,28 @@ const MapLocations = ({ navigation }) => {
         }}
         style={styles.map}
       >
-        <Marker
-          pinColor="aqua"
-          coordinate={{
-            latitude: 26.06511777097489,
-            longitude: 50.50512842133828,
-          }}
-          onPress={() => {
-            setModalVisible(true);
-          }}
-        />
-        <Marker
-          pinColor="aqua"
-          coordinate={{
-            latitude: 26.03249589178873,
-            longitude: 50.51141226508145,
-          }}
-          onPress={() => {
-            setModalVisible(!modalVisible);
-          }}
-        />
-
-        <Marker
-          pinColor="aqua"
-          coordinate={{
-            latitude: 26.065542160714863,
-            longitude: 50.51328399270143,
-          }}
-          onPress={() => {
-            setModalVisible(true);
-          }}
-        />
+        {details.map((property) => (
+          <Marker
+            pinColor="aqua"
+            coordinate={{
+              latitude: property.location.latitude,
+              longitude: property.location.longitude,
+            }}
+            onPress={() => {
+              setModalVisible(true);
+              dispatchMap({
+                info: property,
+              });
+            }}
+          />
+        ))}
       </MapView>
       {modalVisible && (
         <View>
           <MapLocationDetails
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
+            info={info}
           />
         </View>
       )}
