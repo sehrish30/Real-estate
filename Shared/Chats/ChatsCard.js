@@ -104,7 +104,7 @@ const ChatsCard = ({
           ) : (
             <>
               <View>
-                {lastchatauthor != userId && !seen && unSeenCount !== 0 && (
+                {lastchatauthor != userId && !seen && unSeenCount > 0 && (
                   <Badge
                     value={unSeenCount}
                     badgeStyle={{

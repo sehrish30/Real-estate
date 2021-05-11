@@ -18,7 +18,7 @@ import ChatsCard from "../../Shared/Chats/ChatsCard";
 import { agencyRooms, customerRooms } from "../../Shared/Services/ChatServices";
 import CreateChat from "../../Shared/Chats/CreateChat";
 import { SearchBar } from "react-native-elements";
-
+import * as actions from "../../Redux/Actions/chat";
 var { width, height } = Dimensions.get("window");
 const AllChats = ({ navigation, route }) => {
   const [allChats, setAllChats] = useState([]);
@@ -37,7 +37,6 @@ const AllChats = ({ navigation, route }) => {
   let token = useSelector((state) => state.auth.token);
   let sockets = useSelector((state) => state.chat.socket);
   let fetchedChats = useSelector((state) => state.chat.allChats);
-  console.log(sockets, "SEHRISH CRYING");
 
   let userId;
   if (agency.id) {
@@ -54,6 +53,7 @@ const AllChats = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      dispatch(actions.currentChat(null));
       if (user.email) {
         (async () => {
           let res;
@@ -92,7 +92,7 @@ const AllChats = ({ navigation, route }) => {
                 key: r.id,
                 id: r.id,
                 name: r.agency?.name,
-                message: r?.chats[r.chats?.length - 1]?.content || "No message",
+                message: r?.chats[r.chats?.length - 1]?.content || "",
                 uri: r.agency.logo.url,
                 createdAt: r?.chats[r.chats?.length - 1]?.createdAt,
                 unSeenCount,
@@ -119,7 +119,6 @@ const AllChats = ({ navigation, route }) => {
               setAllChats((prev) => [...prev, info]);
               setSafetyChats((prev) => [...prev, info]);
               fastChats.push(info);
-              console.log("FAST CHATS", fastChats);
             });
             Promise.all(requests).then(() => {
               useSocket({ user, allChats: fastChats }, dispatch);
@@ -131,6 +130,7 @@ const AllChats = ({ navigation, route }) => {
       } else if (agency.email) {
         (async () => {
           let res;
+
           if (fetchedChats.length <= 0) {
             res = await agencyRooms({ agency: agency.id }, token);
           } else {
@@ -162,7 +162,7 @@ const AllChats = ({ navigation, route }) => {
                 key: r.id,
                 id: r.id,
                 name: r.customer?.email,
-                message: r?.chats[r.chats?.length - 1]?.content || null,
+                message: r?.chats[r.chats?.length - 1]?.content || "",
                 uri: r.customer.dp,
                 createdAt: r?.chats[r.chats?.length - 1]?.createdAt || null,
                 unSeenCount,
@@ -243,7 +243,7 @@ const AllChats = ({ navigation, route }) => {
 
   useEffect(() => {
     if (search.length === 0) {
-      setAllChats(safetyChats);
+      setAllChats(fetchedChats);
     }
     searchedAgency(useDebounce(search));
 
@@ -285,7 +285,6 @@ const AllChats = ({ navigation, route }) => {
       message={item.message}
       navigation={navigation}
       createdAt={item.createdAt}
-      unSeenCount={item.unSeenCount}
       agencyId={item.agencyId}
       customerId={item.customerId}
       seen={item.seen}
@@ -313,6 +312,7 @@ const AllChats = ({ navigation, route }) => {
           placeholderTextColor="#eff7e1"
         />
       )}
+
       {allChats.length !== 0 && !loading ? (
         <View style={{ flex: 1, marginTop: StatusBar.currentHeight || 0 }}>
           <FlatList

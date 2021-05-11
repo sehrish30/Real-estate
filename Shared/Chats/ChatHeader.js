@@ -4,6 +4,7 @@ import { MaterialCommunityIcons, EvilIcons } from "@expo/vector-icons";
 import { Badge } from "react-native-elements";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteChat } from "../../Shared/Services/ChatServices";
+import { Image } from "react-native-elements";
 
 import chat from "../../Redux/Reducers/chat";
 const ChatHeader = ({
@@ -77,11 +78,23 @@ const ChatHeader = ({
                 });
               })} */}
               {otherChatName.name}{" "}
-              {otherChatName?.id && (
+              {/* {otherChatName?.id && (
                 <Badge status="success" containerStyle={{ marginLeft: 10 }} />
-              )}{" "}
+              )}{" "} */}
               {senderTyping.id === userId && senderTyping.typing && (
-                <Text style={{ paddingLeft: 10, color: "#839b97" }}>....</Text>
+                <Image
+                  style={{
+                    width: 40,
+                    height: 10,
+                    paddingLeft: 10,
+                  }}
+                  containerStyle={{
+                    padding: 0,
+                    marginTop: 20,
+                  }}
+                  source={require("../../assets/typing.gif")}
+                />
+                // <Text style={{ paddingLeft: 10, color: "#839b97" }}>....</Text>
               )}
             </Text>
           </View>

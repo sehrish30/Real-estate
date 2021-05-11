@@ -42,3 +42,4 @@ export const NOTIFY = "NOTIFY";
 export const STORE_NOTIFICATIONS = "STORE_NOTIFICATIONS";
 export const SEEN_ALL_NOTIFY = "SEEN_ALL_NOTIFY";
 export const RATE = "RATE";
+export const FETCH_CHAT_SEEN = "FETCH_CHAT_SEEN";

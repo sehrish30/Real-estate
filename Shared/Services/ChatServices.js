@@ -184,3 +184,39 @@ export async function unblockChat(data, token) {
     console.error(err);
   }
 }
+
+export async function unseenChatsAgency(agency, token) {
+  try {
+    const res = await axios.get(`${baseURL}chats/unseenchats-agency`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        params: {
+          agency,
+        },
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function unseenChatsCustomer(customer, token) {
+  try {
+    const res = await axios.get(`${baseURL}chats/unseenchats-customer`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        params: {
+          customer,
+        },
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

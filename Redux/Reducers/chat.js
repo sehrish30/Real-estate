@@ -18,6 +18,7 @@ import {
   UNBLOCK_CHAT,
   FETCH_CHATS,
   EDIT_FETCH_CHATS,
+  FETCH_CHAT_SEEN,
 } from "../constants";
 
 const initialState = {
@@ -248,6 +249,18 @@ const chat = (state = initialState, action) => {
       return {
         ...state,
         allChats: [payload, ...state.allChats],
+      };
+    case FETCH_CHAT_SEEN:
+      let allChatsCopy = state.allChats;
+      allChatsCopy.map((chat) => {
+        if (chat.id == payload) {
+          console.log(chat.seen);
+          chat.seen = true;
+        }
+      });
+      return {
+        ...state,
+        allChats: allChatsCopy,
       };
 
     default:

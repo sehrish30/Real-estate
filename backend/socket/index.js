@@ -287,15 +287,16 @@ const SocketServer = (server) => {
     //   // remove user when disconnected
     //   console.log("User had left");
     // });
+
     socket.on("disconnect", async () => {
       // emit so also delete in frontend
 
       console.log("USER LEFT", socket.id, userSockets.has(socket.id));
-
+      console.log("SOCKET OFF");
       console.log("ALL THE SOCKETS", sockets);
       if (userSockets.has(socket.id)) {
         const user = users.get(userSockets.get(socket.id));
-        console.log("LEFT USER", user);
+        console.log("LEFT USER", user.sockets.length);
 
         // checking if user has multiple sockets
         if (user.sockets.length > 1) {
@@ -321,7 +322,7 @@ const SocketServer = (server) => {
                 try {
                   // io.to("room").emit("roomData", userSockets.get(socket.id));
                   // io.to(socket).emit("offline", user.id);
-                  io.to("room").emit("offline", user.id);
+                  io.to(socket).emit("offline", user.id);
                   console.log("I EMITTED", user.id);
                 } catch (err) {}
               });

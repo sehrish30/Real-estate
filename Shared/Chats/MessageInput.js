@@ -8,13 +8,14 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { sendChat } from "../../Shared/Services/ChatServices";
 import { SafeAreaView } from "react-native";
 import { uploadToCloudinary } from "../../Shared/services";
 import Agree from "../Modals/Agree";
+
 import * as Location from "expo-location";
 var { width } = Dimensions.get("window");
 
@@ -28,6 +29,7 @@ const MessageInput = ({
   modalVisible,
 }) => {
   const [message, setMessage] = useState("");
+  let dispatch = useDispatch();
 
   let token = useSelector((state) => state.auth.token);
   let user = useSelector((state) => state.auth.user);
@@ -129,9 +131,8 @@ const MessageInput = ({
 
   const uploadImage = async () => {
     if (Platform.OS !== "web") {
-      const {
-        status,
-      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("To upload image we need access to your gallery");
       } else {
@@ -193,6 +194,7 @@ const MessageInput = ({
       };
     }
     const chatSendReponse = await sendChat(data, token);
+    // dispatch(addToMessages(data));
 
     if (agency.id) {
       setMessage("");

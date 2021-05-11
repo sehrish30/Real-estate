@@ -10,6 +10,7 @@ import {
 import { Badge } from "react-native-elements";
 import CreateChat from "../../Shared/Chats/CreateChat";
 import { Pressable } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
 import { Image } from "react-native-elements";
 import { ActivityIndicator } from "react-native";
@@ -30,8 +31,8 @@ const ChatsContent = ({
   setShowTrash,
   setDeluser,
   mainIndex,
-  fadeAnim,
-  showNoMessages,
+  blockstatus,
+  chatBlocked,
 }) => {
   let scrollViewRef = useRef(null);
 
@@ -78,17 +79,19 @@ const ChatsContent = ({
       {chatExists && !route.params.notsure ? (
         <>
           <View style={styles.badge}>
-            <Badge
-              onPress={() => {
-                scrollViewRef.current.scrollToEnd({ animated: true });
-              }}
-              badgeStyle={styles.badgeText}
-              value={
-                <Text style={{ color: "#a2d0c1" }}>
-                  Exceeding limit 50 will delete old messages
-                </Text>
-              }
-            />
+            {(chatBlocked || blockstatus) && (
+              <Badge
+                onPress={() => {
+                  scrollViewRef.current.scrollToEnd({ animated: true });
+                }}
+                badgeStyle={styles.badgeText}
+                value={
+                  <Text style={{ color: "#214151" }}>
+                    You have blocked this user
+                  </Text>
+                }
+              />
+            )}
           </View>
           <Animated.FlatList
             ref={scrollViewRef}
@@ -178,7 +181,6 @@ const ChatsContent = ({
                             <>
                               {item.type === "location" ? (
                                 <Pressable
-                                  style={true}
                                   onLongPress={() => {
                                     setMainIndex(item?.id || item?.msgId);
                                     setShowTrash(true);
@@ -271,7 +273,7 @@ const ChatsContent = ({
                           ) : (
                             <>
                               {item.type === "location" ? (
-                                <Pressable style={true}>
+                                <Pressable>
                                   <Tile
                                     onPress={() => {
                                       sendCurrentLocationToUser(item.location);

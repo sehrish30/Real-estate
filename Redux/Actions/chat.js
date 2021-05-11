@@ -20,6 +20,7 @@ import {
   UNBLOCK_CHAT,
   FETCH_CHATS,
   EDIT_FETCH_CHATS,
+  FETCH_CHAT_SEEN,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -106,4 +107,8 @@ export const fetchAllChats = (chat) => (dispatch) => {
 export const addToFetchedChats = (chat) => (dispatch) => {
   console.log("ACTION HERE", chat);
   dispatch({ type: EDIT_FETCH_CHATS, payload: chat });
+};
+
+export const fetchChatsSeen = (chatId) => (dispatch) => {
+  dispatch({ type: FETCH_CHAT_SEEN, payload: chatId });
 };

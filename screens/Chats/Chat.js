@@ -103,6 +103,7 @@ const Chat = ({ navigation, route }) => {
 
           // Storing current chat ID in redux
           dispatch(actions.currentChat(route.params?.chatId));
+          dispatch(actions.fetchChatsSeen(route.params?.chatId));
 
           // Checking if chat exists
           if (res.status) {
@@ -322,6 +323,8 @@ const Chat = ({ navigation, route }) => {
           />
           <KeyboardAvoidingView style={styles.content}>
             <ChatsContent
+              chatBlocked={chatBlocked}
+              blockstatus={blockstatus}
               chatExists={chatExists}
               messages={messages}
               setMainIndex={setMainIndex}

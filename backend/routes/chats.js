@@ -248,42 +248,42 @@ router.delete(`/block-chatroom/:chatId/:personId`, async (req, res) => {
     Chat.findById(req.params.chatId)
       .then(async (chatroom) => {
         // loop through chat msgs ids and delete them in Chat Msg table
-        const requests = await Promise.all(
-          chatroom.chats.map(async (chatmessage) => {
-            const delChat = await ChatMsg.findByIdAndDelete(chatmessage);
+        // const requests = await Promise.all(
+        //   chatroom.chats.map(async (chatmessage) => {
+        //     const delChat = await ChatMsg.findByIdAndDelete(chatmessage);
 
-            if (delChat?.contentImgPublicId) {
-              cloudinary.uploader.destroy(
-                delChat.contentImgPublicId,
-                async (result) => {
-                  if (result.result == "ok") {
-                    console.log("DONE");
-                  }
-                }
-              );
-            }
-            return chatmessage;
-          })
+        //     if (delChat?.contentImgPublicId) {
+        //       cloudinary.uploader.destroy(
+        //         delChat.contentImgPublicId,
+        //         async (result) => {
+        //           if (result.result == "ok") {
+        //             console.log("DONE");
+        //           }
+        //         }
+        //       );
+        //     }
+        //     return chatmessage;
+        //   })
+        // );
+
+        // if (requests) {
+        // delete chatroom
+        const deletedChatMsgs = await Chat.findByIdAndUpdate(
+          req.params.chatId,
+          {
+            isblocked: true,
+            personWhoBlocked: req.params.personId,
+            // chats: [],
+          },
+          {
+            new: true,
+          }
         );
 
-        if (requests) {
-          // delete chatroom
-          const deletedChatMsgs = await Chat.findByIdAndUpdate(
-            req.params.chatId,
-            {
-              isblocked: true,
-              personWhoBlocked: req.params.personId,
-              chats: [],
-            },
-            {
-              new: true,
-            }
-          );
-
-          if (deletedChatMsgs) {
-            return res.status(200).send(deletedChatMsgs);
-          }
+        if (deletedChatMsgs) {
+          return res.status(200).send(deletedChatMsgs);
         }
+        // }
       })
       .catch((err) => res.status(422).send(err));
   } catch (err) {
@@ -318,7 +318,7 @@ router.post(`/unblock-chat`, async (req, res) => {
 });
 
 /*----------------------------------------
-    Mark all chats seen
+    GET ALL AGENCY CHAT ROOMS
 ---------------------------------------- */
 router.get(`/all-agencychatrooms`, async (req, res) => {
   console.error(req.query);
@@ -358,6 +358,71 @@ router.put(`/all-chatsSeen`, async (req, res) => {
     }
 
     return res.status(200).send(true);
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+   CHECK IF ANY CHAT HAS UNSEEN MSGS FOR AGENCY
+---------------------------------------- */
+router.get("/unseenchats-agency", async (Req, res) => {
+  try {
+    let count = 0;
+    Chat.find({
+      agency: req.query.agency,
+    })
+      .populate({
+        path: "chats",
+      })
+      .exec((err, data) => {
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data[i].chats.length; j++) {
+            if ((data[i].chats[j].seen = false)) {
+              count = count + 1;
+              break;
+            }
+          }
+        }
+        if (err) {
+          return res.status(402).send(err);
+        }
+        console.log("COUNT", count);
+        return res.status(200).send(count);
+      });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+   CHECK IF ANY CHAT HAS UNSEEN MSGS FOR CUSTOMER
+---------------------------------------- */
+router.get("/unseenchats-customer", async (req, res) => {
+  try {
+    let count = 0;
+
+    Chat.find({
+      customer: req.query.customer,
+    })
+      .populate({
+        path: "chats",
+      })
+      .exec((err, data) => {
+        for (let i = 0; i < data.length; i++) {
+          for (let j = 0; j < data[i].chats.length; j++) {
+            if ((data[i].chats[j].seen = false)) {
+              count = count + 1;
+              break;
+            }
+          }
+        }
+        if (err) {
+          return res.status(402).send(err);
+        }
+        console.log("COUNT", count);
+        return res.status(200).send(count);
+      });
   } catch (err) {
     return res.status(500).send(err);
   }

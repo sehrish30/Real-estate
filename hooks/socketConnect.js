@@ -30,6 +30,7 @@ export function useSocket(user, dispatch) {
   });
 
   socket.on("offline", (userId) => {
+    console.error("offline");
     dispatch(actions.userOffline(userId));
   });
 
@@ -51,7 +52,7 @@ export function useSocket(user, dispatch) {
   });
 
   socket.on("newMessage", (message) => {
-    console.log("WHAT I AM GETTING ON SENDING MESSAGEs", message);
+    console.error("WHAT I AM GETTING ON SENDING MESSAGEs", message);
     dispatch(actions.addToMessages({ ...message }));
   });
 
