@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import { StyleSheet, Text, View, FlatList, StatusBar } from "react-native";
-import { Avatar, Button } from "react-native-elements";
+import { Avatar, Button, Badge } from "react-native-elements";
 import { formatISO9075 } from "date-fns";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
@@ -24,6 +24,7 @@ const Item = ({
   token,
   data,
   agency,
+  numberOfReports,
   dispatchReportedProperties,
 }) => {
   // REDUCERS
@@ -43,8 +44,14 @@ const Item = ({
           />
         </View>
         <View style={[styles.side]}>
-          <Text style={styles.title}>{description}</Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.title}>{description}</Text>
+            <Badge value={numberOfReports} status="error" />
+          </View>
           <Text style={{ color: "#214151" }}>{type}</Text>
+
           <Text style={styles.date}>
             {formatISO9075(Date.parse(createdAt), {
               representation: "date",
@@ -117,6 +124,7 @@ const Reports = () => {
       token={token}
       data={data}
       agency={item.agency}
+      numberOfReports={item.noOfReports}
       dispatchReportedProperties={dispatchReportedProperties}
     />
   );

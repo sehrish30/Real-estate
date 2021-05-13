@@ -139,7 +139,7 @@ export async function declineConsultation(data, token) {
     if (res.status == 401) {
       Toast.show({
         type: "info",
-        text1: `Your agency isn't logged in`,
+        text1: `Your seller account isn't logged in`,
         visibilityTime: 4000,
         topOffset: 30,
       });

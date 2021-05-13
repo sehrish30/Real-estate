@@ -59,9 +59,9 @@ const propertySchema = mongoose.Schema(
     city: {
       type: String,
     },
-    isReported: {
-      type: Boolean,
-      default: false,
+    noOfReports: {
+      type: Number,
+      default: 0,
     },
     // agency: {
     //   type: mongoose.Schema.Types.ObjectId,

@@ -108,6 +108,15 @@ const OfficeTiming = ({ showTiming }) => {
   return (
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
+        <Text
+          style={{
+            color: "#214151",
+            fontFamily: "EBGaramond-Bold",
+            marginBottom: 10,
+          }}
+        >
+          Office hours
+        </Text>
         <View style={{ flexDirection: "row" }}>
           <Input
             ref={startTimeRef}

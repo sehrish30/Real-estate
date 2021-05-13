@@ -40,7 +40,7 @@ const DrawerNavigator = () => {
         <Drawer.Screen name="Dashboard" component={DashboardNavigator} />
       )}
 
-      <Drawer.Screen name="Register Agency" component={RegisterAgent} />
+      <Drawer.Screen name="Register Seller" component={RegisterAgent} />
       {isLoggedIn && (
         <Drawer.Screen
           name="Affordibility calculator"

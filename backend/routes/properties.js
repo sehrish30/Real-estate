@@ -27,12 +27,40 @@ router.get(`/all-properties`, async (req, res) => {
 });
 
 /*----------------------------------------
+      REPORT PROPERTIES
+---------------------------------------- */
+router.put("/report-property", async (req, res) => {
+  try {
+    await Property.findOne({ _id: req.body.propertyId }).exec(
+      async (err, result) => {
+        if (err) {
+          return res.status(401).send(err);
+        }
+        console.log("FIRST", result);
+        let count = result.noOfReports;
+
+        await Property.findByIdAndUpdate(req.body.propertyId, {
+          noOfReports: count + 1,
+        }).exec((err, result) => {
+          console.log("COUNT", count);
+          return res.status(200).send(result);
+        });
+      }
+    );
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
       Get all reported properties
 ---------------------------------------- */
 
 router.get(`/reported-properties`, async (req, res) => {
   try {
-    const propertyList = await Property.find({ isReported: true }).exec();
+    const propertyList = await Property.find({
+      noOfReports: { $gt: 0 },
+    }).exec();
 
     if (!propertyList) {
       return res.status(204).send("No results found");
@@ -175,9 +203,8 @@ router.post(`/send-notifications`, async (req, res) => {
                 receiptIds.push(ticket.id);
               }
             }
-            let receiptIdChunks = expo.chunkPushNotificationReceiptIds(
-              receiptIds
-            );
+            let receiptIdChunks =
+              expo.chunkPushNotificationReceiptIds(receiptIds);
 
             (async () => {
               // Like sending notifications, there are different strategies you could use

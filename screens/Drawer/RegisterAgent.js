@@ -15,7 +15,6 @@ import * as ImagePicker from "expo-image-picker";
 import { Input } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
 import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import { Header } from "react-native-elements";
 import SelectBox from "react-native-multi-selectbox";
 import { catgeories } from "../../Shared/Categories";
 import Dialog from "react-native-dialog";
@@ -70,9 +69,8 @@ const RegisterAgent = ({ navigation }) => {
   useLayoutEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const {
-          status,
-        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
           alert(
             "Sorry, we need camera roll permissions to upload your attachments!"
@@ -262,7 +260,7 @@ const RegisterAgent = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <CustomHeader showMenu={showMenu} title="Register your agency" />
+      <CustomHeader showMenu={showMenu} title="Register as a seller" />
 
       <KeyboardAwareScrollView
         viewIsInsideTabBar={true}
@@ -273,10 +271,10 @@ const RegisterAgent = ({ navigation }) => {
           visible={visibleModal}
           setVisible={setVisibleModal}
           message={
-            "To become a part of Ionic Real estate team you should be be real estate broker or developer."
+            "We check accounts before approving them as sellers on Iconic Properties"
           }
           shortMsg={"If your request gets accepted we will email you."}
-          heading={"Agency Register Request"}
+          heading={"Register seller request"}
         />
         <ScrollView contentContainerStyle={styles.form}>
           <Input
@@ -339,7 +337,7 @@ const RegisterAgent = ({ navigation }) => {
               style={[styles.font, { color: "#5D746E", marginBottom: 10 }]}
             >
               Upload photos of documents for registered agencies in Bahrain to
-              have verified Agency account
+              have verified Seller account
             </Text>
             <Button
               titleStyle={styles.buttonStyle}
@@ -445,7 +443,7 @@ const RegisterAgent = ({ navigation }) => {
           <Button
             titleStyle={styles.btn}
             buttonStyle={[styles.font, styles.register]}
-            title="Register Agency"
+            title="Register Seller"
             onPress={registerAgent}
             disabled={loading}
           />
