@@ -188,11 +188,11 @@ export async function unblockChat(data, token) {
 export async function unseenChatsAgency(agency, token) {
   try {
     const res = await axios.get(`${baseURL}chats/unseenchats-agency`, {
+      params: {
+        agency,
+      },
       headers: {
         Authorization: `Bearer ${token}`,
-        params: {
-          agency,
-        },
       },
     });
     if (res.status == 200 || res.status == 201) {
@@ -206,13 +206,14 @@ export async function unseenChatsAgency(agency, token) {
 export async function unseenChatsCustomer(customer, token) {
   try {
     const res = await axios.get(`${baseURL}chats/unseenchats-customer`, {
+      params: {
+        customer,
+      },
       headers: {
         Authorization: `Bearer ${token}`,
-        params: {
-          customer,
-        },
       },
     });
+    console.error(res.status, "HJK");
     if (res.status == 200 || res.status == 201) {
       return res.data;
     }

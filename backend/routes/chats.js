@@ -378,7 +378,7 @@ router.get("/unseenchats-agency", async (Req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            if ((data[i].chats[j].seen = false)) {
+            if (data[i].chats[j].seen == false) {
               count = count + 1;
               break;
             }
@@ -387,8 +387,8 @@ router.get("/unseenchats-agency", async (Req, res) => {
         if (err) {
           return res.status(402).send(err);
         }
-        console.log("COUNT", count);
-        return res.status(200).send(count);
+
+        return res.status(200).json(count);
       });
   } catch (err) {
     return res.status(500).send(err);
@@ -411,7 +411,7 @@ router.get("/unseenchats-customer", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            if ((data[i].chats[j].seen = false)) {
+            if (data[i].chats[j].seen == false) {
               count = count + 1;
               break;
             }
@@ -420,8 +420,8 @@ router.get("/unseenchats-customer", async (req, res) => {
         if (err) {
           return res.status(402).send(err);
         }
-        console.log("COUNT", count);
-        return res.status(200).send(count);
+
+        return res.status(200).json(count);
       });
   } catch (err) {
     return res.status(500).send(err);

@@ -21,6 +21,7 @@ import {
   FETCH_CHATS,
   EDIT_FETCH_CHATS,
   FETCH_CHAT_SEEN,
+  NOTIFICATIONS_CHATS,
 } from "../constants";
 
 export const chectChatExistAction = (data) => (dispatch) => {
@@ -111,4 +112,8 @@ export const addToFetchedChats = (chat) => (dispatch) => {
 
 export const fetchChatsSeen = (chatId) => (dispatch) => {
   dispatch({ type: FETCH_CHAT_SEEN, payload: chatId });
+};
+
+export const sendChatNotifications = (payload) => (dispatch) => {
+  dispatch({ type: NOTIFICATIONS_CHATS, payload });
 };

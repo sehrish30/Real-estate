@@ -16,6 +16,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import { FontAwesome5 } from "@expo/vector-icons";
+import * as actionsChats from "../../Redux/Actions/chat";
+import {
+  unseenChatsAgency,
+  unseenChatsCustomer,
+} from "../../Shared/Services/ChatServices";
 
 // import jwt from "jsonwebtoken";
 import jwt_decode from "jwt-decode";
@@ -26,7 +31,7 @@ import { useSocket } from "../../hooks/socketConnect";
 
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
-
+  const token = useSelector((state) => state.auth.token);
   const showNewNotification = useSelector((state) => state.consultation.new);
   const tokenAvailable = useSelector((state) => state.auth.token);
 
@@ -98,6 +103,7 @@ const Home = ({ navigation }) => {
           let isLoggedInAgency = !!(
             (await AsyncStorage.getItem("isLoggedInAgency")) == "true"
           );
+
           if (isLoggedIn || isLoggedInAgency) {
             dispatch(
               fillStore({ jwt, user, isLoggedIn, isLoggedInAgency, agency })
@@ -129,6 +135,22 @@ const Home = ({ navigation }) => {
             userId = agency.id;
           } else {
             userId = user.decoded.userId;
+          }
+
+          // notify new chats
+          let result;
+          if (user.decoded && token) {
+            (async () => {
+              result = await unseenChatsCustomer(user.decoded.userId, token);
+              console.error("RESULT", result);
+              dispatch(actionsChats.sendChatNotifications(result));
+            })();
+          } else if (agency.id && token) {
+            (async () => {
+              result = await unseenChatsAgency(agency.id, token);
+              console.error("RESULT", result);
+              dispatch(actionsChats.sendChatNotifications(result));
+            })();
           }
         } catch (e) {
           console.error(e);

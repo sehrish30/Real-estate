@@ -122,7 +122,6 @@ const AllChats = ({ navigation, route }) => {
             });
             Promise.all(requests).then(() => {
               useSocket({ user, allChats: fastChats }, dispatch);
-
               setLoading(false);
             });
           }
@@ -135,6 +134,7 @@ const AllChats = ({ navigation, route }) => {
             res = await agencyRooms({ agency: agency.id }, token);
           } else {
             setAllChats(fetchedChats);
+            setSafetyChats(fetchedChats);
           }
           if (!res) {
             setLoading(false);

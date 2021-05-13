@@ -11,6 +11,7 @@ import AdminNavigator from "./AdminNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
 import ChatNavigator from "./ChatNavigator";
+import ChatsNotification from "../Shared/Chats/ChatsNotification";
 // import { StatusBar } from "expo-status-bar";
 
 let showAdminPanel;
@@ -59,7 +60,7 @@ const Main = () => {
             tabBarIcon: ({ color }) => (
               <View>
                 <Icon name="wechat" color={color} size={25} />
-                {/* <CartIcon /> */}
+                <ChatsNotification />
               </View>
             ),
           }}

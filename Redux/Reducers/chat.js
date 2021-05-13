@@ -19,6 +19,7 @@ import {
   FETCH_CHATS,
   EDIT_FETCH_CHATS,
   FETCH_CHAT_SEEN,
+  NOTIFICATIONS_CHATS,
 } from "../constants";
 
 const initialState = {
@@ -32,6 +33,7 @@ const initialState = {
   messages: [],
   unseenCount: [],
   allChats: [],
+  notificationChats: 0,
 };
 
 const chat = (state = initialState, action) => {
@@ -41,6 +43,11 @@ const chat = (state = initialState, action) => {
       return {
         ...state,
         chatExists: true,
+      };
+    case NOTIFICATIONS_CHATS:
+      return {
+        ...state,
+        notificationChats: payload,
       };
     case SET_SOCKET:
       return {
@@ -198,6 +205,7 @@ const chat = (state = initialState, action) => {
         return {
           ...state,
           newMessageChats: sendChats,
+          notificationChats: 1,
         };
       }
 
@@ -208,6 +216,7 @@ const chat = (state = initialState, action) => {
         return {
           ...state,
           newMessageChats: sendChats,
+          notificationChats: 0,
         };
       }
 
