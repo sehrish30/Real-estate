@@ -11,6 +11,7 @@ import Home from "../screens/Drawer/Home";
 import HomeNavigator from "./HomeNavigator";
 import Dashboard from "../screens/Drawer/Dashboard";
 import DashboardNavigator from "./DashboardNavigator";
+import PostProperty from "../screens/Drawer/PostProperty";
 
 const Drawer = createDrawerNavigator();
 
@@ -46,6 +47,9 @@ const DrawerNavigator = () => {
           name="Affordibility calculator"
           component={AffordibilityCalculator}
         />
+      )}
+      {isLoggedInAgency && (
+        <Drawer.Screen name="Post a property" component={PostProperty} />
       )}
     </Drawer.Navigator>
   );
