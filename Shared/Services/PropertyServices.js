@@ -139,3 +139,45 @@ export async function getAllProperties() {
     console.error(err);
   }
 }
+
+export async function getAllReportedProperties(agency, token) {
+  try {
+    const res = await axios.get(`${baseURL}properties/reported-vs-unreported`, {
+      params: {
+        agency,
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getAllPropertiesStats(agency, token) {
+  try {
+    const res = await axios.get(`${baseURL}properties/typeOfProperties`, {
+      params: {
+        agency,
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

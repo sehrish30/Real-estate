@@ -9,6 +9,7 @@ const hbs = require("nodemailer-express-handlebars");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
+const { Property } = require("../models/property");
 
 const sendtransporter = nodemailer.createTransport(
   sendgridTransport({
@@ -115,6 +116,25 @@ router.get(`/`, async (req, res) => {
     res.send(agencyList);
   } catch (e) {
     res.status(500).json({ error: e });
+  }
+});
+
+/*-----------------------------------------
+      AGENTS PROPERTIES
+-------------------------------------------*/
+router.get("/my-properties", async (req, res) => {
+  console.log(req.query);
+  try {
+    await Property.find({
+      agency: mongoose.Types.ObjectId(req.query.agency),
+    }).exec((err, result) => {
+      if (err) {
+        return res.status(401).send(err);
+      }
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(500).send(err);
   }
 });
 
@@ -1033,4 +1053,5 @@ router.put("/visit-hours", async (req, res) => {
     return res.status(500).send(err);
   }
 });
+
 module.exports = router;

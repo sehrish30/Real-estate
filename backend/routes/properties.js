@@ -249,6 +249,103 @@ router.post(`/send-notifications`, async (req, res) => {
 });
 
 /*----------------------------------------
+   SEND NOTIFICATION TO USER BY SELLER
+---------------------------------------- */
+router.post(`/send-user-notifications`, async (req, res) => {
+  try {
+    User.findOne({
+      enableNotification: true,
+      locations: { $in: [req.body.location] },
+      email: req.body.email,
+    }).exec((err, result) => {
+      if (err) {
+        console.log("HERE");
+        return res.status(500).send(err);
+      }
+      let message = "New properties arrived";
+
+      // Check valid push token
+      // Check that all your push tokens appear to be valid Expo push tokens
+      if (!Expo.isExpoPushToken(result.notificationToken)) {
+        console.log(
+          `Push token ${result.notificationToken} is not a valid Expo push token`
+        );
+      }
+      const chunks = expo.chunkPushNotifications([
+        {
+          to: result.notificationToken,
+          sound: "default",
+          body: message,
+          data: { property: req.body.propertyId },
+          ttl: 86400,
+          title: "ICONIC properties",
+        },
+      ]);
+      let tickets = [];
+      console.log(chunks);
+      for (let chunk of chunks) {
+        try {
+          (async () => await expo.sendPushNotificationsAsync(chunk))().then(
+            (ticketChunk) => {
+              console.log("TICKET CHUNK", ticketChunk);
+              tickets.push(...ticketChunk);
+              console.log("TICKETS", tickets);
+            }
+          );
+
+          // Handling the receipt ID
+          let receiptIds = [];
+          for (let ticket of tickets) {
+            if (ticket.id) {
+              receiptIds.push(ticket.id);
+            }
+          }
+          let receiptIdChunks =
+            expo.chunkPushNotificationReceiptIds(receiptIds);
+
+          (async () => {
+            // Like sending notifications, there are different strategies you could use
+            // to retrieve batches of receipts from the Expo service.
+            for (let chunk of receiptIdChunks) {
+              try {
+                let receipts = await expo.getPushNotificationReceiptsAsync(
+                  chunk
+                );
+                console.log(receipts);
+
+                // The receipts specify whether Apple or Google successfully received the
+                // notification and information about an error, if one occurred.
+                for (let receiptId in receipts) {
+                  let { status, message, details } = receipts[receiptId];
+                  if (status === "ok") {
+                    continue;
+                  } else if (status === "error") {
+                    console.error(
+                      `There was an error sending a notification: ${message}`
+                    );
+                    if (details && details.error) {
+                      console.error(`The error code is ${details.error}`);
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          })();
+        } catch (err) {
+          return res.status(500).send(err);
+        }
+      }
+
+      return res.status(200).send(result);
+    });
+  } catch (err) {
+    return res.status(400).send(err);
+  }
+});
+
+/*----------------------------------------
      SEND NOTIFICATION WITHOUT ALERT
 ---------------------------------------- */
 router.post(`/send-customer-notifications`, async (req, res) => {
@@ -301,6 +398,107 @@ router.get("/subscribed-locations", async (req, res) => {
         }
         return res.status(200).send(result);
       });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+   SUGGEST RELEVANT PROPERTIES
+---------------------------------------- */
+router.get("/relevant-properties", async (req, res) => {
+  try {
+    await Property.find({
+      $or: [
+        { city: req.body.city },
+        { category: req.body.category },
+        { type: req.body.type },
+      ],
+      $and: [
+        { _id: { $ne: req.body.propertyId } },
+        { cost: { $lte: req.body.cost } },
+      ],
+    })
+      .limit(3)
+      .exec((err, result) => {
+        if (err) {
+          return res.status(401).send(err);
+        }
+        return res.status(200).send(result);
+      });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+   STATS FOR REPORTED PROPERTIES
+---------------------------------------- */
+router.get("/reported-vs-unreported", async (req, res) => {
+  try {
+    Property.find({
+      agency: req.query.agency,
+      noOfReports: { $gt: 0 },
+    })
+      .select("_id")
+      .exec((err, result) => {
+        if (err) {
+          return res.status(401).send(err);
+        }
+
+        Property.find({
+          agency: req.query.agency,
+        })
+          .select("_id")
+          .exec((err, result1) => {
+            console.log("RESULT DDS", result1);
+            if (err) {
+              return res.status(401).status(err);
+            }
+            if (result && result1) {
+              return res.status(200).json({
+                reported: result.length,
+                properties: result1.length,
+              });
+            }
+          });
+      });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
+});
+
+/*----------------------------------------
+   STATS FOR REPORTED PROPERTIES
+---------------------------------------- */
+router.get("/typeOfProperties", async (req, res) => {
+  // "name" : { $regex : /Andrew/i }
+  try {
+    let [commercial, residential, industrial, land] = await Promise.all([
+      Property.find({
+        agency: req.query.agency,
+        type: { $regex: /Commercial/i },
+      }).select("_id"),
+      Property.find({
+        agency: req.query.agency,
+        type: { $regex: /Residential/i },
+      }).select("_id"),
+      Property.find({
+        agency: req.query.agency,
+        type: { $regex: /Industrial/i },
+      }).select("_id"),
+      Property.find({
+        agency: req.query.agency,
+        type: { $regex: /Land/i },
+      }).select("_id"),
+    ]);
+
+    return res.status(200).json({
+      commercial: commercial.length,
+      residential: residential.length,
+      industrial: industrial.length,
+      land: land.length,
+    });
   } catch (err) {
     return res.status(500).send(err);
   }

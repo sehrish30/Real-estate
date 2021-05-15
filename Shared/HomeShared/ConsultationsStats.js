@@ -13,6 +13,7 @@ import {
 } from "../../Victory";
 
 let { width } = Dimensions.get("screen");
+
 const ConsultationsStats = ({ graphicData, endAngle }) => {
   return (
     <View>
@@ -39,7 +40,13 @@ const ConsultationsStats = ({ graphicData, endAngle }) => {
         cornerRadius={4}
         endAngle={endAngle}
       />
-      <View style={{ flexDirection: "row", marginTop: 10 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 10,
+          justifyContent: "center",
+        }}
+      >
         <Badge
           value="pending"
           badgeStyle={[{ backgroundColor: "#faeda5" }, styles.badge]}

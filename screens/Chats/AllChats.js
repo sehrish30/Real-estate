@@ -35,7 +35,6 @@ const AllChats = ({ navigation, route }) => {
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
-  let sockets = useSelector((state) => state.chat.socket);
   let fetchedChats = useSelector((state) => state.chat.allChats);
 
   let userId;
@@ -245,7 +244,9 @@ const AllChats = ({ navigation, route }) => {
     if (search.length === 0) {
       setAllChats(fetchedChats);
     }
-    searchedAgency(useDebounce(search));
+    if (search.length > 0) {
+      searchedAgency(useDebounce(search));
+    }
 
     return () => {
       clearTimeout(timer);

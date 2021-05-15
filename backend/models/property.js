@@ -63,11 +63,11 @@ const propertySchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    // agency: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Agency",
-    //   required: true,
-    // },
+    agency: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Agent",
+      // required: true,
+    },
   },
   {
     timestamps: true,

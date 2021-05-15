@@ -138,17 +138,18 @@ const Home = ({ navigation }) => {
           }
 
           // notify new chats
+          let getToken = await AsyncStorage.getItem("jwt");
           let result;
-          if (user.decoded && token) {
+
+          if (user.decoded && getToken) {
             (async () => {
-              result = await unseenChatsCustomer(user.decoded.userId, token);
-              console.error("RESULT", result);
+              result = await unseenChatsCustomer(user.decoded.userId, getToken);
               dispatch(actionsChats.sendChatNotifications(result));
             })();
-          } else if (agency.id && token) {
+          } else if (agency.id && getToken) {
             (async () => {
-              result = await unseenChatsAgency(agency.id, token);
-              console.error("RESULT", result);
+              console.error(getToken);
+              result = await unseenChatsAgency(agency.id, getToken);
               dispatch(actionsChats.sendChatNotifications(result));
             })();
           }

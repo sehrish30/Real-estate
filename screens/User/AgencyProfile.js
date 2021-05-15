@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState, useReducer } from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Button, Card, Image } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
@@ -224,6 +224,23 @@ const AgencyProfile = ({ navigation }) => {
         navigation={navigation}
         dispatchProfile={dispatchProfile}
       />
+      <View>
+        <Card containerStyle={styles.property}>
+          <Card.Title>CARD WITH DIVIDER</Card.Title>
+          <Card.Divider />
+          <View>
+            <Image
+              style={{ width: 100, height: 100 }}
+              resizeMode="cover"
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
+              }}
+            />
+            <Text style={styles.name}>{"PROPERTY"}</Text>
+          </View>
+        </Card>
+      </View>
+      <Button title="View properties" type="outline" />
     </ScrollView>
   );
 };
@@ -240,5 +257,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#214151",
+  },
+  property: {
+    backgroundColor: "white",
+    borderRadius: 5,
   },
 });

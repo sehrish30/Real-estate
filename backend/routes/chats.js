@@ -366,7 +366,7 @@ router.put(`/all-chatsSeen`, async (req, res) => {
 /*----------------------------------------
    CHECK IF ANY CHAT HAS UNSEEN MSGS FOR AGENCY
 ---------------------------------------- */
-router.get("/unseenchats-agency", async (Req, res) => {
+router.get("/unseenchats-agency", async (req, res) => {
   try {
     let count = 0;
     Chat.find({
