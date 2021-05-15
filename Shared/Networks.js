@@ -1,0 +1,18 @@
+export const networks = [
+  {
+    id: "STC",
+    item: "STC",
+  },
+  {
+    id: "Zain",
+    item: "Zain",
+  },
+  {
+    id: "Batelco",
+    item: "Batelco",
+  },
+  {
+    id: "Others",
+    item: "Others",
+  },
+];

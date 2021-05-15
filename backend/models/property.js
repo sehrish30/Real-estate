@@ -13,16 +13,6 @@ const propertySchema = mongoose.Schema(
       type: Object,
     },
     network: [Object],
-    // images: [
-    //   {
-    //     type: Object,
-    //     default: {
-    //       public_id: Date.now,
-    //       url:
-    //         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-    //     },
-    //   },
-    // ],
     images: {
       type: [String],
       default:
@@ -59,14 +49,20 @@ const propertySchema = mongoose.Schema(
     city: {
       type: String,
     },
-    noOfReports: {
-      type: Number,
-      default: 0,
+    panorama_url: {
+      type: String,
+    },
+    video_url: {
+      type: String,
     },
     agency: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Agent",
-      // required: true,
+      ref: "Agency",
+      required: true,
+    },
+    noOfReports: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -27,6 +27,32 @@ router.get(`/all-properties`, async (req, res) => {
 });
 
 /*----------------------------------------
+      GET ALL PROPERTIES
+---------------------------------------- */
+router.get("/allProperties", (req, res) => {
+  let partialToMatch = new RegExp(req.body.title, "i");
+  console.log("Search--------------");
+  Category.find({ type: partialToMatch }, function (err, data) {
+    if (err) return res.json({ error: err, status: "400" });
+    console.log("Search Data-----", data);
+    return res.json({ status: "200", data: data });
+  });
+});
+
+/*----------------------------------------
+        Property details
+---------------------------------------- */
+router.get("/propertyDetails/:id", (req, res) => {
+  let id = req.params.id;
+  console.log("Search--------------", req.body);
+  Category.find({ _id: id }, function (err, data) {
+    if (err) return res.json({ error: err, status: "400" });
+    console.log("Search Data-----", data);
+    return res.json({ status: "200", data: data });
+  });
+});
+
+/*----------------------------------------
       REPORT PROPERTIES
 ---------------------------------------- */
 router.put("/report-property", async (req, res) => {
@@ -60,14 +86,14 @@ router.get(`/reported-properties`, async (req, res) => {
   try {
     const propertyList = await Property.find({
       noOfReports: { $gt: 0 },
-    }).exec();
-
+    });
+    console.log("GETTING");
     if (!propertyList) {
       return res.status(204).send("No results found");
     }
     res.status(200).send(propertyList);
   } catch (err) {
-    return res.status(400).send(err);
+    return res.status(500).send(err);
   }
 });
 
@@ -503,4 +529,80 @@ router.get("/typeOfProperties", async (req, res) => {
     return res.status(500).send(err);
   }
 });
+
+/*----------------------------------------
+       UPLOAD PROPERTIEs
+---------------------------------------- */
+router.post("/uploadProperty", async (req, res) => {
+  console.log("Body", req.body);
+  const data = req.body;
+  res.json({ message: "SEnd to upload" });
+  let property = new Category({
+    title: data.name,
+    cost: data.price,
+    location: data.location,
+    bathrooms: data.bathRooms,
+    rooms: data.rooms,
+    description: data.description,
+    type: data.type.item,
+    network: data.network,
+    Amenities: data.amenity,
+    images: data.uri,
+    city: data.city,
+    area: data.area,
+    panorama_url: data.panorama_url,
+    video_url: data.video_url,
+  });
+
+  const savedProperty = await property.save();
+  console.log("Property", property);
+});
+
+/*----------------------------------------
+        PROPERTIEs SEARCH
+---------------------------------------- */
+router.post("/searchProperty", (req, res) => {
+  let partialToMatch = new RegExp(req.body.title, "i");
+  const type = req.body.type;
+  console.log("Search--------------");
+  Category.find({ title: partialToMatch, type: type }, function (err, data) {
+    if (err) return res.json({ error: err, status: "400" });
+    console.log("Search Data-----", data);
+    return res.json({ status: "200", data: data });
+  });
+});
+
+/*----------------------------------------
+        FILTER PROPERTY
+---------------------------------------- */
+router.post("/filterProperty", (req, res) => {
+  console.log("Req Body data", req.body);
+  const {
+    priceMinimum,
+    priceMaximum,
+    type,
+    property,
+    amenity,
+    areaMaximum,
+    areaMinimum,
+    city,
+  } = req.body;
+  console.log("Filter Body", req.body.data);
+  Category.find(
+    {
+      cost: { $lt: priceMaximum, $gt: priceMinimum },
+      area: { $lt: areaMaximum, $gt: areaMinimum },
+      type: type,
+      category: property,
+      Amenities: { $in: amenity },
+      city,
+    },
+    function (err, data) {
+      if (err) return res.json({ error: err, status: "400" });
+      console.log("Filter Data", data);
+      res.json({ data: data });
+    }
+  );
+});
+
 module.exports = router;
