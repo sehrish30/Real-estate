@@ -34,7 +34,7 @@ router.get("/:user_id", async (req, res) => {
 router.post("/add", async (req, res) => {
   try {
     let wishList = new Wishlist(req.body);
-
+    console.log(req.body, "GET");
     console.log("wishlist:", wishList);
     // wishList= await wishList.save();
 
@@ -45,10 +45,7 @@ router.post("/add", async (req, res) => {
           message: err,
         });
       } else {
-        res.status(200).json({
-          wishlist: item,
-          message: "Wishlist added successfully",
-        });
+        res.status(200).send(item);
       }
     });
 
@@ -63,22 +60,19 @@ router.post("/add", async (req, res) => {
         DELETE ITEM FROM Wishlist
 ----------------------------------------- */
 
-router.post("/delete", async (req, res) => {
+router.delete("/delete", async (req, res) => {
   try {
-    Wishlist.remove({ _id: req.body.wishlist_id }, function (err, result) {
+    Wishlist.findOneAndDelete({
+      property_id: req.body.property_id,
+      user_id: req.body.user_id,
+    }).exec((err, data) => {
       if (err) {
-        return res.send({
-          status: 404,
-          message: err,
-        });
-      } else {
-        res.status(200).json({
-          message: "Deleted successfully",
-        });
+        return res.status(422).send(err);
       }
+      return res.status(200).send(data);
     });
   } catch (e) {
-    console.error(e);
+    return res.status(500).send(e);
   }
 });
 

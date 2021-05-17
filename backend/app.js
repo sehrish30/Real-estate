@@ -43,6 +43,7 @@ const propertyRoutes = require("./routes/properties");
 const chatsRoutes = require("./routes/chats");
 const consulationRoutes = require("./routes/consultations");
 const notificationRoutes = require("./routes/notifications");
+const wishlistsRoutes = require("./routes/wishlists");
 
 /*---------------------------------
               ROUTER
@@ -53,6 +54,7 @@ app.use(`/properties`, propertyRoutes);
 app.use(`/chats`, chatsRoutes);
 app.use(`/consultations`, consulationRoutes);
 app.use(`/notifications`, notificationRoutes);
+app.use(`/wishlists`, wishlistsRoutes);
 
 /*---------------------------------
        MONGOOSE CONNECTION

@@ -29,6 +29,8 @@ const authJwt = () => {
       `/agencies/reset-password`,
       `/agencies/all-reviews`,
       `/properties/all-properties`,
+      `/properties/allProperties`,
+      `/properties/searchProperty`,
     ],
   });
 };

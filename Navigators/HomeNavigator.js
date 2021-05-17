@@ -8,6 +8,8 @@ import ScheduleConsultationForm from "../screens/Drawer/ScheduleConsultationForm
 import UserRateReview from "../screens/User/UserRateReview";
 import Notifications from "../screens/Drawer/Notifications";
 import MapLocations from "../screens/Drawer/MapLocations";
+import SearchProperty from "../Shared/HomeShared/PostProperties/SearchProperty";
+import PropertiesPosts from "../Shared/HomeShared/PostProperties/PropertiesPosts";
 
 const Stack = createStackNavigator();
 
@@ -66,6 +68,20 @@ function MyStack() {
         component={MapLocations}
         options={{
           title: "All properties",
+        }}
+      />
+      <Stack.Screen
+        name="SearchProperty"
+        component={SearchProperty}
+        options={{
+          title: "Filter Property",
+        }}
+      />
+      <Stack.Screen
+        name="PropertiesPosts"
+        component={PropertiesPosts}
+        options={{
+          title: "Property Detail",
         }}
       />
     </Stack.Navigator>

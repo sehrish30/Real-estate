@@ -181,3 +181,58 @@ export async function getAllPropertiesStats(agency, token) {
     console.error(err);
   }
 }
+
+export async function getPropertyDetails(data) {
+  try {
+    const res = await axios.get(`${baseURL}properties/propertyDetails`, {
+      params: {
+        id: data.property,
+        userId: data.userId,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function addWishLists(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}wishlists/add`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function removeFromWishList(data, token) {
+  try {
+    const res = await axios.delete(`${baseURL}wishlists/delete`, {
+      // params: {
+      //   user_id: data.user_id,
+      //   property_id: data.property_id,
+      // },
+      data,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

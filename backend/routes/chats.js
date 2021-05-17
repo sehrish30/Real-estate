@@ -2,6 +2,7 @@ const { Chat } = require("../models/chat");
 const { ChatMsg } = require("../models/chatMsg");
 const express = require("express");
 const cloudinary = require("cloudinary");
+const mongoose = require("mongoose");
 
 const router = express.Router();
 
@@ -378,7 +379,11 @@ router.get("/unseenchats-agency", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            if (data[i].chats[j].seen == false) {
+            if (
+              data[i].chats[j].seen == false &&
+              data[i].chats[j].author !=
+                mongoose.Types.ObjectId(req.query.agency)
+            ) {
               count = count + 1;
               break;
             }
@@ -411,7 +416,11 @@ router.get("/unseenchats-customer", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            if (data[i].chats[j].seen == false) {
+            if (
+              data[i].chats[j].seen == false &&
+              data[i].chats[j].author !=
+                mongoose.Types.ObjectId(req.query.customer)
+            ) {
               count = count + 1;
               break;
             }

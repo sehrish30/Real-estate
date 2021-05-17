@@ -9,6 +9,9 @@ import {
   Platform,
 } from "react-native";
 
+import _ from 'lodash';
+import Image360Viewer from '@hauvo/react-native-360-image-viewer';
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
@@ -21,163 +24,166 @@ import MapView from "react-native-maps";
 import * as Location from "expo-location";
 import SwitchSelector from "react-native-switch-selector";
 import Counter from "react-native-counters";
-
-// import MainScreen from "./ImageUpload/MainScreen";
+import { color } from "react-native-reanimated";
+import MainScreen from "./ImageUpload/MainScreen";
 import { connect } from "react-redux";
 import Axios from "axios";
-import { useNavigation } from "@react-navigation/native";
-import { useRoute } from "@react-navigation/native";
-import baseURL from "../../assets/common/baseUrl";
-import { items } from "../../Shared/Items";
-import { amenities } from "../../Shared/amenities";
-import { networks } from "../../Shared/Networks";
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
+import baseURL from '../../assets/common/baseUrl'
+
+import baseUrl from "../../assets/common/baseUrl";
+
+const images = _.reverse([
+  require(`./../../assets/images/andes.jpg`)
+])
 //property type list
-// export const items = [
-//   {
-//     id: "Residential",
-//     item: "Residential",
-//   },
-//   {
-//     id: "Commercial",
-//     item: "Commercial",
-//   },
-//   {
-//     id: "Industrial",
-//     item: "Industrial",
-//   },
-//   {
-//     id: "Lands",
-//     item: "Lands",
-//   },
-// ];
+export const items = [
+  {
+    id: "Residential",
+    item: "Residential",
+  },
+  {
+    id: "Commercial",
+    item: "Commercial",
+  },
+  {
+    id: "Industrial",
+    item: "Industrial",
+  },
+  {
+    id: "Lands",
+    item: "Lands",
+  },
+];
 
-// //amenities list
-// export const amenities = [
-//   {
-//     id: "Central heating",
-//     item: "Central heating",
-//   },
-//   {
-//     id: "Central cooling",
-//     item: "Central cooling",
-//   },
-//   {
-//     id: "Dirty kitchen",
-//     item: "Dirty Kitchen",
-//   },
-//   {
-//     id: "Lawn",
-//     item: "Lawn",
-//   },
-//   {
-//     id: "Swimming pool",
-//     item: "Swimming pool",
-//   },
-//   {
-//     id: "Parking space",
-//     item: "Parking space",
-//   },
-//   {
-//     id: "TV lounge",
-//     item: "TV lounge",
-//   },
-//   {
-//     id: "Drawing room",
-//     item: "Drawing room",
-//   },
-//   {
-//     id: "Home theatre",
-//     item: "Home theatre",
-//   },
-//   {
-//     id: "Corner house",
-//     item: "Corner house",
-//   },
-//   {
-//     id: "Elevators",
-//     item: "Elevators",
-//   },
-//   {
-//     id: "Study room",
-//     item: "Study room",
-//   },
-//   {
-//     id: "Security staff",
-//     item: "Security staff",
-//   },
-//   {
-//     id: "Nearby Landmark",
-//     item: "Nearby Landmark",
-//   },
-//   {
-//     id: "Wifi",
-//     item: "Wifi",
-//   },
-//   {
-//     id: "Balcony",
-//     item: "Balcony",
-//   },
-//   {
-//     id: "Laundry room",
-//     item: "Laundry room",
-//   },
-//   {
-//     id: "Servant quarter",
-//     item: "Servant quarter",
-//   },
-//   {
-//     id: "Fully Furnished",
-//     item: "Fully Furnished",
-//   },
-//   {
-//     id: "Semi furnished",
-//     item: "Semi furnished",
-//   },
-//   {
-//     id: "Dining room",
-//     item: "Dining room",
-//   },
-//   {
-//     id: "Kitchen",
-//     item: "Kitchen",
-//   },
-//   {
-//     id: "Store room",
-//     item: "Store room",
-//   },
-//   {
-//     id: "Powder room",
-//     item: "Powder room",
-//   },
-//   {
-//     id: "Accessible for specially abled persons",
-//     item: "Accessible for specially abled persons",
-//   },
-// ];
+//amenities list
+export const amenities = [
+  {
+    id: "Central heating",
+    item: "Central heating",
+  },
+  {
+    id: "Central cooling",
+    item: "Central cooling",
+  },
+  {
+    id: "Dirty kitchen",
+    item: "Dirty Kitchen",
+  },
+  {
+    id: "Lawn",
+    item: "Lawn",
+  },
+  {
+    id: "Swimming pool",
+    item: "Swimming pool",
+  },
+  {
+    id: "Parking space",
+    item: "Parking space",
+  },
+  {
+    id: "TV lounge",
+    item: "TV lounge",
+  },
+  {
+    id: "Drawing room",
+    item: "Drawing room",
+  },
+  {
+    id: "Home theatre",
+    item: "Home theatre",
+  },
+  {
+    id: "Corner house",
+    item: "Corner house",
+  },
+  {
+    id: "Elevators",
+    item: "Elevators",
+  },
+  {
+    id: "Study room",
+    item: "Study room",
+  },
+  {
+    id: "Security staff",
+    item: "Security staff",
+  },
+  {
+    id: "Nearby Landmark",
+    item: "Nearby Landmark",
+  },
+  {
+    id: "Wifi",
+    item: "Wifi",
+  },
+  {
+    id: "Balcony",
+    item: "Balcony",
+  },
+  {
+    id: "Laundry room",
+    item: "Laundry room",
+  },
+  {
+    id: "Servant quarter",
+    item: "Servant quarter",
+  },
+  {
+    id: "Fully Furnished",
+    item: "Fully Furnished",
+  },
+  {
+    id: "Semi furnished",
+    item: "Semi furnished",
+  },
+  {
+    id: "Dining room",
+    item: "Dining room",
+  },
+  {
+    id: "Kitchen",
+    item: "Kitchen",
+  },
+  {
+    id: "Store room",
+    item: "Store room",
+  },
+  {
+    id: "Powder room",
+    item: "Powder room",
+  },
+  {
+    id: "Accessible for specially abled persons",
+    item: "Accessible for specially abled persons",
+  },
+];
 
-// //networkCoverage
-// export const networks = [
-//   {
-//     id: "STC",
-//     item: "STC",
-//   },
-//   {
-//     id: "Zain",
-//     item: "Zain",
-//   },
-//   {
-//     id: "Batelco",
-//     item: "Batelco",
-//   },
-//   {
-//     id: "Others",
-//     item: "Others",
-//   },
-// ];
+//networkCoverage
+export const networks = [
+  {
+    id: "STC",
+    item: "STC",
+  },
+  {
+    id: "Zain",
+    item: "Zain",
+  },
+  {
+    id: "Batelco",
+    item: "Batelco",
+  },
+  {
+    id: "Others",
+    item: "Others",
+  },
+];
 
 var { width, height } = Dimensions.get("window");
 
-const PostProperty = ({ navigation, image, imageUri }) => {
+const PropertiesInfo = ({ navigation, image, imageUri }) => {
   const showMenu = () => {
     navigation.toggleDrawer();
   };
@@ -187,17 +193,20 @@ const PostProperty = ({ navigation, image, imageUri }) => {
   const [type, setType] = useState({});
   const [amenity, setAmenity] = useState([]);
   const [network, setNetwork] = useState([]);
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
   const [area, setArea] = useState(0);
   const [rooms, setRooms] = useState(0);
   const [bathRooms, setBathRooms] = useState(0);
   const [parking, setParking] = useState(false);
-  const [property, setProperty] = useState("");
+  const [property, setProperty] = useState('');
   const [uri, setUri] = useState([]);
 
-  const [city, setCity] = useState("");
-  const [amn, setAmn] = useState([]);
+  const [city, setCity] = useState('');
+  const [videourl, setVideourl] = useState('');
+  const [Imageurl, setImageurl] = useState('');
+  const [amn, setAmn] = useState([])
+
 
   const [attachments, setAttachments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -207,23 +216,16 @@ const PostProperty = ({ navigation, image, imageUri }) => {
 
   //amenities
   function removeA(item) {
-    console.log(
-      "1111111111111111111111111111111111111111111111111111111111111```````````"
-    );
+    console.log('1111111111111111111111111111111111111111111111111111111111111```````````')
     const filteredAmenities = amenity.filter((amnty) => amnty !== item.item);
     const filteredAmn = amn.filter((amnty) => amnty.item !== item.item);
-    console.log(
-      "-------------------------",
-      filteredAmn,
-      filteredAmenities,
-      "-----------------------------------------"
-    );
+    console.log('-------------------------', filteredAmn, filteredAmenities, '-----------------------------------------')
     setAmenity(filteredAmenities);
     setAmn(filteredAmn);
   }
 
   function onMultiChangeA() {
-    console.log("22222");
+    console.log('222222222222222222222222222222222222222222222222222222222222222222222222222222222222')
     return (item) => {
       for (let i = 0; i < amenity.length; i++) {
         if (amenity[i] === item.id) {
@@ -231,19 +233,19 @@ const PostProperty = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log("Multi Change Item", item.item);
-      setAmn([...amn, item]);
+      console.log('Multi Change Item', item.item)
+      setAmn([...amn, item])
       setAmenity([...amenity, item.item]);
     };
   }
-  console.log("Amenities--------------------", amenity);
+  console.log('Amenities--------------------', amenity)
   function removeSelectA() {
     return (item) => {
       const filteredAmn = amn.filter((amnty) => amnty.id !== item.id);
       const filteredAmenities = amenity.filter((amnty) => amnty !== item.id);
-      console.log("Item", item, "Filtered Aminities", filteredAmenities);
+      console.log('Item', item, 'Filtered Aminities', filteredAmenities)
       setAmn(filteredAmn);
-      setAmenity(filteredAmenities);
+      setAmenity(filteredAmenities)
     };
   }
 
@@ -253,6 +255,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
     setNetwork(filteredNetworks);
   }
 
+
   function onMultiChangeN() {
     return (item) => {
       for (let i = 0; i < network.length; i++) {
@@ -261,7 +264,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log("N multi", item);
+      console.log('N multi', item)
       setNetwork([...network, item]);
     };
   }
@@ -272,6 +275,8 @@ const PostProperty = ({ navigation, image, imageUri }) => {
       setNetwork(filteredNetworks);
     };
   }
+
+
 
   function removeT(item) {
     const filteredType = type.filter((net) => net.id !== item.id);
@@ -286,7 +291,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log("T multi", item);
+      console.log('T multi', item)
       setType([...type, item]);
     };
   }
@@ -298,10 +303,13 @@ const PostProperty = ({ navigation, image, imageUri }) => {
     };
   }
 
+
+
+
   const onChange = () => {
     return (item) => {
-      console.log("Type", item);
-      setType(item);
+      console.log('Type', item)
+      setType(item)
     };
   };
 
@@ -317,9 +325,11 @@ const PostProperty = ({ navigation, image, imageUri }) => {
   let route = useRoute();
   const { params } = route;
 
-  console.log("Params============================", params);
+  console.log('Params============================', params)
 
-  console.log("Uri???????????????????????????????????", uri);
+
+
+  console.log('Uri???????????????????????????????????', uri)
   useEffect(() => {
     // (async () => {
 
@@ -333,52 +343,53 @@ const PostProperty = ({ navigation, image, imageUri }) => {
     //   setLocation(location.coords);
     //   console.log(location.coords);
     // })();
-    console.log("-------------//////////////-------111112221");
+    console.log('-------------//////////////-------111112221')
     if (params?.photos) {
       setUri([]);
-      console.log("-------------//////////////-------");
+      console.log('-------------//////////////-------')
 
       //-----------------------------------
-      params.photos.map((image) => {
+      params.photos.map(image => {
         const imageData = new FormData();
         const newFile = {
           uri: image.uri,
           name: image.name,
-          type: image.type,
+          type: image.type
         };
         imageData.append("file", newFile);
         imageData.append("cloud_name", "abikhan");
         imageData.append("upload_preset", "insta-clone");
 
+
         Axios.post(
           "https://api.cloudinary.com/v1_1/abikhan/image/upload",
           imageData
-        )
-          .then(async (res) => {
-            console.log(
-              "Response URI.....",
-              res.data.url,
-              "//////////////////////////////// uri array"
-            );
-            const responseURI = await res.data.url;
-            console.log("Checking--------------------------", responseURI);
-            // uri.push(responseURI);
-            setUri((prev) => [...prev, responseURI]);
-          })
-          .catch((err) => console.log("Error---", err));
-      });
+        ).then(async (res) => {
+          console.log('Response URI.....', res.data.url, '//////////////////////////////// uri array')
+          const responseURI = await res.data.url;
+          console.log('Checking--------------------------', responseURI);
+          // uri.push(responseURI);
+          setUri(prev => [...prev, responseURI])
+        })
+          .catch(err => console.log('Error---', err))
+      }
+      )
     }
   }, [params?.photos]);
   const onChangeRoomsConter = (number, type) => {
-    setRooms(number);
+    setRooms(number)
     console.log(number, type); // 1, + or -
   };
   const onChangeBathsConter = (number, type) => {
-    setBathRooms(number);
+    setBathRooms(number)
     console.log(number, type); // 1, + or -
   };
 
   const onSubmit = async () => {
+
+
+
+
     const variable = {
       name,
       type,
@@ -392,15 +403,17 @@ const PostProperty = ({ navigation, image, imageUri }) => {
       property,
       uri,
       area: parseInt(area),
-      city,
+      city
     };
     // console.log('Variable------------------------------------------', variable)
     // console.log('BaseUrl', baseURL)
     Axios.post(`${baseURL}/uploadProperty`, variable).then((res) => {
-      console.log("--------------------------------------");
-      console.log("Response", res.data);
-      console.log("--------------------------------------");
-    });
+      console.log("--------------------------------------")
+      console.log("Response", res.data)
+      console.log("--------------------------------------")
+    }
+    )
+
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -424,6 +437,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
                 onPress={showMenu}
                 name="ios-search"
                 color={"#214151"}
+
                 size={30}
               />
             </TouchableOpacity>
@@ -451,7 +465,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
             buttonColor="#214151"
             borderColor="#214151"
             hasPadding
-            onPress={(value) => setProperty(value)}
+            onPress={value => setProperty(value)}
             options={[
               { label: "Buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
               { label: "Rent", value: "rent" }, //images.masculino = require('./path_to/assets/img/masculino.png')
@@ -610,20 +624,22 @@ const PostProperty = ({ navigation, image, imageUri }) => {
             }}
             value={network}
           />
+
           <View style={{ paddingBottom: 10 }}></View>
-          <TextInput
-            value={city}
-            onChangeText={(val) => setCity(val)}
-            placeholder="Enter City name"
-            style={styles.textInput}
-          />
+          <TextInput value={city} onChangeText={(val) => setCity(val)} placeholder='Enter City name' style={styles.textInput} />
+
+          <View style={{ paddingBottom: 10 }}></View>
+          <TextInput value={videourl} onChangeText={(val) => setVideourl(val)} placeholder='Enter Video Url' style={styles.textInput} />
+
+          <View style={{ paddingBottom: 10 }}></View>
+          <TextInput value={Imageurl} onChangeText={(val) => setImageurl(val)} placeholder='Enter 360 Image Url' style={styles.textInput} />
+
           <View style={{ height: 150 }}>
+
+
             <MapView
               style={styles.maps}
-              onPress={(e) => {
-                setLocation(e.nativeEvent.coordinate),
-                  console.log(e.nativeEvent);
-              }}
+              onPress={(e) => { setLocation(e.nativeEvent.coordinate), console.log(e.nativeEvent) }}
             >
               <MapView.Marker
                 coordinate={{
@@ -636,6 +652,7 @@ const PostProperty = ({ navigation, image, imageUri }) => {
             </MapView>
           </View>
 
+
           <View style={{ paddingBottom: 10 }}></View>
           <MainScreen />
           <View style={{ paddingBottom: 10 }}></View>
@@ -645,28 +662,22 @@ const PostProperty = ({ navigation, image, imageUri }) => {
             title="Register Agency"
             onPress={onSubmit}
           />
-          {image ? (
-            <Image
-              style={{ height: 100, width: 100 }}
-              source={{ uri: image[0]?.uri }}
-            />
-          ) : (
-            <Text>No image available</Text>
-          )}
+          {image ? <Image style={{ height: 100, width: 100 }} source={{ uri: image[0]?.uri }} /> : <Text>No image available</Text>}
+
         </ScrollView>
       </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };
 const mapStateToProps = (state) => {
-  console.log("State...........///--------", state);
+  console.log('State...........///--------', state)
   return {
     image: state.auth.images,
-    imageUri: state.uri,
+    imageUri: state.uri
   };
 };
 
-export default connect(mapStateToProps, null)(PostProperty);
+export default connect(mapStateToProps, null)(PropertiesInfo);
 
 const styles = StyleSheet.create({
   container: {
@@ -738,10 +749,10 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   textInput: {
-    borderColor: "#A5A5A5",
+    borderColor: '#A5A5A5',
     borderWidth: 1,
     paddingHorizontal: 4,
     paddingVertical: 8,
-    marginVertical: 16,
-  },
+    marginVertical: 16
+  }
 });

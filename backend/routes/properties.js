@@ -8,6 +8,7 @@ const { Agency } = require("../models/agency");
 const { Expo } = require("expo-server-sdk");
 const { User } = require("../models/user");
 const expo = new Expo();
+const Wishlist = require("../models/wishlist.js");
 
 /*----------------------------------------
       GET ALL PROPERTIES
@@ -30,26 +31,59 @@ router.get(`/all-properties`, async (req, res) => {
       GET ALL PROPERTIES
 ---------------------------------------- */
 router.get("/allProperties", (req, res) => {
-  let partialToMatch = new RegExp(req.body.title, "i");
+  let partialToMatch = new RegExp(req.query.title, "i");
   console.log("Search--------------");
-  Category.find({ type: partialToMatch }, function (err, data) {
-    if (err) return res.json({ error: err, status: "400" });
-    console.log("Search Data-----", data);
-    return res.json({ status: "200", data: data });
-  });
+  Property.find({ type: partialToMatch })
+    .populate("agency", "name totalRating")
+    .exec((err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(422).send(err);
+      }
+      return res.status(200).send(data);
+    });
+  // Property.find()
+  //   .populate("agency")
+  //   .exec((err, data) => {
+  //     if (err) {
+  //       return res.status(400).send(err);
+  //     }
+  //     return res.status(200).send(data);
+  //   });
 });
 
 /*----------------------------------------
         Property details
 ---------------------------------------- */
-router.get("/propertyDetails/:id", (req, res) => {
-  let id = req.params.id;
+router.get("/propertyDetails", (req, res) => {
+  let id = mongoose.Types.ObjectId(req.query.id);
   console.log("Search--------------", req.body);
-  Category.find({ _id: id }, function (err, data) {
-    if (err) return res.json({ error: err, status: "400" });
-    console.log("Search Data-----", data);
-    return res.json({ status: "200", data: data });
-  });
+  Property.findById(req.query.id)
+    .populate("agency", "name logo totalRating")
+    .exec((err, data) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+      if (req.query.userId) {
+        Wishlist.findOne({
+          user_id: req.query.userId,
+          property_id: req.query.id,
+        })
+          .select("_id")
+          .exec((err, info) => {
+            if (err) {
+              return res.status(422).send(err);
+            }
+            let exists = false;
+            if (info) {
+              exists = true;
+            }
+            return res.status(200).json({ data, exists });
+          });
+      } else if (!req.query.userId && data) {
+        return res.status(200).json({ data, exists: false });
+      }
+    });
 });
 
 /*----------------------------------------
@@ -537,7 +571,7 @@ router.post("/uploadProperty", async (req, res) => {
   console.log("Body", req.body);
   const data = req.body;
   res.json({ message: "SEnd to upload" });
-  let property = new Category({
+  let property = new Property({
     title: data.name,
     cost: data.price,
     location: data.location,
@@ -561,11 +595,16 @@ router.post("/uploadProperty", async (req, res) => {
 /*----------------------------------------
         PROPERTIEs SEARCH
 ---------------------------------------- */
-router.post("/searchProperty", (req, res) => {
-  let partialToMatch = new RegExp(req.body.title, "i");
-  const type = req.body.type;
+router.get("/searchProperty", (req, res) => {
+  let partialToMatch = new RegExp(req.query.title, "i");
+  let query = { title: partialToMatch };
+  const type = req.query.type;
+  if (type) {
+    query = { title: partialToMatch, type: type };
+  }
+
   console.log("Search--------------");
-  Category.find({ title: partialToMatch, type: type }, function (err, data) {
+  Property.find(query, function (err, data) {
     if (err) return res.json({ error: err, status: "400" });
     console.log("Search Data-----", data);
     return res.json({ status: "200", data: data });
@@ -588,7 +627,7 @@ router.post("/filterProperty", (req, res) => {
     city,
   } = req.body;
   console.log("Filter Body", req.body.data);
-  Category.find(
+  Property.find(
     {
       cost: { $lt: priceMaximum, $gt: priceMinimum },
       area: { $lt: areaMaximum, $gt: areaMinimum },

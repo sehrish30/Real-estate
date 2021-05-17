@@ -7,11 +7,9 @@ import AffordibilityCalculator from "../screens/Drawer/AffordibilityCalculator";
 import RegisterAgent from "../screens/Drawer/RegisterAgent";
 
 import { useSelector } from "react-redux";
-import Home from "../screens/Drawer/Home";
 import HomeNavigator from "./HomeNavigator";
 import Dashboard from "../screens/Drawer/Dashboard";
 import DashboardNavigator from "./DashboardNavigator";
-import PostProperty from "../screens/Drawer/PostProperty";
 
 const Drawer = createDrawerNavigator();
 
@@ -48,9 +46,9 @@ const DrawerNavigator = () => {
           component={AffordibilityCalculator}
         />
       )}
-      {isLoggedInAgency && (
+      {/* {isLoggedInAgency && (
         <Drawer.Screen name="Post a property" component={PostProperty} />
-      )}
+      )} */}
     </Drawer.Navigator>
   );
 };

@@ -83,7 +83,7 @@ const AgencyLogin = ({ navigation }) => {
       headerStyle: { backgroundColor: "#eff7e1" },
       headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
       headerTintColor: "#2c6e8f",
-      headerTitle: "Login agency",
+      headerTitle: "Login Seller",
     });
   }, [navigation]);
   return (

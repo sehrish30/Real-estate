@@ -57,7 +57,7 @@ const propertySchema = mongoose.Schema(
     },
     agency: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Agency",
+      ref: "Agent",
       required: true,
     },
     noOfReports: {

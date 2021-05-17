@@ -25,7 +25,7 @@ const Register = ({ navigation }) => {
       email !== "" &&
       /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
     ) {
-      if (password.length >= 6 && passRegex.test(password)) {
+      if (password.length >= 6 && "/(?=.*d)(?=.*[a-z]).{6,}/".test(password)) {
         setLoading(true);
         let newEmail = email;
         newEmail = newEmail.toLowerCase().trim();
@@ -44,7 +44,7 @@ const Register = ({ navigation }) => {
     } else {
       Toast.show({
         type: "error",
-        text1: `Email Invalid`,
+        text1: `Email not in correct format`,
         text2: `e.g: email@exp.com`,
         visibilityTime: 4000,
         topOffset: 30,

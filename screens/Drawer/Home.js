@@ -28,6 +28,7 @@ import jwt_decode from "jwt-decode";
 import Splash from "../Splash";
 import { Pressable } from "react-native";
 import { useSocket } from "../../hooks/socketConnect";
+import Landing from "../../Shared/HomeShared/Landing";
 
 const Home = ({ navigation }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
@@ -240,6 +241,7 @@ const Home = ({ navigation }) => {
           }
         />
       )}
+      <Landing />
     </SafeAreaView>
   );
 };
