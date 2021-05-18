@@ -81,7 +81,7 @@ function MyStack() {
         name="PropertiesPosts"
         component={PropertiesPosts}
         options={{
-          title: "Property Detail",
+          title: "Property",
         }}
       />
     </Stack.Navigator>

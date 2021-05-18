@@ -416,10 +416,15 @@ router.get("/unseenchats-customer", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
+            console.log(
+              data[i].customer,
+              mongoose.Types.ObjectId(req.query.customer)
+            );
             if (
               data[i].chats[j].seen == false &&
               data[i].chats[j].author !=
-                mongoose.Types.ObjectId(req.query.customer)
+                mongoose.Types.ObjectId(req.query.customer) &&
+              data[i].customer == mongoose.Types.ObjectId(req.query.customer)
             ) {
               count = count + 1;
               break;

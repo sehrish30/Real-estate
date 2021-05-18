@@ -236,3 +236,27 @@ export async function removeFromWishList(data, token) {
     console.error(err);
   }
 }
+
+export async function relevantProperties(data, token) {
+  try {
+    const res = await axios.get(`${baseURL}properties/relevant-properties`, {
+      params: {
+        city: data.city,
+        category: data.category,
+        type: data.type,
+        propertyId: data.propertyId,
+        cost: data.cost,
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

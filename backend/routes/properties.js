@@ -9,6 +9,7 @@ const { Expo } = require("expo-server-sdk");
 const { User } = require("../models/user");
 const expo = new Expo();
 const Wishlist = require("../models/wishlist.js");
+const { populate } = require("../models/wishlist.js");
 
 /*----------------------------------------
       GET ALL PROPERTIES
@@ -470,15 +471,16 @@ router.get("/relevant-properties", async (req, res) => {
   try {
     await Property.find({
       $or: [
-        { city: req.body.city },
-        { category: req.body.category },
-        { type: req.body.type },
+        { city: req.query.city },
+        { category: req.query.category },
+        { type: req.query.type },
       ],
       $and: [
-        { _id: { $ne: req.body.propertyId } },
-        { cost: { $lte: req.body.cost } },
+        { _id: { $ne: req.query.propertyId } },
+        { cost: { $lte: req.query.cost } },
       ],
     })
+      .populate("agency", "name totalRating")
       .limit(3)
       .exec((err, result) => {
         if (err) {

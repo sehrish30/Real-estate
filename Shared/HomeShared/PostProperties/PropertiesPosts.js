@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useReducer,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { requireNativeComponent } from "react-native";
 import {
   StyleSheet,
@@ -9,6 +16,13 @@ import {
   FlatList,
   Animated,
 } from "react-native";
+
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  recommendations: [],
+};
+
+import { formatDistanceToNow } from "date-fns";
 import YoutubePlayer, { YoutubeIframeRef } from "react-native-youtube-iframe";
 import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,22 +36,20 @@ import baseURL from "../../../assets/common/baseUrl";
 import Swiper from "react-native-swiper";
 import { useSelector } from "react-redux";
 import { Icon as Native } from "react-native-elements";
+import openMap from "react-native-open-maps";
 import {
   addWishLists,
   removeFromWishList,
+  relevantProperties,
 } from "../../Services/PropertyServices";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-// import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-// import DateTimePicker from '@react-native-community/datetimepicker';
-// import SwitchSelector from "react-native-switch-selector";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
-// import { Calendar } from 'react-native-calendars';
 var { width, height } = Dimensions.get("window");
 import { getPropertyDetails } from "../../Services/PropertyServices";
 import { useRoute, useNavigation } from "@react-navigation/native";
 
 import { WebView } from "react-native-webview";
 import Toast from "react-native-toast-message";
+import RecommendedProperties from "./RecommendedProperties";
 const images = [
   "https://th.bing.com/th/id/Re2a4a7e212cacbf317c408356179ae84?rik=rBl5XPQzQ1xusA&riu=http%3a%2f%2fwww.e-architect.co.uk%2fimages%2fjpgs%2fsouth_africa%2fhouse-mosi-n120413-15.jpg",
   "https://th.bing.com/th/id/Re86b4a25d378003cd5decb63fc1d9f6d?rik=bwtHH3SpDhVxIw&riu=http%3a%2f%2f1.bp.blogspot.com%2f-ipy06jJr7lM%2fUcBy_kDc62I%2fAAAAAAAAT5U%2fcWBJGKpSq-Q%2fs1600%2fBeautiful_Modern_House_In_Desert_on_world_of_architecture_10.jpg",
@@ -53,16 +65,21 @@ const PropertiesPosts = () => {
     getData();
   }, []);
 
+  const [{ recommendations }, dispatchRecommendations] = useReducer(
+    reducer,
+    initialState
+  );
+
   const currentValue = new Animated.Value(1);
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
   const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
+  let userId;
   if (agency.id) {
     userId = agency.id;
-  } else {
-    console.error("LIKE");
-    userId = user.decoded.userId;
+  } else if (user?.decoded) {
+    userId = user?.decoded?.userId;
   }
   const getData = async () => {
     console.error("ROUTE", route.params);
@@ -73,12 +90,14 @@ const PropertiesPosts = () => {
     });
     if (res) {
       setList([res.data]);
+      setRecommended(res.data);
       setStar(res.exists);
     }
   };
 
   const [active, setActive] = useState(0);
   const [list, setList] = useState([]);
+  const [recommended, setRecommended] = useState(null);
   const [animationVisibile, setAnimationVisible] = useState(false);
   const [mute, setMute] = useState("volume-mute");
   const [star, setStar] = useState(false);
@@ -101,12 +120,44 @@ const PropertiesPosts = () => {
       });
     }
   }, [star]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: "#eff7e1" },
+      headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
+      headerTintColor: "#2c6e8f",
+    });
+  });
 
   const onStateChange = useCallback((state) => {
     if (state === "ended") {
       setPlaying(false);
     }
   }, []);
+  useEffect(() => {
+    (async () => {
+      if (recommended) {
+        const result = await relevantProperties(
+          {
+            city: recommended.city,
+            category: recommended.category,
+            type: recommended.type,
+            propertyId: recommended._id,
+            cost: recommended.cost,
+          },
+          token
+        );
+        dispatchRecommendations({
+          recommendations: result,
+        });
+        console.error("RECCOMENDED", result);
+      }
+    })();
+    return () => {
+      dispatchRecommendations({
+        recommendations: [],
+      });
+    };
+  }, [recommended]);
 
   const renderDayRow = ({ item }) => {
     const Like = async () => {
@@ -116,7 +167,7 @@ const PropertiesPosts = () => {
         if (star) {
           const result = await removeFromWishList(
             {
-              user_id: userId,
+              user_id: userId || null,
               property_id: item._id,
             },
             token
@@ -129,7 +180,7 @@ const PropertiesPosts = () => {
           setAnimationVisible(true);
           const res = await addWishLists(
             {
-              user_id: userId,
+              user_id: userId || null,
               property_id: item._id,
             },
             token
@@ -225,6 +276,16 @@ const PropertiesPosts = () => {
             </Text>
           </View>
         </View>
+        <Text
+          style={{
+            alignSelf: "center",
+            color: "#839b97",
+          }}
+        >
+          {formatDistanceToNow(Date.parse(item.updatedAt), {
+            includeSeconds: true,
+          })}
+        </Text>
 
         <View style={styles.divider} />
         <View style={styles.details}>
@@ -393,6 +454,24 @@ const PropertiesPosts = () => {
                 ></MapView.Marker>
               </MapView>
             </View>
+            <Button
+              title="Open Map"
+              buttonStyle={{
+                paddingBottom: 10,
+              }}
+              titleStyle={{
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+              }}
+              onPress={() => {
+                openMap({
+                  latitude: item.location.latitude,
+                  longitude: item.location.longitude,
+                  zoom: 30,
+                });
+              }}
+              type="clear"
+            />
             {/* 
             <View>
               <Video
@@ -409,14 +488,15 @@ const PropertiesPosts = () => {
                 style={{ width: 330, height: 200, marginTop: 10 }}
               />
             </View> */}
-            {console.error(item.video_url.split("=")[1])}
-            <YoutubePlayer
-              play={playing}
-              onChangeState={onStateChange}
-              height={300}
-              width={width / 1.2}
-              videoId={item.video_url.split("=")[1]}
-            />
+            {item.video_url && (
+              <YoutubePlayer
+                play={playing}
+                onChangeState={onStateChange}
+                height={300}
+                width={width / 1.2}
+                videoId={item.video_url.split("=")[1]}
+              />
+            )}
 
             {/* <WebView
               scalesPageToFit={true}
@@ -479,9 +559,25 @@ const PropertiesPosts = () => {
           </View>
           <View style={styles.divider} />
         </View>
+        <View style={{ marginTop: 20 }}>
+          {recommendations.map((recommend) => (
+            <RecommendedProperties
+              item={recommend.item}
+              images={recommend.images}
+              type={recommend.type}
+              agency={recommend.agency}
+              title={recommend.title}
+              cost={recommend.cost}
+              category={recommend.category}
+              city={recommend.city}
+              id={recommend._id}
+            />
+          ))}
+        </View>
       </View>
     );
   };
+
   return (
     <View>
       <ScrollView>

@@ -295,11 +295,10 @@ const Chat = ({ navigation, route }) => {
       zoom: 30,
     });
     openMap({
-      // latitude: location.coords.latitude,
-      // longitude: location.coords.longitude,
-
-      latitude: 26.05111474346075,
-      longitude: 50.513465912995706,
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      // latitude: 26.05111474346075,
+      // longitude: 50.513465912995706,
       zoom: 30,
     });
   };
