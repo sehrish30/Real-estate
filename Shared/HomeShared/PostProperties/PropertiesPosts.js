@@ -6,7 +6,7 @@ import React, {
   useCallback,
   useLayoutEffect,
 } from "react";
-import { requireNativeComponent } from "react-native";
+import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import {
   StyleSheet,
   Text,
@@ -57,7 +57,6 @@ const PropertiesPosts = () => {
 
   const navigation = useNavigation();
 
-  const playerRef = useRef();
   useEffect(() => {
     getData();
   }, []);
@@ -85,7 +84,9 @@ const PropertiesPosts = () => {
       property: route.params.id,
       userId: userId || null,
     });
-    if (res) {
+    if (res.data) {
+      console.error("LST", route.params.id, userId);
+
       setList([res.data]);
       setRecommended(res.data);
       setStar(res.exists);
@@ -161,12 +162,12 @@ const PropertiesPosts = () => {
       let login = await AsyncStorage.getItem("isLoggedIn");
       let loginAgency = await AsyncStorage.getItem("isLoggedInAgency");
 
-      if (login == "true" || loginAgency) {
+      if (login || loginAgency) {
         if (star) {
           const result = await removeFromWishList(
             {
               user_id: userId || null,
-              property_id: item._id,
+              property_id: item?._id || item?.id,
             },
             token
           );
@@ -179,7 +180,7 @@ const PropertiesPosts = () => {
           const res = await addWishLists(
             {
               user_id: userId || null,
-              property_id: item._id,
+              property_id: item?._id || item?.id,
             },
             token
           );
@@ -211,416 +212,369 @@ const PropertiesPosts = () => {
     };
 
     return (
-      <View style={styles.container}>
-        <View style={styles.wrap}>
-          <Swiper
-            style={{ height: width }}
-            showButtons={true}
-            autoplay={true}
-            autoplayTimeout={6}
-            dotColor="#214151"
-            activeDotColor="#a2d0c1"
-          >
-            {item?.propertyImages?.map((e, index) => (
-              <Image
-                key={e}
-                resizeMode="stretch"
-                style={styles.wrap}
-                source={{ uri: e.url }}
-              />
-            ))}
-            {/* {item?.images?.map((e, index) => (
-              <Image
-                key={e}
-                resizeMode="stretch"
-                style={styles.wrap}
-                source={{ uri: e }}
-              />
-            ))} */}
-          </Swiper>
-        </View>
-
-        {/* {images && images.length > 0 ? <Image style={styles.avatar} source={{ uri: images[0] }} /> : null} */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            width: width / 1.1,
-          }}
-        >
-          {/* <Text style={styles.title}>{title}</Text> */}
-          <Text style={styles.title}>{item.title}</Text>
-
-          {userId && (
-            <TouchableOpacity
-              onPress={() => Like()}
-              style={{ flexDirection: "row", marginTop: 10 }}
+      <>
+        <View style={styles.container}>
+          <View style={styles.wrap}>
+            <Swiper
+              style={{ height: width }}
+              showButtons={true}
+              autoplay={true}
+              autoplayTimeout={6}
+              dotColor="#214151"
+              activeDotColor="#a2d0c1"
             >
-              {star ? (
-                <AntDesign name="heart" color="#fdb827" size={30} />
-              ) : (
-                <AntDesign name="hearto" color="#fdb827" size={30} />
-              )}
-            </TouchableOpacity>
-          )}
-
-          {/* <TouchableOpacity style={{ marginLeft: 10 }}>
-                                  <Icon name="cart-outline" color="red" size={30} />
-                              </TouchableOpacity> */}
-        </View>
-        {/* <View style={styles.smallDivider} /> */}
-        <View style={{ marginTop: 10 }} />
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View style={{ justifyContent: "flex-start", alignSelf: "center" }}>
-            {/* <Text>{type}</Text> */}
-            <Text style={styles.description}>{item.type}</Text>
-            <Text style={styles.description}>{item.city || null}</Text>
-            {/* <Text>Available/NotAvailable</Text> */}
+              {item?.propertyImages?.map((e, index) => (
+                <Image
+                  key={e}
+                  resizeMode="stretch"
+                  style={styles.wrap}
+                  source={{ uri: e.url }}
+                />
+              ))}
+            </Swiper>
           </View>
-          <View style={{ justifyContent: "flex-end", alignSelf: "center" }}>
-            {/* <Text style={{ color: 'red', fontWeight: 'bold' }}>{cost} BHD</Text> */}
-            <Text style={{ color: "#214151", fontWeight: "bold" }}>
-              {item.cost} BHD
-            </Text>
-            {/* <Text style={{ alignSelf: 'center' }}>for {category}</Text> */}
-            <Text style={{ alignSelf: "center", color: "#214151" }}>
-              for {item.category}
-            </Text>
-          </View>
-        </View>
-        <Text
-          style={{
-            alignSelf: "center",
-            color: "#839b97",
-          }}
-        >
-          {formatDistanceToNow(Date.parse(item.updatedAt), {
-            includeSeconds: true,
-          })}
-        </Text>
 
-        <View style={styles.divider} />
-        <View style={styles.details}>
-          <Icon name="sofa" color="#306968" size={18} />
-          <Text style={styles.detailText}>Rooms: </Text>
-          <Text style={styles.detailText}>{item.rooms}</Text>
-          <Icon name="shower" color="#306968" size={18} />
-          <Text style={styles.detailText}>Bathrooms:</Text>
-          <Text style={styles.detailText}>{item.bathrooms}</Text>
-        </View>
-        <View style={styles.divider} />
-
-        <View>
-          <Text style={styles.bio}>Description</Text>
-          {/* <Text style={styles.text}>{description}</Text> */}
-          {showFullDescription ? (
-            <Text style={styles.descriptionCrop}>{item.description}</Text>
-          ) : (
-            <Text
-              ellipsizeMode="tail"
-              numberOfLines={3}
-              style={styles.descriptionCrop}
-            >
-              {item.description}
-            </Text>
-          )}
-          <Text
-            style={styles.readmore}
-            onPress={() => {
-              setShowFullDescription(!showFullDescription);
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: width / 1.1,
             }}
           >
-            {item.description.length > 40 && (
-              <>{!showFullDescription ? "Read more" : "Read less"}</>
-            )}
-          </Text>
-          <View style={styles.divider} />
+            {/* <Text style={styles.title}>{title}</Text> */}
+            <Text style={styles.title}>{item.title}</Text>
 
-          <Text style={styles.bio}>Amenities</Text>
-          <FlatList
-            style={styles.amenities}
-            horizontal={true}
-            data={item.Amenities}
-            renderItem={({ item }) => (
-              <View
-                showsVerticalScrollIndicator={true}
-                style={{
-                  flexDirection: "row",
-                  width: width / 3,
-                  paddingBottom: 10,
-                  flexWrap: "wrap",
-                }}
+            {userId && (
+              <TouchableOpacity
+                onPress={() => Like()}
+                style={{ flexDirection: "row", marginTop: 10 }}
               >
-                <AmenityIcon name={item} />
-                <Text
-                  style={[
-                    styles.text,
-                    {
-                      color: "#214151",
-                    },
-                  ]}
-                >
-                  {item}
+                {star ? (
+                  <AntDesign name="heart" color="#fdb827" size={30} />
+                ) : (
+                  <AntDesign name="hearto" color="#fdb827" size={30} />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.smallDivider} />
+          <View style={{ marginTop: 10 }} />
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <View style={{ justifyContent: "flex-start", alignSelf: "center" }}>
+              <View style={{ flexDirection: "row" }}>
+                <MaterialIcons
+                  name="photo-size-select-small"
+                  style={{ paddingRight: 5 }}
+                  size={24}
+                  color="#a2d0c1"
+                />
+                {/* <Text style={styles.description}> Property type </Text> */}
+                <Text style={[styles.description, { fontWeight: "bold" }]}>
+                  {" "}
+                  {item.type}
                 </Text>
               </View>
-            )}
-          />
-          <View style={styles.divider} />
+              <View style={{ flexDirection: "row" }}>
+                <FontAwesome5
+                  name="building"
+                  style={{ paddingRight: 5 }}
+                  size={24}
+                  color="#a2d0c1"
+                />
+                {/* <Text style={styles.description}> Property size(sqft)</Text> */}
+                <Text style={[styles.description, { fontWeight: "bold" }]}>
+                  {item.area}
+                  {" sqft "}
+                </Text>
+              </View>
 
-          <Text style={styles.bio}>Network Coverage</Text>
-          <FlatList
-            showsHorizontalScrollIndicator={true}
-            horizontal={true}
-            data={item.network}
-            renderItem={({ item, index }) => (
-              <>
-                {item.item == "Zain" && (
-                  <Image
-                    source={require(`../../../assets/Zain.png`)}
-                    style={{
-                      width: 60,
-                      marginRight: 10,
-                      height: 30,
-                      resizeMode: "stretch",
-                    }}
-                  />
-                )}
-                {item.item == "STC" && (
-                  <Image
-                    source={require(`../../../assets/STC.png`)}
-                    style={{
-                      width: 60,
-                      height: 40,
-                      resizeMode: "cover",
-                    }}
-                  />
-                )}
-                {item.item == "Batelco" && (
-                  <Image
-                    source={require(`../../../assets/Batelco.png`)}
-                    style={{
-                      width: 60,
-                      marginRight: 10,
-                      height: 40,
-                      resizeMode: "cover",
-                    }}
-                  />
-                )}
-              </>
-            )}
-          />
-
-          <View style={styles.divider} />
-
-          <Text style={styles.bio}>Location </Text>
-          <View>
-            {/* {locations?.map((location) => (               
-                                  <Badge
-                                       key={location}
-                                       value={location}
-                                      badgeStyle={styles.location}
-                                       textStyle={[styles.font, { color: "#214151", fontSize: 14 }]}
-                                   />
-                               ))} */}
-            {/* <View style={{ height: 150 }}>
-                                          <MapView
-                                              style={styles.maps}
-                                              initialRegion={{
-                                                  latitude: location?.latitude,
-                                                  longitude: location?.longitude,
-                                                  latitudeDelta: 0.0922,
-                                                  longitudeDelta: 0.0421
-                                              }}
-                                          >
-                                              <MapView.Marker
-                                                  coordinate={{
-                                                      latitude: location?.latitude,
-                                                      longitude: location?.longitude,
-                                                  }}
-                                                  title={"title"}
-                                                  description={"description"}
-                                              ></MapView.Marker>
-                                          </MapView>
-                                      </View>
-                                       */}
-
-            <View style={{ height: 150 }}>
-              <MapView
-                style={styles.maps}
-                initialRegion={{
-                  // latitude: 55.3781,
-                  // longitude: 3.436,
-                  // latitudeDelta: 0.0922,
-                  // longitudeDelta: 0.0421,
-                  latitude: item.location.latitude,
-                  longitude: item.location.longitude,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                }}
-              >
-                <MapView.Marker
-                  pinColor="aqua"
-                  coordinate={{
-                    latitude: item.location.latitude,
-                    longitude: item.location.longitude,
-                  }}
-                  title={item.title}
-                ></MapView.Marker>
-              </MapView>
+              <View style={{ flexDirection: "row" }}>
+                <Ionicons
+                  name="ios-location-sharp"
+                  style={{ paddingRight: 5 }}
+                  size={24}
+                  color="#a2d0c1"
+                />
+                {/* <Text style={styles.description}> Property size(sqft)</Text> */}
+                <Text style={[styles.description, { fontWeight: "bold" }]}>
+                  {item.city}
+                </Text>
+              </View>
             </View>
-            <Button
-              title="Open Map"
-              buttonStyle={{
-                paddingBottom: 10,
-              }}
-              titleStyle={{
-                color: "#214151",
-                fontFamily: "EBGaramond-Bold",
-              }}
-              onPress={() => {
-                openMap({
-                  latitude: item.location.latitude,
-                  longitude: item.location.longitude,
-                  zoom: 30,
-                });
-              }}
-              type="clear"
-            />
-            {/* 
-            <View>
-              <Video
-                source={{
-                  uri: "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
-                }}
-                rate={1.0}
-                volume={1.0}
-                isMuted={true}
-                resizeMode="cover"
-                isLooping={false}
-                shouldPlay={false}
-                useNativeControls={true}
-                style={{ width: 330, height: 200, marginTop: 10 }}
-              />
-            </View> */}
-            {item.video_url ? (
-              <YoutubePlayer
-                play={playing}
-                onChangeState={onStateChange}
-                height={300}
-                width={width / 1.2}
-                videoId={item.video_url.split("=")[1]}
-              />
-            ) : null}
+            <View style={{ justifyContent: "flex-end", alignSelf: "center" }}>
+              <Text style={{ color: "#214151", fontWeight: "bold" }}>
+                {item.cost} BHD
+              </Text>
 
-            {/* <WebView
-              scalesPageToFit={true}
-              startInLoadingState={true}
-              source={{
-                uri: item.video_url,
-              }}
-              style={{
-                marginTop: 20,
-                width: 330,
-                height: 300,
-              }}
-            /> */}
+              <Text style={{ alignSelf: "center", color: "#214151" }}>
+                for {item.category}
+              </Text>
+            </View>
+          </View>
+          <Text
+            style={{
+              alignSelf: "center",
+              color: "#839b97",
+            }}
+          >
+            {formatDistanceToNow(Date.parse(item.updatedAt), {
+              includeSeconds: true,
+            })}
+          </Text>
 
-            {/* <View style={styles.container}>
-              <PanoramaView
-                style={styles.viewer}
-                dimensions={{
-                  height: 230,
-                  width: Dimensions.get("window").width,
-                }}
-                inputType="stereo"
-                imageUrl="https://raw.githubusercontent.com/googlevr/gvr-android-sdk/master/assets/panoramas/testRoom1_2kMono.jpg"
-              />
-            </View> */}
+          <View style={styles.divider} />
+          <View style={styles.details}>
+            <Icon name="sofa" color="#306968" size={18} />
+            <Text style={styles.detailText}>Rooms: </Text>
+            <Text style={styles.detailText}>{item.rooms}</Text>
+            <Icon name="shower" color="#306968" size={18} />
+            <Text style={styles.detailText}>Bathrooms:</Text>
+            <Text style={styles.detailText}>{item.bathrooms}</Text>
           </View>
           <View style={styles.divider} />
 
-          <View style={{ alignSelf: "center" }}>
-            <Text style={[styles.bio, { alignSelf: "center" }]}>
-              Agent Info{" "}
-            </Text>
-            <Image
-              style={styles.contact}
-              source={{ uri: item.agency.logo.url }}
-            />
-            <Text style={styles.contactText}>{item.agency.name} </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                marginBottom: 10,
-                alignSelf: "center",
+          <View>
+            <Text style={styles.bio}>Description</Text>
+
+            {showFullDescription ? (
+              <Text style={styles.descriptionCrop}>{item.description}</Text>
+            ) : (
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={3}
+                style={styles.descriptionCrop}
+              >
+                {item.description}
+              </Text>
+            )}
+            <Text
+              style={styles.readmore}
+              onPress={() => {
+                setShowFullDescription(!showFullDescription);
               }}
             >
-              <Icon name="star" color="#fdb827" size={18} />
-              <Text>{item.agency.totalRating}</Text>
-            </View>
-            <TouchableOpacity style={styles.superhost}>
-              <Text
+              {item.description.length > 40 && (
+                <>{!showFullDescription ? "Read more" : "Read less"}</>
+              )}
+            </Text>
+            <View style={styles.divider} />
+
+            <Text style={styles.bio}>Amenities</Text>
+            <FlatList
+              style={styles.amenities}
+              horizontal={true}
+              data={item.Amenities}
+              renderItem={({ item }) => (
+                <View
+                  showsVerticalScrollIndicator={true}
+                  style={{
+                    flexDirection: "row",
+                    width: width / 3,
+                    paddingBottom: 10,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <AmenityIcon name={item} />
+                  <Text
+                    style={[
+                      styles.text,
+                      {
+                        color: "#214151",
+                      },
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </View>
+              )}
+            />
+            <View style={styles.divider} />
+
+            <Text style={styles.bio}>Network Coverage</Text>
+            <FlatList
+              showsHorizontalScrollIndicator={true}
+              horizontal={true}
+              data={item.network}
+              keyExtractor={(item) => item.item}
+              renderItem={({ item, index }) => (
+                <>
+                  {item.item == "Zain" && (
+                    <Image
+                      source={require(`../../../assets/Zain.png`)}
+                      style={{
+                        width: 60,
+                        marginRight: 10,
+                        height: 30,
+                        resizeMode: "stretch",
+                      }}
+                    />
+                  )}
+                  {item.item == "STC" && (
+                    <Image
+                      source={require(`../../../assets/STC.png`)}
+                      style={{
+                        width: 60,
+                        height: 40,
+                        resizeMode: "cover",
+                      }}
+                    />
+                  )}
+                  {item.item == "Batelco" && (
+                    <Image
+                      source={require(`../../../assets/Batelco.png`)}
+                      style={{
+                        width: 60,
+                        marginRight: 10,
+                        height: 40,
+                        resizeMode: "cover",
+                      }}
+                    />
+                  )}
+                </>
+              )}
+            />
+
+            <View style={styles.divider} />
+
+            <Text style={styles.bio}>Location </Text>
+            <View>
+              <View style={{ height: 150 }}>
+                <MapView
+                  style={styles.maps}
+                  initialRegion={{
+                    latitude: item.location.latitude,
+                    longitude: item.location.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                  }}
+                >
+                  <MapView.Marker
+                    pinColor="aqua"
+                    coordinate={{
+                      latitude: item.location.latitude,
+                      longitude: item.location.longitude,
+                    }}
+                    title={item.title}
+                  ></MapView.Marker>
+                </MapView>
+              </View>
+              <Button
+                title="Open Map"
+                buttonStyle={{
+                  paddingBottom: 10,
+                }}
+                titleStyle={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
                 onPress={() => {
-                  navigation.navigate("AgencyDetail", {
-                    id: item.agency.id,
+                  openMap({
+                    latitude: item.location.latitude,
+                    longitude: item.location.longitude,
+                    zoom: 30,
                   });
                 }}
-                style={styles.superhostLabel}
-              >
-                View Agent Profile
+                type="clear"
+              />
+
+              {item.video_url ? (
+                <YoutubePlayer
+                  play={playing}
+                  onChangeState={onStateChange}
+                  height={300}
+                  width={width / 1.2}
+                  videoId={item.video_url.split("=")[1]}
+                />
+              ) : null}
+            </View>
+            <View style={styles.divider} />
+
+            <View style={{ alignSelf: "center" }}>
+              <Text style={[styles.bio, { alignSelf: "center" }]}>
+                Agent Info{" "}
               </Text>
-            </TouchableOpacity>
+              <Image
+                style={styles.contact}
+                source={{ uri: item.agency?.logo.url }}
+              />
+              <Text style={styles.contactText}>{item.agency?.name} </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginBottom: 10,
+                  alignSelf: "center",
+                }}
+              >
+                <Icon name="star" color="#fdb827" size={18} />
+                <Text>{item.agency.totalRating}</Text>
+              </View>
+              <TouchableOpacity style={styles.superhost}>
+                <Text
+                  onPress={() => {
+                    navigation.navigate("AgencyDetail", {
+                      id: item.agency.id,
+                    });
+                  }}
+                  style={styles.superhostLabel}
+                >
+                  View Agent Profile
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.divider} />
           </View>
-          <View style={styles.divider} />
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.similar}>Similar Properties</Text>
+            {recommendations.map((recommend) => (
+              <RecommendedProperties
+                item={recommend.item}
+                images={recommend.images}
+                type={recommend.type}
+                agency={recommend.agency}
+                title={recommend.title}
+                cost={recommend.cost}
+                category={recommend.category}
+                city={recommend.city}
+                id={recommend._id}
+                propertyImages={recommend.propertyImages}
+              />
+            ))}
+          </View>
         </View>
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.similar}>Similar Properties</Text>
-          {recommendations.map((recommend) => (
-            <RecommendedProperties
-              item={recommend.item}
-              images={recommend.images}
-              type={recommend.type}
-              agency={recommend.agency}
-              title={recommend.title}
-              cost={recommend.cost}
-              category={recommend.category}
-              city={recommend.city}
-              id={recommend._id}
-              propertyImages={recommend.propertyImages}
-            />
-          ))}
-        </View>
-      </View>
+      </>
     );
   };
 
   return (
-    <View>
-      <ScrollView>
-        {animationVisibile && (
-          <AnimatedIcon
-            style={{
-              position: "absolute",
-              top: 150,
-              left: "40%",
-              elevation: 4,
-              zIndex: 3,
-              transform: [{ scale: currentValue }],
-            }}
-            name="heart"
-            size={50}
-            color="#fdb827"
-          />
-        )}
-
-        <FlatList
-          pagingEnabled
-          data={list}
-          renderItem={renderDayRow}
-          keyExtractor={(item) => item.id}
+    <ScrollView>
+      {animationVisibile && (
+        <AnimatedIcon
+          style={{
+            position: "absolute",
+            top: 150,
+            left: "40%",
+            elevation: 4,
+            zIndex: 3,
+            transform: [{ scale: currentValue }],
+          }}
+          name="heart"
+          size={50}
+          color="#fdb827"
         />
-      </ScrollView>
-    </View>
+      )}
+
+      <FlatList
+        pagingEnabled
+        data={list}
+        renderItem={renderDayRow}
+        keyExtractor={(item) => {
+          console.error("KHALID", item.id);
+          return item.id;
+        }}
+      />
+    </ScrollView>
   );
 };
 
@@ -850,6 +804,7 @@ const styles = StyleSheet.create({
   },
   description: {
     color: "#214151",
+    paddingVertical: 5,
   },
   descriptionCrop: {
     color: "#214151",

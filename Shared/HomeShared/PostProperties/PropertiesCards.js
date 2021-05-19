@@ -62,7 +62,7 @@ export default PropertiesCards = ({ item }) => {
           // });
         }}
       >
-        {propertyImages.length > 0 || images.length > 0 ? (
+        {propertyImages?.length > 0 || images?.length > 0 ? (
           <Image
             style={styles.image}
             source={{ uri: propertyImages[0]?.url || images[0] }}
@@ -73,23 +73,30 @@ export default PropertiesCards = ({ item }) => {
             <View style={styles.superhost}>
               <Text style={styles.superhostLabel}>{type}</Text>
             </View>
-            <View style={styles.rating}>
+            {/* <View style={styles.rating}>
               <Icon name="star" color="#fdca40" />
               <Text style={styles.ratingLabel}>{agency.totalRating}</Text>
-            </View>
+            </View> */}
           </View>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <View style={{}}>
-              <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
-                {title}
-              </Text>
+              {title.length > 20 ? (
+                <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
+                  {title.substring(0, 20)}....
+                </Text>
+              ) : (
+                <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
+                  {title}
+                </Text>
+              )}
+
               <Text style={[styles.title, { fontSize: 15 }]}>
                 {city || null}
               </Text>
               <Text style={[styles.title, { fontSize: 15, color: "#839b97" }]}>
-                By {agency.name}
+                By {agency?.name}
               </Text>
             </View>
             <View style={{ justifyContent: "center" }}>
@@ -102,14 +109,14 @@ export default PropertiesCards = ({ item }) => {
                     fontSize: 20,
                   }}
                 >
-                  {cost}
+                  {cost}{" "}
                 </Text>
                 {item.category == "Rent" ? (
                   <Text
                     style={{
                       color: "#F0C948",
-                      fontSize: 20,
-                      marginTop: 10,
+                      fontSize: 12,
+                      marginTop: 15,
                     }}
                   >
                     BD/month
@@ -118,7 +125,8 @@ export default PropertiesCards = ({ item }) => {
                   <Text
                     style={{
                       color: "#F0C948",
-                      fontSize: 20,
+                      fontSize: 12,
+                      marginTop: 15,
                     }}
                   >
                     {" "}
@@ -182,7 +190,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: width / 1.1,
-    backgroundColor: "#21534A",
+    backgroundColor: "#214151",
+
     padding: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,

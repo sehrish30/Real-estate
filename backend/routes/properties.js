@@ -32,28 +32,26 @@ router.get(`/all-properties`, async (req, res) => {
       GET ALL PROPERTIES
 ---------------------------------------- */
 router.get("/allProperties", (req, res) => {
+  console.log("QUERY", req.query);
   let partialToMatch = new RegExp(req.query.title, "i");
+  let search = {};
+  if (req.query.category) {
+    search = { type: req.query.category };
+  }
 
-  Property.find({ type: partialToMatch })
+  Property.find(search)
     .populate("agency", "name totalRating")
     .limit(10)
+    .skip(parseInt(req.query.page) || 0)
     .sort({ updatedAt: -1 })
     .exec((err, data) => {
-      console.log("Search--------------", data);
+      console.log(data);
       if (err) {
         console.log(err);
         return res.status(422).send(err);
       }
       return res.status(200).send(data);
     });
-  // Property.find()
-  //   .populate("agency")
-  //   .exec((err, data) => {
-  //     if (err) {
-  //       return res.status(400).send(err);
-  //     }
-  //     return res.status(200).send(data);
-  //   });
 });
 
 /*----------------------------------------
@@ -596,7 +594,9 @@ router.post("/uploadProperty", async (req, res) => {
       category: data.category,
       agency: data.agency,
     });
-
+    console.log(
+      "SAVING--------------------------------------------------------"
+    );
     const savedProperty = await property.save();
     console.log("Property", savedProperty);
     if (savedProperty) {

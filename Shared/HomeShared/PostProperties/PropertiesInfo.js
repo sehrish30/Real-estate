@@ -226,61 +226,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     longitude: 50.5632703633697,
   });
 
-  // let route = useRoute();
-  // const { params } = route;
-
-  // console.log("Params============================", params);
-
-  // console.log("Uri???????????????????????????????????", uri);
-  // useEffect(() => {
-  // (async () => {
-
-  //   let { status } = await Location.requestPermissionsAsync();
-  //   if (status !== "granted") {
-  //     setErrorMsg("Permission to access location was denied");
-  //     return;
-  //   }
-
-  //   let location = await Location.getCurrentPositionAsync({});
-  //   setLocation(location.coords);
-  //   console.log(location.coords);
-  // })();
-  // console.log("-------------//////////////-------111112221");
-  //   if (params?.photos) {
-  //     setUri([]);
-  //     console.log("-------------//////////////-------");
-
-  //     //-----------------------------------
-  //     params.photos.map((image) => {
-  //       const imageData = new FormData();
-  //       const newFile = {
-  //         uri: image.uri,
-  //         name: image.name,
-  //         type: image.type,
-  //       };
-  //       imageData.append("file", newFile);
-  //       imageData.append("cloud_name", "abikhan");
-  //       imageData.append("upload_preset", "insta-clone");
-
-  //       Axios.post(
-  //         "https://api.cloudinary.com/v1_1/abikhan/image/upload",
-  //         imageData
-  //       )
-  //         .then(async (res) => {
-  //           console.log(
-  //             "Response URI.....",
-  //             res.data.url,
-  //             "//////////////////////////////// uri array"
-  //           );
-  //           const responseURI = await res.data.url;
-  //           console.log("Checking--------------------------", responseURI);
-  //           // uri.push(responseURI);
-  //           setUri((prev) => [...prev, responseURI]);
-  //         })
-  //         .catch((err) => console.log("Error---", err));
-  //     });
-  //   }
-  // }, [params?.photos]);
   const onChangeRoomsConter = (number, type) => {
     setRooms(number);
     console.log(number, type); // 1, + or -
@@ -290,9 +235,14 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     console.log(number, type); // 1, + or -
   };
 
+  function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+  }
+
   const onSubmit = async () => {
     let sentPhotos = [];
     console.error("DEJJ");
+    let done = null;
 
     for (let i = 0; i < selectedPhotos.length; i++) {
       let filename = selectedPhotos[i].uri.split("/").pop();
@@ -312,29 +262,29 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
         sentPhotos.push(imageURL);
         console.error("IMAGE", sentPhotos);
       });
-      const done = await Promise.all(promises);
-      if (done) {
-        const variable = {
-          title: name,
-          type,
-          amenity,
-          network,
-          location,
-          description,
-          cost: parseInt(price),
-          rooms,
-          bathrooms: bathRooms,
-          category: property,
-          area: parseInt(area),
-          city,
-          images: sentPhotos,
-          panorama_url: Imageurl,
-          video_url: videourl,
-          agency: agency.id,
-        };
+      done = await Promise.all(promises);
+    }
+    if (done) {
+      const variable = {
+        title: name,
+        type,
+        amenity,
+        network,
+        location,
+        description,
+        cost: formatNumber(price),
+        rooms,
+        bathrooms: bathRooms,
+        category: property,
+        area: formatNumber(area),
+        city,
+        images: sentPhotos,
+        panorama_url: Imageurl,
+        video_url: videourl,
+        agency: agency.id,
+      };
 
-        await UploadProperty(variable, token);
-      }
+      await UploadProperty(variable, token);
     }
 
     // console.log("BaseUrl", baseURL);
@@ -399,6 +349,20 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               value={name}
               errorMessage={errors.name}
             />
+            {/* <TextInputMask
+              type={"money"}
+              value={price}
+              onChangeText={(text) => {
+                setPrice(text);
+              }}
+              options={{
+                // precision: 2,
+                separator: ",",
+                // delimiter: ".",
+                unit: "BD",
+                suffixUnit: "",
+              }}
+            /> */}
 
             <Input
               ref={priceRef}

@@ -76,6 +76,7 @@ module.exports.getWishlistByUserId = function (user_id) {
                 type: true,
                 area: true,
                 city: true,
+                propertyImages: true,
               },
             },
           ],

@@ -11,6 +11,7 @@ import HomeNavigator from "./HomeNavigator";
 import Dashboard from "../screens/Drawer/Dashboard";
 import DashboardNavigator from "./DashboardNavigator";
 import PropertiesInfo from "../Shared/HomeShared/PostProperties/PropertiesInfo";
+import Favorite from "../screens/Drawer/Favorite";
 
 const Drawer = createDrawerNavigator();
 
@@ -49,6 +50,9 @@ const DrawerNavigator = () => {
       )}
       {isLoggedInAgency && (
         <Drawer.Screen name="Post a property" component={PropertiesInfo} />
+      )}
+      {(isLoggedInAgency || isLoggedIn) && (
+        <Drawer.Screen name="Saved properties" component={Favorite} />
       )}
     </Drawer.Navigator>
   );

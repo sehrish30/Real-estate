@@ -23,7 +23,7 @@ const AgencySearchCard = ({ index, agency, navigation }) => {
     >
       <Card containerStyle={[styles.card]}>
         <Card.Title style={styles.title}>
-          <Text>{agency.name}</Text>
+          <Text>{agency?.name}</Text>
         </Card.Title>
         <Card.Divider />
         <View style={styles.agency}>

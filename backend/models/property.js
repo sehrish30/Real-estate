@@ -7,7 +7,7 @@ const propertySchema = mongoose.Schema(
       required: true,
     },
     cost: {
-      type: Number,
+      type: String,
     },
     location: {
       type: Object,
@@ -43,7 +43,7 @@ const propertySchema = mongoose.Schema(
       default: "Residential",
     },
     area: {
-      type: Number,
+      type: String,
     },
     city: {
       type: String,
