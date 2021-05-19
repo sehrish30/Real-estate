@@ -31,13 +31,13 @@ export const amenities = [
   },
   {
     id: "Wardrobes",
-    item: "Lawn",
+    item: "Wardrobes",
     type: "wardrobe",
     name: "material-community",
   },
   {
     id: "Kitchen Applicances",
-    item: "Swimming pool",
+    item: "Kitchen Applicances",
     type: "utensils",
     name: "font-awesome-5",
   },

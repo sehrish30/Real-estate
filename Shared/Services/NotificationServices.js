@@ -437,19 +437,22 @@ export async function getAllNotificationDetails(notificationId, token) {
 
 export async function showNotifications(userId, token) {
   try {
-    const res = await axios.get(`${baseURL}notifications/new-notification`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
-        userId,
-      },
-    });
-    if (res.status == 200 || res.status == 201) {
-      console.log("RES", res.data);
-      return res.data;
+    console.error("NEHI HAI NA", token);
+    if (token) {
+      const res = await axios.get(`${baseURL}notifications/new-notification`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          userId,
+        },
+      });
+      if (res.status == 200 || res.status == 201) {
+        console.log("RES", res.data);
+        return res.data;
+      }
     }
   } catch (err) {
     console.log(err);

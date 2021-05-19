@@ -50,14 +50,11 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { WebView } from "react-native-webview";
 import Toast from "react-native-toast-message";
 import RecommendedProperties from "./RecommendedProperties";
-const images = [
-  "https://th.bing.com/th/id/Re2a4a7e212cacbf317c408356179ae84?rik=rBl5XPQzQ1xusA&riu=http%3a%2f%2fwww.e-architect.co.uk%2fimages%2fjpgs%2fsouth_africa%2fhouse-mosi-n120413-15.jpg",
-  "https://th.bing.com/th/id/Re86b4a25d378003cd5decb63fc1d9f6d?rik=bwtHH3SpDhVxIw&riu=http%3a%2f%2f1.bp.blogspot.com%2f-ipy06jJr7lM%2fUcBy_kDc62I%2fAAAAAAAAT5U%2fcWBJGKpSq-Q%2fs1600%2fBeautiful_Modern_House_In_Desert_on_world_of_architecture_10.jpg",
-  "https://www.soprovich.com/i-a86d0f95/real-estate/2075_57339.luxury-lg.default.jpg",
-];
+import AmenityIcon from "./AmenityIcon";
 
 const PropertiesPosts = () => {
   const route = useRoute();
+
   const navigation = useNavigation();
 
   const playerRef = useRef();
@@ -162,8 +159,9 @@ const PropertiesPosts = () => {
   const renderDayRow = ({ item }) => {
     const Like = async () => {
       let login = await AsyncStorage.getItem("isLoggedIn");
+      let loginAgency = await AsyncStorage.getItem("isLoggedInAgency");
 
-      if (login == "true") {
+      if (login == "true" || loginAgency) {
         if (star) {
           const result = await removeFromWishList(
             {
@@ -223,19 +221,33 @@ const PropertiesPosts = () => {
             dotColor="#214151"
             activeDotColor="#a2d0c1"
           >
-            {item?.images?.map((e, index) => (
+            {item?.propertyImages?.map((e, index) => (
+              <Image
+                key={e}
+                resizeMode="stretch"
+                style={styles.wrap}
+                source={{ uri: e.url }}
+              />
+            ))}
+            {/* {item?.images?.map((e, index) => (
               <Image
                 key={e}
                 resizeMode="stretch"
                 style={styles.wrap}
                 source={{ uri: e }}
               />
-            ))}
+            ))} */}
           </Swiper>
         </View>
 
         {/* {images && images.length > 0 ? <Image style={styles.avatar} source={{ uri: images[0] }} /> : null} */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: width / 1.1,
+          }}
+        >
           {/* <Text style={styles.title}>{title}</Text> */}
           <Text style={styles.title}>{item.title}</Text>
 
@@ -318,7 +330,9 @@ const PropertiesPosts = () => {
               setShowFullDescription(!showFullDescription);
             }}
           >
-            {!showFullDescription ? "Read more" : "Read less"}
+            {item.description.length > 40 && (
+              <>{!showFullDescription ? "Read more" : "Read less"}</>
+            )}
           </Text>
           <View style={styles.divider} />
 
@@ -337,7 +351,7 @@ const PropertiesPosts = () => {
                   flexWrap: "wrap",
                 }}
               >
-                <Native name="sc-telegram" type="evilicon" color="#839b97" />
+                <AmenityIcon name={item} />
                 <Text
                   style={[
                     styles.text,
@@ -488,7 +502,7 @@ const PropertiesPosts = () => {
                 style={{ width: 330, height: 200, marginTop: 10 }}
               />
             </View> */}
-            {item.video_url && (
+            {item.video_url ? (
               <YoutubePlayer
                 play={playing}
                 onChangeState={onStateChange}
@@ -496,7 +510,7 @@ const PropertiesPosts = () => {
                 width={width / 1.2}
                 videoId={item.video_url.split("=")[1]}
               />
-            )}
+            ) : null}
 
             {/* <WebView
               scalesPageToFit={true}
@@ -560,6 +574,7 @@ const PropertiesPosts = () => {
           <View style={styles.divider} />
         </View>
         <View style={{ marginTop: 20 }}>
+          <Text style={styles.similar}>Similar Properties</Text>
           {recommendations.map((recommend) => (
             <RecommendedProperties
               item={recommend.item}
@@ -571,6 +586,7 @@ const PropertiesPosts = () => {
               category={recommend.category}
               city={recommend.city}
               id={recommend._id}
+              propertyImages={recommend.propertyImages}
             />
           ))}
         </View>
@@ -699,7 +715,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   title: {
-    fontSize: 32,
+    fontSize: 18,
+    width: width / 1.4,
     lineHeight: 36,
     marginTop: 10,
     fontFamily: "EBGaramond-Bold",
@@ -846,5 +863,10 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     maxWidth: width / 1.1,
+  },
+  similar: {
+    fontFamily: "EBGaramond-Bold",
+    fontSize: 16,
+    color: "#214151",
   },
 });

@@ -10,6 +10,8 @@ import Notifications from "../screens/Drawer/Notifications";
 import MapLocations from "../screens/Drawer/MapLocations";
 import SearchProperty from "../Shared/HomeShared/PostProperties/SearchProperty";
 import PropertiesPosts from "../Shared/HomeShared/PostProperties/PropertiesPosts";
+import BrowserScreen from "../Shared/HomeShared/PostProperties/ImageUpload/BrowserScreen";
+import Photos from "../Shared/HomeShared/PostProperties/ImageUpload/Photos";
 
 const Stack = createStackNavigator();
 
@@ -84,6 +86,14 @@ function MyStack() {
           title: "Property",
         }}
       />
+      <Stack.Screen
+        name="Browser screen"
+        component={BrowserScreen}
+        options={{
+          title: "Browser Screen",
+        }}
+      />
+      <Stack.Screen name="Photos" component={Photos} />
     </Stack.Navigator>
   );
 }

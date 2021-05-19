@@ -17,6 +17,7 @@ const RecommendedProperties = ({
   category,
   city,
   id,
+  propertyImages,
 }) => {
   const navigation = useNavigation();
   return (
@@ -32,8 +33,8 @@ const RecommendedProperties = ({
           // });
         }}
       >
-        {images && images.length > 0 ? (
-          <Image style={styles.image} source={{ uri: images[0] }} />
+        {propertyImages.length > 0 ? (
+          <Image style={styles.image} source={{ uri: propertyImages[0].url }} />
         ) : null}
         <View style={styles.card}>
           <View style={styles.details}>

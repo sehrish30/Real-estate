@@ -47,6 +47,7 @@ export default PropertiesCards = ({ item }) => {
     title,
     type,
     agency,
+    propertyImages,
   } = item;
   const navigation = useNavigation();
 
@@ -61,8 +62,11 @@ export default PropertiesCards = ({ item }) => {
           // });
         }}
       >
-        {images && images.length > 0 ? (
-          <Image style={styles.image} source={{ uri: images[0] }} />
+        {propertyImages.length > 0 || images.length > 0 ? (
+          <Image
+            style={styles.image}
+            source={{ uri: propertyImages[0]?.url || images[0] }}
+          />
         ) : null}
         <View style={styles.card}>
           <View style={styles.details}>
@@ -92,6 +96,7 @@ export default PropertiesCards = ({ item }) => {
               <View style={{ flexDirection: "row" }}>
                 <Text
                   style={{
+                    marginTop: 10,
                     color: "#F0C948",
                     fontFamily: "EBGaramond-Bold",
                     fontSize: 20,
@@ -99,15 +104,27 @@ export default PropertiesCards = ({ item }) => {
                 >
                   {cost}
                 </Text>
-                <Text
-                  style={{
-                    color: "#F0C948",
-                    fontSize: 20,
-                  }}
-                >
-                  {" "}
-                  BD
-                </Text>
+                {item.category == "Rent" ? (
+                  <Text
+                    style={{
+                      color: "#F0C948",
+                      fontSize: 20,
+                      marginTop: 10,
+                    }}
+                  >
+                    BD/month
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      color: "#F0C948",
+                      fontSize: 20,
+                    }}
+                  >
+                    {" "}
+                    BD
+                  </Text>
+                )}
               </View>
 
               <View style={{ flexDirection: "row", alignSelf: "center" }}>
@@ -164,6 +181,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   card: {
+    width: width / 1.1,
     backgroundColor: "#21534A",
     padding: 10,
     borderBottomLeftRadius: 10,

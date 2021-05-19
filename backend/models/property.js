@@ -13,11 +13,13 @@ const propertySchema = mongoose.Schema(
       type: Object,
     },
     network: [Object],
-    images: {
-      type: [String],
-      default:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-    },
+    images: [String],
+    propertyImages: [
+      {
+        public_id: String,
+        url: String,
+      },
+    ],
     bathrooms: {
       type: Number,
       default: 1,
@@ -25,9 +27,6 @@ const propertySchema = mongoose.Schema(
     category: {
       type: String,
       default: "rent",
-    },
-    iBanNumber: {
-      type: String,
     },
     description: {
       type: String,

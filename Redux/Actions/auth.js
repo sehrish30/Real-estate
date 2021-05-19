@@ -11,6 +11,8 @@ import {
   LOGOUT,
   LOGINAGENCY,
   UPDATEAGENCYPROFILE,
+  UPDATEURI,
+  UPDATEIMAGES,
 } from "../constants";
 import Toast from "react-native-toast-message";
 
@@ -126,4 +128,20 @@ export const updateProfile = (data) => (dispatch) => {
     type: UPDATEAGENCYPROFILE,
     payload: data,
   });
+};
+
+export const updateImages = (data) => {
+  console.log("Action", data);
+  return {
+    type: UPDATEIMAGES,
+    payload: data,
+  };
+};
+
+export const saveuri = (data) => {
+  console.log("Saved URI---------", data);
+  return {
+    type: UPDATEURI,
+    payload: data,
+  };
 };

@@ -33,10 +33,13 @@ router.get(`/all-properties`, async (req, res) => {
 ---------------------------------------- */
 router.get("/allProperties", (req, res) => {
   let partialToMatch = new RegExp(req.query.title, "i");
-  console.log("Search--------------");
+
   Property.find({ type: partialToMatch })
     .populate("agency", "name totalRating")
+    .limit(10)
+    .sort({ updatedAt: -1 })
     .exec((err, data) => {
+      console.log("Search--------------", data);
       if (err) {
         console.log(err);
         return res.status(422).send(err);
@@ -570,28 +573,41 @@ router.get("/typeOfProperties", async (req, res) => {
        UPLOAD PROPERTIEs
 ---------------------------------------- */
 router.post("/uploadProperty", async (req, res) => {
-  console.log("Body", req.body);
-  const data = req.body;
-  res.json({ message: "SEnd to upload" });
-  let property = new Property({
-    title: data.name,
-    cost: data.price,
-    location: data.location,
-    bathrooms: data.bathRooms,
-    rooms: data.rooms,
-    description: data.description,
-    type: data.type.item,
-    network: data.network,
-    Amenities: data.amenity,
-    images: data.uri,
-    city: data.city,
-    area: data.area,
-    panorama_url: data.panorama_url,
-    video_url: data.video_url,
-  });
+  try {
+    console.log("Body", req.body);
+    const data = req.body;
+    let property = new Property({
+      title: data.title,
+      type: data.type,
+      cost: data.cost,
+      location: data.location,
+      bathrooms: data.bathrooms,
+      rooms: data.rooms,
+      description: data.description,
+      type: data.type.item,
+      network: data.network,
+      Amenities: data.amenity,
+      propertyImages: data.images,
+      city: data.city,
+      area: data.area,
+      panorama_url: data.panorama_url,
+      video_url: data.video_url,
+      cose: data.cost,
+      category: data.category,
+      agency: data.agency,
+    });
 
-  const savedProperty = await property.save();
-  console.log("Property", property);
+    const savedProperty = await property.save();
+    console.log("Property", savedProperty);
+    if (savedProperty) {
+      return res.status(200).send(true);
+    } else {
+      console.log("WRONG");
+      return res.status(422).send(false);
+    }
+  } catch (err) {
+    return res.status(500).send(err);
+  }
 });
 
 /*----------------------------------------

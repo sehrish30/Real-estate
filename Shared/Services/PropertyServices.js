@@ -260,3 +260,25 @@ export async function relevantProperties(data, token) {
     console.error(err);
   }
 }
+
+export async function UploadProperty(data, token) {
+  try {
+    const res = await axios.post(`${baseURL}properties/uploadProperty`, data, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Post updated`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

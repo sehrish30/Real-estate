@@ -1,231 +1,150 @@
-import React, { useState, useLayoutEffect, useRef, useEffect } from "react";
+import React, { useState, useReducer, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   SafeAreaView,
   Dimensions,
-  Platform,
+  StatusBar,
 } from "react-native";
-
-import _ from 'lodash';
-import Image360Viewer from '@hauvo/react-native-360-image-viewer';
-
+import { useGlobalize } from "react-native-globalize";
+import { useSelector } from "react-redux";
+import { Overlay } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
-import * as ImagePicker from "expo-image-picker";
-import { Input, Button, Image, Header, Divider } from "react-native-elements";
-import Icon from "react-native-vector-icons/Ionicons";
-import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import Dialog from "react-native-dialog";
+import { UploadProperty } from "../../Services/PropertyServices";
+import { Input, Button, Image } from "react-native-elements";
+import { uploadToCloudinary } from "../../../Shared/services";
 import SelectBox from "react-native-multi-selectbox";
 import MapView from "react-native-maps";
-import * as Location from "expo-location";
 import SwitchSelector from "react-native-switch-selector";
 import Counter from "react-native-counters";
-import { color } from "react-native-reanimated";
-import MainScreen from "./ImageUpload/MainScreen";
 import { connect } from "react-redux";
 import Axios from "axios";
-import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/native';
-import baseURL from '../../assets/common/baseUrl'
-
-import baseUrl from "../../assets/common/baseUrl";
-
-const images = _.reverse([
-  require(`./../../assets/images/andes.jpg`)
-])
-//property type list
-export const items = [
-  {
-    id: "Residential",
-    item: "Residential",
-  },
-  {
-    id: "Commercial",
-    item: "Commercial",
-  },
-  {
-    id: "Industrial",
-    item: "Industrial",
-  },
-  {
-    id: "Lands",
-    item: "Lands",
-  },
-];
-
-//amenities list
-export const amenities = [
-  {
-    id: "Central heating",
-    item: "Central heating",
-  },
-  {
-    id: "Central cooling",
-    item: "Central cooling",
-  },
-  {
-    id: "Dirty kitchen",
-    item: "Dirty Kitchen",
-  },
-  {
-    id: "Lawn",
-    item: "Lawn",
-  },
-  {
-    id: "Swimming pool",
-    item: "Swimming pool",
-  },
-  {
-    id: "Parking space",
-    item: "Parking space",
-  },
-  {
-    id: "TV lounge",
-    item: "TV lounge",
-  },
-  {
-    id: "Drawing room",
-    item: "Drawing room",
-  },
-  {
-    id: "Home theatre",
-    item: "Home theatre",
-  },
-  {
-    id: "Corner house",
-    item: "Corner house",
-  },
-  {
-    id: "Elevators",
-    item: "Elevators",
-  },
-  {
-    id: "Study room",
-    item: "Study room",
-  },
-  {
-    id: "Security staff",
-    item: "Security staff",
-  },
-  {
-    id: "Nearby Landmark",
-    item: "Nearby Landmark",
-  },
-  {
-    id: "Wifi",
-    item: "Wifi",
-  },
-  {
-    id: "Balcony",
-    item: "Balcony",
-  },
-  {
-    id: "Laundry room",
-    item: "Laundry room",
-  },
-  {
-    id: "Servant quarter",
-    item: "Servant quarter",
-  },
-  {
-    id: "Fully Furnished",
-    item: "Fully Furnished",
-  },
-  {
-    id: "Semi furnished",
-    item: "Semi furnished",
-  },
-  {
-    id: "Dining room",
-    item: "Dining room",
-  },
-  {
-    id: "Kitchen",
-    item: "Kitchen",
-  },
-  {
-    id: "Store room",
-    item: "Store room",
-  },
-  {
-    id: "Powder room",
-    item: "Powder room",
-  },
-  {
-    id: "Accessible for specially abled persons",
-    item: "Accessible for specially abled persons",
-  },
-];
-
-//networkCoverage
-export const networks = [
-  {
-    id: "STC",
-    item: "STC",
-  },
-  {
-    id: "Zain",
-    item: "Zain",
-  },
-  {
-    id: "Batelco",
-    item: "Batelco",
-  },
-  {
-    id: "Others",
-    item: "Others",
-  },
-];
+import { useRoute } from "@react-navigation/native";
+import baseURL from "../../../assets/common/baseUrl";
+import { networks } from "../../../Shared/Networks";
+import { amenities } from "../../../Shared/amenities";
+import { items } from "../../../Shared/Items";
+import CustomHeader from "../CustomHeader";
+import Photos from "./ImageUpload/Photos";
 
 var { width, height } = Dimensions.get("window");
 
+const reducer = (state, newState) => ({ ...state, ...newState });
+const initialState = {
+  selectedPhotos: [],
+  errors: {},
+};
+
 const PropertiesInfo = ({ navigation, image, imageUri }) => {
+  const token = useSelector((state) => state.auth.token);
+  const agency = useSelector((state) => state.auth.agency);
   const showMenu = () => {
     navigation.toggleDrawer();
   };
 
+  const [{ selectedPhotos, errors }, dipatchPhotos] = useReducer(
+    reducer,
+    initialState
+  );
   // FORM STATES
   const [name, setName] = useState("");
   const [type, setType] = useState({});
   const [amenity, setAmenity] = useState([]);
   const [network, setNetwork] = useState([]);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [area, setArea] = useState(0);
-  const [rooms, setRooms] = useState(0);
-  const [bathRooms, setBathRooms] = useState(0);
-  const [parking, setParking] = useState(false);
-  const [property, setProperty] = useState('');
-  const [uri, setUri] = useState([]);
+  const [rooms, setRooms] = useState(1);
+  const [bathRooms, setBathRooms] = useState(1);
+  const [extra, setExtra] = useState(false);
+  const [property, setProperty] = useState("Rent");
+  const [uploadPhotos, setUploadPhotos] = useState(false);
+  const [map, setMap] = useState(false);
+  const [city, setCity] = useState("");
+  const [videourl, setVideourl] = useState("");
+  const [Imageurl, setImageurl] = useState("");
+  const [amn, setAmn] = useState([]);
+  const nameRef = useRef();
+  const priceRef = useRef();
+  const sizeRef = useRef();
+  const cityRef = useRef();
+  const descriptionRef = useRef();
+  const videoRef = useRef();
 
-  const [city, setCity] = useState('');
-  const [videourl, setVideourl] = useState('');
-  const [Imageurl, setImageurl] = useState('');
-  const [amn, setAmn] = useState([])
+  const toggleOverlay = () => {
+    setUploadPhotos(true);
+  };
 
+  useEffect(() => {
+    if (nameRef.current.isFocused() && name.length < 5) {
+      dipatchPhotos({
+        errors: { ...errors, name: "Name is required atleast 5 characters" },
+      });
+    } else if (name.length > 0) {
+      delete errors.name;
+    }
 
-  const [attachments, setAttachments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState(false);
-  const [category, setCategory] = useState("");
-  const [showUpload, setShowUpload] = useState(false);
+    if (priceRef.current.isFocused() && price.length == 0) {
+      dipatchPhotos({
+        errors: { ...errors, price: "Price is required" },
+      });
+    } else if (price.length > 0) {
+      delete errors.price;
+    }
+
+    if (sizeRef.current.isFocused() && area.length == 0) {
+      dipatchPhotos({
+        errors: { ...errors, size: "Size is required" },
+      });
+    } else if (area.length > 0) {
+      delete errors.size;
+    }
+    if (cityRef.current.isFocused() && city.length == 0) {
+      dipatchPhotos({
+        errors: { ...errors, city: "City is required" },
+      });
+    } else if (city.length > 0) {
+      delete errors.city;
+    }
+    if (descriptionRef.current.isFocused() && description.length <= 10) {
+      dipatchPhotos({
+        errors: {
+          ...errors,
+          description: "Description should be atleast 40 characters",
+        },
+      });
+    } else if (description.length > 0) {
+      delete errors.description;
+    }
+
+    if (
+      videoRef.current.isFocused() &&
+      !/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi.test(
+        videourl
+      ) &&
+      videourl.length > 1
+    ) {
+      dipatchPhotos({
+        errors: {
+          ...errors,
+          video: "url format incorrect",
+        },
+      });
+    } else {
+      delete errors.video;
+    }
+  }, [name, price, area, city, description, videourl]);
 
   //amenities
   function removeA(item) {
-    console.log('1111111111111111111111111111111111111111111111111111111111111```````````')
     const filteredAmenities = amenity.filter((amnty) => amnty !== item.item);
     const filteredAmn = amn.filter((amnty) => amnty.item !== item.item);
-    console.log('-------------------------', filteredAmn, filteredAmenities, '-----------------------------------------')
     setAmenity(filteredAmenities);
     setAmn(filteredAmn);
   }
 
   function onMultiChangeA() {
-    console.log('222222222222222222222222222222222222222222222222222222222222222222222222222222222222')
     return (item) => {
       for (let i = 0; i < amenity.length; i++) {
         if (amenity[i] === item.id) {
@@ -233,28 +152,24 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log('Multi Change Item', item.item)
-      setAmn([...amn, item])
+      setAmn([...amn, item]);
       setAmenity([...amenity, item.item]);
     };
   }
-  console.log('Amenities--------------------', amenity)
   function removeSelectA() {
     return (item) => {
       const filteredAmn = amn.filter((amnty) => amnty.id !== item.id);
       const filteredAmenities = amenity.filter((amnty) => amnty !== item.id);
-      console.log('Item', item, 'Filtered Aminities', filteredAmenities)
+      console.error("Item", item, "Filtered Aminities", filteredAmenities);
       setAmn(filteredAmn);
-      setAmenity(filteredAmenities)
+      setAmenity(filteredAmenities);
     };
   }
-
   //networks
   function removeN(item) {
     const filteredNetworks = network.filter((net) => net.id !== item.id);
     setNetwork(filteredNetworks);
   }
-
 
   function onMultiChangeN() {
     return (item) => {
@@ -264,7 +179,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log('N multi', item)
       setNetwork([...network, item]);
     };
   }
@@ -275,8 +189,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
       setNetwork(filteredNetworks);
     };
   }
-
-
 
   function removeT(item) {
     const filteredType = type.filter((net) => net.id !== item.id);
@@ -291,7 +203,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
           return;
         }
       }
-      console.log('T multi', item)
+
       setType([...type, item]);
     };
   }
@@ -303,160 +215,155 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     };
   }
 
-
-
-
   const onChange = () => {
     return (item) => {
-      console.log('Type', item)
-      setType(item)
+      setType(item);
     };
   };
 
-  // const showDialog = () => {
-  //   setVisible(true);
-  // };
-
   const [location, setLocation] = useState({
-    latitude: 34.0226741,
-    longitude: 71.5877877,
+    latitude: 26.121393020640035,
+    longitude: 50.5632703633697,
   });
-  const [errorMsg, setErrorMsg] = useState(null);
-  let route = useRoute();
-  const { params } = route;
 
-  console.log('Params============================', params)
+  // let route = useRoute();
+  // const { params } = route;
 
+  // console.log("Params============================", params);
 
+  // console.log("Uri???????????????????????????????????", uri);
+  // useEffect(() => {
+  // (async () => {
 
-  console.log('Uri???????????????????????????????????', uri)
-  useEffect(() => {
-    // (async () => {
+  //   let { status } = await Location.requestPermissionsAsync();
+  //   if (status !== "granted") {
+  //     setErrorMsg("Permission to access location was denied");
+  //     return;
+  //   }
 
-    //   let { status } = await Location.requestPermissionsAsync();
-    //   if (status !== "granted") {
-    //     setErrorMsg("Permission to access location was denied");
-    //     return;
-    //   }
+  //   let location = await Location.getCurrentPositionAsync({});
+  //   setLocation(location.coords);
+  //   console.log(location.coords);
+  // })();
+  // console.log("-------------//////////////-------111112221");
+  //   if (params?.photos) {
+  //     setUri([]);
+  //     console.log("-------------//////////////-------");
 
-    //   let location = await Location.getCurrentPositionAsync({});
-    //   setLocation(location.coords);
-    //   console.log(location.coords);
-    // })();
-    console.log('-------------//////////////-------111112221')
-    if (params?.photos) {
-      setUri([]);
-      console.log('-------------//////////////-------')
+  //     //-----------------------------------
+  //     params.photos.map((image) => {
+  //       const imageData = new FormData();
+  //       const newFile = {
+  //         uri: image.uri,
+  //         name: image.name,
+  //         type: image.type,
+  //       };
+  //       imageData.append("file", newFile);
+  //       imageData.append("cloud_name", "abikhan");
+  //       imageData.append("upload_preset", "insta-clone");
 
-      //-----------------------------------
-      params.photos.map(image => {
-        const imageData = new FormData();
-        const newFile = {
-          uri: image.uri,
-          name: image.name,
-          type: image.type
-        };
-        imageData.append("file", newFile);
-        imageData.append("cloud_name", "abikhan");
-        imageData.append("upload_preset", "insta-clone");
-
-
-        Axios.post(
-          "https://api.cloudinary.com/v1_1/abikhan/image/upload",
-          imageData
-        ).then(async (res) => {
-          console.log('Response URI.....', res.data.url, '//////////////////////////////// uri array')
-          const responseURI = await res.data.url;
-          console.log('Checking--------------------------', responseURI);
-          // uri.push(responseURI);
-          setUri(prev => [...prev, responseURI])
-        })
-          .catch(err => console.log('Error---', err))
-      }
-      )
-    }
-  }, [params?.photos]);
+  //       Axios.post(
+  //         "https://api.cloudinary.com/v1_1/abikhan/image/upload",
+  //         imageData
+  //       )
+  //         .then(async (res) => {
+  //           console.log(
+  //             "Response URI.....",
+  //             res.data.url,
+  //             "//////////////////////////////// uri array"
+  //           );
+  //           const responseURI = await res.data.url;
+  //           console.log("Checking--------------------------", responseURI);
+  //           // uri.push(responseURI);
+  //           setUri((prev) => [...prev, responseURI]);
+  //         })
+  //         .catch((err) => console.log("Error---", err));
+  //     });
+  //   }
+  // }, [params?.photos]);
   const onChangeRoomsConter = (number, type) => {
-    setRooms(number)
+    setRooms(number);
     console.log(number, type); // 1, + or -
   };
   const onChangeBathsConter = (number, type) => {
-    setBathRooms(number)
+    setBathRooms(number);
     console.log(number, type); // 1, + or -
   };
 
   const onSubmit = async () => {
+    let sentPhotos = [];
+    console.error("DEJJ");
 
+    for (let i = 0; i < selectedPhotos.length; i++) {
+      let filename = selectedPhotos[i].uri.split("/").pop();
+      let match = /\.(\w+)$/.exec(filename);
+      let type = match ? `image/${match[1]}` : `image`;
+      let newfile = {
+        uri: selectedPhotos[i].uri,
+        type: `test/${selectedPhotos[i].uri.split(".")[1]}`,
+        name: filename,
+      };
+      let cloudphotos = [];
+      cloudphotos.push({ newfile, uri: selectedPhotos[i].uri });
+      // setCloud((prev) => [...prev, { newfile, uri }]);
+      const promises = cloudphotos.map(async (cloudPhoto) => {
+        const imageURL = await uploadToCloudinary(cloudPhoto.newfile);
 
+        sentPhotos.push(imageURL);
+        console.error("IMAGE", sentPhotos);
+      });
+      const done = await Promise.all(promises);
+      if (done) {
+        const variable = {
+          title: name,
+          type,
+          amenity,
+          network,
+          location,
+          description,
+          cost: parseInt(price),
+          rooms,
+          bathrooms: bathRooms,
+          category: property,
+          area: parseInt(area),
+          city,
+          images: sentPhotos,
+          panorama_url: Imageurl,
+          video_url: videourl,
+          agency: agency.id,
+        };
 
-
-    const variable = {
-      name,
-      type,
-      amenity,
-      network,
-      location,
-      description,
-      price: parseInt(price),
-      rooms,
-      bathRooms,
-      property,
-      uri,
-      area: parseInt(area),
-      city
-    };
-    // console.log('Variable------------------------------------------', variable)
-    // console.log('BaseUrl', baseURL)
-    Axios.post(`${baseURL}/uploadProperty`, variable).then((res) => {
-      console.log("--------------------------------------")
-      console.log("Response", res.data)
-      console.log("--------------------------------------")
+        await UploadProperty(variable, token);
+      }
     }
-    )
 
+    // console.log("BaseUrl", baseURL);
+    // Axios.post(`${baseURL}/uploadProperty`, variable).then((res) => {
+    //   console.log("--------------------------------------");
+    //   console.log("Response", res.data);
+    //   console.log("--------------------------------------");
+    // });
+    // navigation.navigate("Home");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Home" }],
+    });
   };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <Header
-        containerStyle={{
-          backgroundColor: "#eff7e1",
-          justifyContent: "space-around",
-        }}
-        leftComponent={
-          <View style={styles.rightNav}>
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="notifications"
-                color={"#214151"}
-                size={30}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="ios-search"
-                color={"#214151"}
+    <SafeAreaView
+      style={[styles.container, { marginTop: StatusBar.currentHeight || 0 }]}
+    >
+      <CustomHeader showMenu={showMenu} title={"Post a property"} />
 
-                size={30}
-              />
-            </TouchableOpacity>
-          </View>
-        }
-        rightComponent={
-          <TouchableOpacity style={styles.menu}>
-            <Icon onPress={showMenu} name="menu" color={"#214151"} size={30} />
-          </TouchableOpacity>
-        }
-      />
-
-      <KeyboardAwareScrollView
+      {/* <KeyboardAwareScrollView
         viewIsInsideTabBar={true}
         extraHeight={200}
         enableOnAndroid={true}
-      >
-        <ScrollView contentContainerStyle={styles.form}>
-          <Text style={styles.heading}>Post a property</Text>
+      > */}
+      {/* <ScrollView contentContainerStyle={styles.form}> */}
+      {!extra ? (
+        <>
           <SwitchSelector
             initial={0}
             // onPress={value => this.setState({ gender: value })}
@@ -465,18 +372,275 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             buttonColor="#214151"
             borderColor="#214151"
             hasPadding
-            onPress={value => setProperty(value)}
+            onPress={(value) => setProperty(value)}
             options={[
+              { label: "Rent", value: "rent" },
               { label: "Buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
-              { label: "Rent", value: "rent" }, //images.masculino = require('./path_to/assets/img/masculino.png')
+              //images.masculino = require('./path_to/assets/img/masculino.png')
               { label: "Both", value: "buyAndRent" },
             ]}
             testID="gender-switch-selector"
             accessibilityLabel="gender-switch-selector"
           />
-          <View style={{ paddingBottom: 10 }}></View>
 
+          <KeyboardAwareScrollView
+            viewIsInsideTabBar={true}
+            extraHeight={200}
+            enableOnAndroid={true}
+          >
+            <View style={{ marginTop: 20 }}></View>
+            <Input
+              ref={nameRef}
+              inputStyle={styles.inputStyle}
+              label="Property Name"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={[styles.inputContainer]}
+              onChangeText={(value) => setName(value)}
+              value={name}
+              errorMessage={errors.name}
+            />
+
+            <Input
+              ref={priceRef}
+              keyboardType={"numeric"}
+              inputStyle={styles.inputStyle}
+              label="Property Cost"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(value) => setPrice(value)}
+              value={price}
+              errorMessage={errors.price}
+            />
+
+            {/* <Input
+          label="Property Price"
+          keyboardType={"numeric"}
+          leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
+          onChangeText={(value) => setPrice(value)}
+          value={price}
+        /> */}
+
+            <Input
+              ref={sizeRef}
+              keyboardType={"numeric"}
+              inputStyle={styles.inputStyle}
+              label="Property size(sqft)"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(value) => setArea(value)}
+              value={area}
+              errorMessage={errors.size}
+            />
+
+            <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
+              <Text style={{ paddingBottom: 10 }}>Rooms</Text>
+              <Counter
+                start={1}
+                onChange={onChangeRoomsConter}
+                buttonStyle={{
+                  borderColor: "#214151",
+                  borderWidth: 2,
+                }}
+                buttonTextStyle={{
+                  color: "#214151",
+                }}
+                countTextStyle={{
+                  color: "#214151",
+                }}
+              />
+            </View>
+
+            <View
+              style={{
+                borderBottomColor: "#214151",
+                borderBottomWidth: 1,
+                marginHorizontal: 10,
+              }}
+            />
+            <View style={{ paddingBottom: 10 }}></View>
+            <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
+              <Text style={{ paddingBottom: 10 }}>Bathrooms</Text>
+              <Counter
+                start={1}
+                onChange={onChangeBathsConter}
+                buttonStyle={{
+                  borderColor: "#214151",
+                  borderWidth: 2,
+                }}
+                buttonTextStyle={{
+                  color: "#214151",
+                }}
+                countTextStyle={{
+                  color: "#214151",
+                }}
+              />
+            </View>
+            {/* 
+        <Input
+          label="Description"
+          onChangeText={(value) => setDescription(value)}
+          value={description}
+          multiline={true}
+          numberOfLines={5}
+        /> */}
+
+            <Input
+              ref={descriptionRef}
+              inputStyle={styles.inputStyle}
+              label="Description"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(value) => setDescription(value)}
+              value={description}
+              multiline={true}
+              numberOfLines={10}
+              errorMessage={errors.description}
+            />
+
+            {/* <TextInput
+          value={city}
+          onChangeText={(val) => setCity(val)}
+          placeholder="Enter City name"
+          style={styles.textInput}
+        /> */}
+            <Input
+              ref={cityRef}
+              inputStyle={styles.inputStyle}
+              label="City"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(val) => setCity(val)}
+              value={city}
+              errorMessage={errors.city}
+            />
+            <Input
+              ref={videoRef}
+              inputStyle={styles.inputStyle}
+              label="Video URL"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(val) => setVideourl(val)}
+              value={videourl}
+              errorMessage={errors.video}
+            />
+
+            <Input
+              inputStyle={styles.inputStyle}
+              label="360 View URL"
+              labelStyle={styles.fieldLabels}
+              inputContainerStyle={styles.inputContainer}
+              onChangeText={(val) => setImageurl(val)}
+              value={Imageurl}
+              // errorMessage={errors.email}
+            />
+
+            <View style={{ height: 150, flex: 1, position: "relative" }}>
+              <MapView
+                initialRegion={{
+                  latitude: location?.latitude || 26.1112803858752,
+                  longitude: location?.longitude || 50.548977414102204,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                style={styles.maps}
+              >
+                <MapView.Marker
+                  pinColor="aqua"
+                  coordinate={{
+                    latitude: location?.latitude,
+                    longitude: location?.longitude,
+                  }}
+                  title={"title"}
+                ></MapView.Marker>
+              </MapView>
+            </View>
+
+            <Button
+              buttonStyle={{
+                borderColor: "#214151",
+              }}
+              containerStyle={{
+                marginVertical: 20,
+              }}
+              titleStyle={{
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+              }}
+              title="Select Map Location"
+              type="outline"
+              onPress={() => {
+                setMap(true);
+              }}
+            />
+            <Button
+              buttonStyle={{
+                borderColor: "#214151",
+              }}
+              titleStyle={{
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+              }}
+              title="Upload Photos"
+              type="outline"
+              onPress={() => {
+                setUploadPhotos(true);
+              }}
+            />
+
+            {selectedPhotos.length > 0 ? (
+              <View
+                style={{ flexDirection: "row", width: width, flexWrap: "wrap" }}
+              >
+                {selectedPhotos.map((photo, i) => (
+                  <Image
+                    key={i}
+                    style={{ paddingTop: 20 }}
+                    onPress={() => {
+                      let copy = selectedPhotos;
+                      copy = selectedPhotos.filter(
+                        (filterPhoto, index) => index !== i
+                      );
+
+                      dipatchPhotos({
+                        selectedPhotos: copy,
+                      });
+                    }}
+                    style={{ height: 100, width: 100 }}
+                    source={{ uri: photo?.uri }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <Text style={{ color: "#214151", marginTop: 10 }}>
+                No images chosen
+              </Text>
+            )}
+
+            <Button
+              disabled={
+                selectedPhotos.length < 2 && Object.keys(errors).length === 0
+              }
+              buttonStyle={styles.register}
+              titleStyle={{ fontFamily: "EBGaramond-Bold" }}
+              title="Next"
+              onPress={() => {
+                setExtra(true);
+              }}
+            />
+          </KeyboardAwareScrollView>
+        </>
+      ) : (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+          }}
+        >
           <SelectBox
+            containerStyle={{
+              marginBottom: 10,
+            }}
             label="Property Type"
             options={items}
             onChange={onChange()}
@@ -495,89 +659,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               paddingLeft: 10,
             }}
           />
-          <View style={{ paddingBottom: 10 }}></View>
-          <Input
-            label="Property Name"
-            leftIcon={<Icon name="people" size={24} color="#f8dc81" />}
-            onChangeText={(value) => setName(value)}
-            value={name}
-          />
-
-          <Input
-            label="Property Price"
-            keyboardType={"numeric"}
-            leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
-            onChangeText={(value) => setPrice(value)}
-            value={price}
-          />
-          <Input
-            label="Area in Sqrt"
-            keyboardType={"numeric"}
-            leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
-            onChangeText={(value) => setArea(value)}
-            value={area}
-          />
-
-          {/* <Input
-            label="Area (sqrt)"
-            keyboardType={"numeric"}
-            leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
-            onChangeText={(value) => setArea(value)}
-            value={area}
-          /> */}
-
-          <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
-            <Text style={{ paddingBottom: 10 }}>Rooms</Text>
-            <Counter
-              start={1}
-              onChange={onChangeRoomsConter}
-              buttonStyle={{
-                borderColor: "#214151",
-                borderWidth: 2,
-              }}
-              buttonTextStyle={{
-                color: "#214151",
-              }}
-              countTextStyle={{
-                color: "#214151",
-              }}
-            />
-          </View>
-
-          <View
-            style={{
-              borderBottomColor: "#214151",
-              borderBottomWidth: 1,
-              marginHorizontal: 10,
-            }}
-          />
-          <View style={{ paddingBottom: 10 }}></View>
-          <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
-            <Text style={{ paddingBottom: 10 }}>Bathrooms</Text>
-            <Counter
-              start={1}
-              onChange={onChangeBathsConter}
-              buttonStyle={{
-                borderColor: "#214151",
-                borderWidth: 2,
-              }}
-              buttonTextStyle={{
-                color: "#214151",
-              }}
-              countTextStyle={{
-                color: "#214151",
-              }}
-            />
-          </View>
-
-          <Input
-            label="Description"
-            leftIcon={<MaterialIcon name="email" size={24} color="#f8dc81" />}
-            onChangeText={(value) => setDescription(value)}
-            value={description}
-            multiline={true}
-            numberOfLines={5}
-          />
           <SelectBox
             label="Amenities"
             options={amenities}
@@ -590,6 +671,10 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             toggleIconColor="#f8dc81"
             inputFilterContainerStyle={{
               backgroundColor: "#f7f6e7",
+              flexWrap: "wrap",
+            }}
+            optionContainerStyle={{
+              flexWrap: "wrap",
             }}
             optionsLabelStyle={{
               color: "#214151",
@@ -624,56 +709,94 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             }}
             value={network}
           />
-
-          <View style={{ paddingBottom: 10 }}></View>
-          <TextInput value={city} onChangeText={(val) => setCity(val)} placeholder='Enter City name' style={styles.textInput} />
-
-          <View style={{ paddingBottom: 10 }}></View>
-          <TextInput value={videourl} onChangeText={(val) => setVideourl(val)} placeholder='Enter Video Url' style={styles.textInput} />
-
-          <View style={{ paddingBottom: 10 }}></View>
-          <TextInput value={Imageurl} onChangeText={(val) => setImageurl(val)} placeholder='Enter 360 Image Url' style={styles.textInput} />
-
-          <View style={{ height: 150 }}>
-
-
-            <MapView
-              style={styles.maps}
-              onPress={(e) => { setLocation(e.nativeEvent.coordinate), console.log(e.nativeEvent) }}
-            >
-              <MapView.Marker
-                coordinate={{
-                  latitude: location?.latitude,
-                  longitude: location?.longitude,
-                }}
-                title={"title"}
-                description={"description"}
-              ></MapView.Marker>
-            </MapView>
+          <View style={{ flexDirection: "row" }}>
+            <Button
+              type="clear"
+              buttonStyle={{ marginTop: 30, marginBottom: 20 }}
+              containerStyle={{ width: width / 2.5 }}
+              titleStyle={{ fontFamily: "EBGaramond-Bold", color: "#214151" }}
+              title="Previous"
+              onPress={() => {
+                setExtra(false);
+              }}
+            />
+            <Button
+              disabled={Object.keys(type).length == 0}
+              buttonStyle={styles.register}
+              containerStyle={{ width: width / 2.5 }}
+              titleStyle={{ fontFamily: "EBGaramond-Bold" }}
+              title="Post Property"
+              onPress={() => {
+                onSubmit();
+              }}
+            />
           </View>
+        </View>
+      )}
 
-
-          <View style={{ paddingBottom: 10 }}></View>
-          <MainScreen />
-          <View style={{ paddingBottom: 10 }}></View>
-
+      <Overlay isVisible={uploadPhotos} onBackdropPress={toggleOverlay}>
+        <Photos
+          setUploadPhotos={setUploadPhotos}
+          navigation={navigation}
+          selectedPhotos={selectedPhotos}
+          dipatchPhotos={dipatchPhotos}
+        />
+      </Overlay>
+      <Overlay
+        isVisible={map}
+        onBackdropPress={() => {
+          setMap(!map);
+        }}
+      >
+        <View style={{ height: height / 1.5, width: width }}>
+          <MapView
+            initialRegion={{
+              latitude: 26.1112803858752,
+              longitude: 50.548977414102204,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            style={styles.maps}
+            onPress={(e) => {
+              setLocation(e.nativeEvent.coordinate);
+            }}
+          >
+            <MapView.Marker
+              pinColor="aqua"
+              coordinate={{
+                latitude: location?.latitude,
+                longitude: location?.longitude,
+              }}
+              title={"This location will be entered in the property"}
+              // description={"description"}
+            ></MapView.Marker>
+          </MapView>
           <Button
-            buttonStyle={styles.register}
-            title="Register Agency"
-            onPress={onSubmit}
+            containerStyle={{
+              width: width,
+            }}
+            buttonStyle={{
+              backgroundColor: "#214151",
+            }}
+            titleStyle={{
+              fontFamily: "EBGaramond-Bold",
+            }}
+            title="Select Location"
+            // onPress={() => {
+            //   setMap(false);
+            //   setUploadPhotos(false);
+            // }}
           />
-          {image ? <Image style={{ height: 100, width: 100 }} source={{ uri: image[0]?.uri }} /> : <Text>No image available</Text>}
-
-        </ScrollView>
-      </KeyboardAwareScrollView>
+        </View>
+      </Overlay>
     </SafeAreaView>
   );
 };
 const mapStateToProps = (state) => {
-  console.log('State...........///--------', state)
+  console.log("State...........///--------", state);
   return {
     image: state.auth.images,
-    imageUri: state.uri
+    imageUri: state.uri,
   };
 };
 
@@ -744,15 +867,28 @@ const styles = StyleSheet.create({
   register: {
     backgroundColor: "#214151",
     marginTop: 30,
+    marginBottom: 20,
   },
   maps: {
     height: "100%",
   },
   textInput: {
-    borderColor: '#A5A5A5',
+    borderColor: "#A5A5A5",
     borderWidth: 1,
     paddingHorizontal: 4,
     paddingVertical: 8,
-    marginVertical: 16
-  }
+    marginVertical: 16,
+  },
+  inputStyle: {
+    color: "#214151",
+  },
+  fieldLabels: {
+    color: "#839b97",
+  },
+  inputContainer: {
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: "#214151",
+    paddingHorizontal: 5,
+  },
 });
