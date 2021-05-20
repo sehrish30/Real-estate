@@ -45,9 +45,7 @@ router.get("/allProperties", (req, res) => {
     .skip(parseInt(req.query.page) || 0)
     .sort({ updatedAt: -1 })
     .exec((err, data) => {
-      console.log(data);
       if (err) {
-        console.log(err);
         return res.status(422).send(err);
       }
       return res.status(200).send(data);
@@ -598,7 +596,6 @@ router.post("/uploadProperty", async (req, res) => {
       "SAVING--------------------------------------------------------"
     );
     const savedProperty = await property.save();
-    console.log("Property", savedProperty);
     if (savedProperty) {
       return res.status(200).send(true);
     } else {

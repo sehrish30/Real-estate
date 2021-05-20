@@ -78,15 +78,11 @@ const PropertiesPosts = () => {
     userId = user?.decoded?.userId;
   }
   const getData = async () => {
-    console.error("ROUTE", route.params);
-
     const res = await getPropertyDetails({
       property: route.params.id,
       userId: userId || null,
     });
     if (res.data) {
-      console.error("LST", route.params.id, userId);
-
       setList([res.data]);
       setRecommended(res.data);
       setStar(res.exists);
@@ -147,7 +143,6 @@ const PropertiesPosts = () => {
         dispatchRecommendations({
           recommendations: result,
         });
-        console.error("RECCOMENDED", result);
       }
     })();
     return () => {
@@ -172,7 +167,6 @@ const PropertiesPosts = () => {
             token
           );
           if (result) {
-            console.error("UN");
             setStar(false);
           }
         } else {
@@ -185,7 +179,6 @@ const PropertiesPosts = () => {
             token
           );
           if (res) {
-            console.error("YAY");
             setStar(true);
           }
         }
@@ -570,7 +563,6 @@ const PropertiesPosts = () => {
         data={list}
         renderItem={renderDayRow}
         keyExtractor={(item) => {
-          console.error("KHALID", item.id);
           return item.id;
         }}
       />

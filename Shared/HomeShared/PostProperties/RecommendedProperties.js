@@ -24,7 +24,6 @@ const RecommendedProperties = ({
     <View style={styles.container}>
       <TouchableWithoutFeedback
         onPress={() => {
-          console.error("ABHE RUK");
           navigation.push("PropertiesPosts", { id: id });
           //   navigation.navigate("Home");
           // navigation.navigate("Home", {

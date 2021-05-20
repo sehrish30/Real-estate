@@ -91,37 +91,8 @@ export default function Landing() {
     });
   };
 
-  console.log("Properties----", propertiesData);
-
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("SearchProperty")}
-        style={{
-          width: 80,
-          backgroundColor: "#21534A",
-          paddingVertical: 5,
-          borderRadius: 4,
-          margin: 8,
-          marginLeft: "auto",
-        }}
-      >
-        <Text style={{ textAlign: "center", color: "white", fontSize: 16 }}>
-          Filter
-        </Text>
-      </TouchableOpacity>
-      {/* <TextInput
-        style={{
-          backgroundColor: "#fff",
-          paddingVertical: 8,
-          paddingHorizontal: 6,
-          borderRadius: 6,
-          marginHorizontal: 12,
-          marginVertical: 12,
-        }}
-        placeholder="Enter property name"
-        onChangeText={(value) => changeText(value)}
-      /> */}
       <BadgesFilter
         residential={residential}
         commercial={commercial}

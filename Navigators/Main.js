@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector, useDispatch } from "react-redux";
 import ChatNavigator from "./ChatNavigator";
 import ChatsNotification from "../Shared/Chats/ChatsNotification";
+import SearchNavigator from "./SearchNavigator";
 // import { StatusBar } from "expo-status-bar";
 
 let showAdminPanel;
@@ -68,7 +69,7 @@ const Main = () => {
       ) : null}
       <Tab.Screen
         name="Search"
-        component={UserAuthNavigator}
+        component={SearchNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <View>
