@@ -272,11 +272,11 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
         network,
         location,
         description,
-        cost: formatNumber(price),
+        cost: parseInt(price),
         rooms,
         bathrooms: bathRooms,
         category: property,
-        area: formatNumber(area),
+        area: parseInt(area),
         city,
         images: sentPhotos,
         panorama_url: Imageurl,
@@ -324,8 +324,8 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             hasPadding
             onPress={(value) => setProperty(value)}
             options={[
-              { label: "Rent", value: "rent" },
-              { label: "Buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
+              { label: "rent", value: "rent" },
+              { label: "buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
               //images.masculino = require('./path_to/assets/img/masculino.png')
               { label: "Both", value: "buyAndRent" },
             ]}

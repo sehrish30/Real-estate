@@ -89,6 +89,10 @@ const PropertiesPosts = () => {
     }
   };
 
+  function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+  }
+
   const [active, setActive] = useState(0);
   const [list, setList] = useState([]);
   const [recommended, setRecommended] = useState(null);
@@ -278,7 +282,7 @@ const PropertiesPosts = () => {
                 />
                 {/* <Text style={styles.description}> Property size(sqft)</Text> */}
                 <Text style={[styles.description, { fontWeight: "bold" }]}>
-                  {item.area}
+                  {item.area ? formatNumber(item.area) : null}
                   {" sqft "}
                 </Text>
               </View>
@@ -298,7 +302,7 @@ const PropertiesPosts = () => {
             </View>
             <View style={{ justifyContent: "flex-end", alignSelf: "center" }}>
               <Text style={{ color: "#214151", fontWeight: "bold" }}>
-                {item.cost} BHD
+                {item.cost ? formatNumber(item.cost) : null} BHD
               </Text>
 
               <Text style={{ alignSelf: "center", color: "#214151" }}>

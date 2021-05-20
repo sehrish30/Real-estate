@@ -31,6 +31,7 @@ const authJwt = () => {
       `/properties/all-properties`,
       `/properties/allProperties`,
       `/properties/searchProperty`,
+      `/properties/filterProperty`,
     ],
   });
 };

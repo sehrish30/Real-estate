@@ -29,7 +29,7 @@ const Amenities = ({
             options={options}
             selectedValues={values}
             onMultiSelect={action()}
-            onTapClose={close}
+            onTapClose={close()}
             isMulti
             arrowIconColor="#f8dc81"
             searchIconColor="#f8dc81"

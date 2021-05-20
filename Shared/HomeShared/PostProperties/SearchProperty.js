@@ -8,6 +8,7 @@ import {
   Dimensions,
   TextInput,
   Modal,
+  Pressable,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -20,12 +21,15 @@ import {
 import PropertyType from "../../Modals/PropertyType";
 import SwitchSelector from "react-native-switch-selector";
 import SelectBox from "react-native-multi-selectbox";
-import Axios from "axios";
+import { filterProperty } from "../../Services/PropertyServices";
 
 import { useNavigation } from "@react-navigation/native";
 import baseURL from "../../../assets/common/baseUrl";
 import Options from "../../Modals/Options";
 import Amenities from "../../Modals/Amenities";
+import { items as cities } from "../../Cities";
+import { items } from "../../Items";
+import { amenities } from "../../amenities";
 
 var { width, height } = Dimensions.get("window");
 // import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -38,278 +42,6 @@ const SearchProperty = () => {
   const showMenu = () => {
     navigation.toggleDrawer();
   };
-
-  const cities = [
-    {
-      id: "Budaiya",
-      item: "Budaiya",
-    },
-    {
-      id: "Jasra",
-      item: "Jasra",
-    },
-    {
-      id: "Boori",
-      item: "Boori",
-    },
-    {
-      id: "Hamala",
-      item: "Hamala",
-    },
-    {
-      id: "Karzakan",
-      item: "Karzakan",
-    },
-    {
-      id: "Malikiya",
-      item: "Malikiya",
-    },
-    {
-      id: "Sadad",
-      item: "Sadad",
-    },
-    {
-      id: "Shahrakan",
-      item: "Shahrakan",
-    },
-    {
-      id: "Dar Kulaib",
-      item: "Dar Kulaib",
-    },
-    {
-      id: "Zallaq",
-      item: "Zallaq",
-    },
-    {
-      id: "Hamad Town",
-      item: "Hamad Town",
-    },
-    {
-      id: "East Riffa",
-      item: "East Riffa",
-    },
-    {
-      id: "West Riffa",
-      item: "West Riffa",
-    },
-    {
-      id: "Jid Ali",
-      item: "Jid Ali",
-    },
-    {
-      id: "Isatown",
-      item: "Isatown",
-    },
-    {
-      id: "Qudaibiya",
-      item: "Qudaibiya",
-    },
-    {
-      id: "Sanabis",
-      item: "Sanabis",
-    },
-    {
-      id: "Salmabad",
-      item: "Salmabad",
-    },
-    {
-      id: "Jurdab",
-      item: "Jurdab",
-    },
-    {
-      id: "Hidd",
-      item: "Hidd",
-    },
-    {
-      id: "Arad",
-      item: "Arad",
-    },
-    {
-      id: "Busaiteen",
-      item: "Busaiteen",
-    },
-    {
-      id: "Janabiyah",
-      item: "Janabiyah",
-    },
-    {
-      id: "Muharraq",
-      item: "Muharraq",
-    },
-    {
-      id: "Al Dur",
-      item: "Al Dur",
-    },
-    {
-      id: "Isa Town",
-      item: "Isa Town",
-    },
-    {
-      id: "Sitra",
-      item: "Sitra",
-    },
-    {
-      id: "Budaiya",
-      item: "Budaiya",
-    },
-    {
-      id: "Adliya",
-      item: "Adliya",
-    },
-    {
-      id: "Awali",
-      item: "Awali",
-    },
-    {
-      id: "Juffair",
-      item: "Juffair",
-    },
-    {
-      id: "Khamis",
-      item: "Khamis",
-    },
-    {
-      id: "Manama",
-      item: "Manama",
-    },
-  ];
-
-  const items = [
-    {
-      id: "Residential",
-      item: "Residential",
-    },
-    {
-      id: "Commercial",
-      item: "Commercial",
-    },
-    {
-      id: "Industrial",
-      item: "Industrial",
-    },
-    {
-      id: "Lands",
-      item: "Lands",
-    },
-  ];
-
-  const keywords = [
-    {
-      id: "R",
-      item: "R",
-    },
-    {
-      id: "C",
-      item: "C",
-    },
-    {
-      id: "I",
-      item: "I",
-    },
-    {
-      id: "L",
-      item: "L",
-    },
-  ];
-
-  const amenities = [
-    {
-      id: "Central heating",
-      item: "Central heating",
-    },
-    {
-      id: "Central cooling",
-      item: "Central cooling",
-    },
-    {
-      id: "Dirty kitchen",
-      item: "Dirty kitchen",
-    },
-    {
-      id: "Lawn",
-      item: "Lawn",
-    },
-    {
-      id: "Swimming pool",
-      item: "Swimming pool",
-    },
-    {
-      id: "Parking space",
-      item: "Parking space",
-    },
-    {
-      id: "TV lounge",
-      item: "TV lounge",
-    },
-    {
-      id: "Drawing room",
-      item: "Drawing room",
-    },
-    {
-      id: "Home theatre",
-      item: "Home theatre",
-    },
-    {
-      id: "Corner house",
-      item: "Corner house",
-    },
-    {
-      id: "Elevators",
-      item: "Elevators",
-    },
-    {
-      id: "Study room",
-      item: "Study room",
-    },
-    {
-      id: "Security staff",
-      item: "Security staff",
-    },
-    {
-      id: "Nearby Landmark",
-      item: "Nearby Landmark",
-    },
-    {
-      id: "Wifi",
-      item: "Wifi",
-    },
-    {
-      id: "Balcony",
-      item: "Balcony",
-    },
-    {
-      id: "Laundry room",
-      item: "Laundry room",
-    },
-    {
-      id: "Servant quarter",
-      item: "Servant quarter",
-    },
-    {
-      id: "Fully Furnished",
-      item: "Fully Furnished",
-    },
-    {
-      id: "Semi furnished",
-      item: "Semi furnished",
-    },
-    {
-      id: "Dining room",
-      item: "Dining room",
-    },
-    {
-      id: "Kitchen",
-      item: "Kitchen",
-    },
-    {
-      id: "Store room",
-      item: "Store room",
-    },
-    {
-      id: "Powder room",
-      item: "Powder room",
-    },
-  ];
 
   const onChange = () => {
     return (item) => {
@@ -337,25 +69,14 @@ const SearchProperty = () => {
   }
   //aminities
   function removeA(item) {
-    console.log(
-      "1111111111111111111111111111111111111111111111111111111111111```````````"
-    );
     const filteredAmenities = amenity.filter((amnty) => amnty !== item.item);
     const filteredAmn = amn.filter((amnty) => amnty.item !== item.item);
-    console.log(
-      "-------------------------",
-      filteredAmn,
-      filteredAmenities,
-      "-----------------------------------------"
-    );
+
     setAmenity(filteredAmenities);
     setAmn(filteredAmn);
   }
 
   function onMultiChangeA() {
-    console.log(
-      "222222222222222222222222222222222222222222222222222222222222222222222222222222222222"
-    );
     return (item) => {
       for (let i = 0; i < amenity.length; i++) {
         if (amenity[i] === item.id) {
@@ -363,12 +84,12 @@ const SearchProperty = () => {
           return;
         }
       }
-      console.log("Multi Change Item", item.item);
+
       setAmn([...amn, item]);
       setAmenity([...amenity, item.item]);
     };
   }
-  console.log("Amenities--------------------", amenity);
+
   function removeSelectA() {
     return (item) => {
       const filteredAmn = amn.filter((amnty) => amnty.id !== item.id);
@@ -393,7 +114,6 @@ const SearchProperty = () => {
           return;
         }
       }
-      console.error("Multi Change Item", item);
       setLocations([...locations, item]);
     };
   }
@@ -432,22 +152,28 @@ const SearchProperty = () => {
   }
 
   // FORM STATES
+  const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalAmenity, setModalAmenity] = useState(false);
   const [modalProperty, setModalProperty] = useState(false);
   const [keyword, setKeyword] = useState([]);
-  const [type, setType] = useState([]);
+  const [type, setType] = useState("");
   const [amenity, setAmenity] = useState([]);
-  const [property, setProperty] = useState("buy");
+  const [property, setProperty] = useState("");
   const [locations, setLocations] = useState([]);
-  const [priceMinimum, setPriceMinimum] = useState("0");
-  const [areaMinimum, setAreaMinimum] = useState("0");
-  const [priceMaximum, setPriceMaximum] = useState("0");
-  const [areaMaximum, setAreaMaximum] = useState("0");
+  const [priceMinimum, setPriceMinimum] = useState(null);
+  const [areaMinimum, setAreaMinimum] = useState(null);
+  const [priceMaximum, setPriceMaximum] = useState(null);
+  const [areaMaximum, setAreaMaximum] = useState(null);
   const [city, setCity] = useState("");
   const [amn, setAmn] = useState([]);
   const navigation = useNavigation();
-  const onSearch = () => {
+  const onSearch = async () => {
+    setLoading(true);
+    let filterLocations = [];
+    locations.map((location) => {
+      filterLocations.push(location.item);
+    });
     const data = {
       priceMinimum: parseInt(priceMinimum),
       priceMaximum: parseInt(priceMaximum),
@@ -455,16 +181,59 @@ const SearchProperty = () => {
       areaMinimum: parseInt(areaMinimum),
       type: type?.item,
       property,
-      city,
+      city: filterLocations,
       amenity,
     };
-    Axios.post("https://1df05c8e9ef4.ngrok.io/filterProperty", data).then(
-      (res) => {
-        console.log("Response Data filter----------", res.data.data);
-        navigation.navigate("FilterData", { filterData: res.data.data });
-      }
-    );
+
+    const response = await filterProperty(data);
+
+    navigation.navigate("FilterData", { filterData: response });
+    setLoading(false);
+    // Axios.post("https://1df05c8e9ef4.ngrok.io/filterProperty", data).then(
+    //   (res) => {
+    //     console.log("Response Data filter----------", res.data.data);
+    //     navigation.navigate("FilterData", { filterData: res.data.data });
+    //   }
+    // );
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: "#eff7e1" },
+      headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
+      headerTintColor: "#2c6e8f",
+      headerTitle: "Customized property search",
+      headerRight: () => (
+        <Pressable
+          onPressIn={() => {
+            setType("");
+            setAmenity([]);
+            setProperty("");
+            setLocations([]);
+            setPriceMinimum(null);
+            setAreaMinimum(null);
+            setPriceMaximum(null);
+            setAreaMaximum(null);
+            setCity("");
+            setAmn([]);
+            setLoading(false);
+          }}
+        >
+          <Text
+            style={{
+              textAlign: "right",
+              color: "#214151",
+              fontFamily: "EBGaramond-Regular",
+              textDecorationLine: "underline",
+              marginRight: 10,
+            }}
+          >
+            Clear All
+          </Text>
+        </Pressable>
+      ),
+    });
+  }, [navigation]);
 
   console.log(
     locations,
@@ -487,8 +256,10 @@ const SearchProperty = () => {
           hasPadding
           onPress={(value) => setProperty(value)}
           options={[
+            { label: "any", value: "" },
+            { label: "rent", value: "rent" },
             { label: "buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
-            { label: "rent", value: "rent" }, //images.masculino = require('./path_to/assets/img/masculino.png')
+            //images.masculino = require('./path_to/assets/img/masculino.png')
           ]}
           testID="gender-switch-selector"
           accessibilityLabel="gender-switch-selector"
@@ -522,13 +293,15 @@ const SearchProperty = () => {
               style={styles.textInput}
               onChangeText={(val) => setAreaMinimum(val)}
               placeholder="Enter Area Min"
+              value={areaMinimum}
             />
-            <Text>-</Text>
+            <Text style={{ color: "#214151" }}>-</Text>
             <TextInput
               keyboardType="numeric"
               style={styles.textInput}
               onChangeText={(val) => setAreaMaximum(val)}
               placeholder="Enter Area Max"
+              value={areaMaximum}
             />
           </View>
         </View>
@@ -551,39 +324,19 @@ const SearchProperty = () => {
               style={styles.textInput}
               onChangeText={(val) => setPriceMinimum(val)}
               placeholder="Enter Price Min"
+              value={priceMinimum}
             />
-            <Text>-</Text>
+            <Text style={{ color: "#214151" }}>-</Text>
             <TextInput
               keyboardType="numeric"
               style={styles.textInput}
               onChangeText={(val) => setPriceMaximum(val)}
               placeholder="Enter Price Max"
+              value={priceMaximum}
             />
           </View>
         </View>
 
-        {/* <SelectBox
-          label="Keywords"
-          options={keywords}
-          selectedValues={keyword}
-          onMultiSelect={onMultiChangeK()}
-          onTapClose={removeSelectK()}
-          isMulti
-          arrowIconColor="#f8dc81"
-          searchIconColor="#f8dc81"
-          toggleIconColor="#f8dc81"
-          inputFilterContainerStyle={{
-            backgroundColor: "#f7f6e7",
-          }}
-          optionsLabelStyle={{
-            color: "#214151",
-            paddingLeft: 10,
-          }}
-          multiOptionContainerStyle={{
-            backgroundColor: "#214151",
-          }}
-          value={keyword}
-        /> */}
         {/* LOCATION */}
         <Input
           placeholder="Tap to edit"
@@ -603,6 +356,7 @@ const SearchProperty = () => {
               value={location.item}
               badgeStyle={{
                 backgroundColor: "#214151",
+                padding: 5,
               }}
             />
           ))}
@@ -626,6 +380,7 @@ const SearchProperty = () => {
               value={amenity.item}
               badgeStyle={{
                 backgroundColor: "#214151",
+                padding: 5,
               }}
             />
           ))}
@@ -639,8 +394,27 @@ const SearchProperty = () => {
           inputContainerStyle={styles.inputContainer}
           // onChangeText={(val) => setCity(val)}
           onPress={() => setModalProperty(true)}
+          value={type.item}
         />
+        <View
+          style={{
+            justifyContent: "flex-end",
+            width: width / 1.1,
+            margin: 0,
+          }}
+        >
+          <Pressable
+            onPressIn={() => {
+              setType("");
+            }}
+          >
+            <Text style={{ textAlign: "right", color: "#214151" }}>
+              Clear Property
+            </Text>
+          </Pressable>
+        </View>
         <Button
+          loading={loading}
           titleStyle={{
             fontFamily: "EBGaramond-Bold",
           }}
@@ -772,7 +546,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     fontSize: 16,
-    // letterSpacing: 0.5,
   },
   textInput: {
     borderRadius: 10,

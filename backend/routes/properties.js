@@ -629,34 +629,45 @@ router.get("/searchProperty", (req, res) => {
 /*----------------------------------------
         FILTER PROPERTY
 ---------------------------------------- */
-router.post("/filterProperty", (req, res) => {
-  console.log("Req Body data", req.body);
-  const {
-    priceMinimum,
+router.get("/filterProperty", (req, res) => {
+  console.log("Req Body data", req.query);
+  let {
     priceMaximum,
     type,
+    priceMinimum,
     property,
     amenity,
     areaMaximum,
     areaMinimum,
     city,
-  } = req.body;
-  console.log("Filter Body", req.body.data);
-  Property.find(
-    {
-      cost: { $lt: priceMaximum, $gt: priceMinimum },
-      area: { $lt: areaMaximum, $gt: areaMinimum },
-      type: type,
-      category: property,
-      Amenities: { $in: amenity },
-      city,
-    },
-    function (err, data) {
-      if (err) return res.json({ error: err, status: "400" });
-      console.log("Filter Data", data);
-      res.json({ data: data });
-    }
-  );
+  } = req.query;
+  let query = {};
+  if (parseInt(priceMaximum)) {
+    query.cost = { $lt: priceMaximum, $gt: priceMinimum };
+  }
+  if (type) {
+    query.type = type;
+  }
+  if (property) {
+    query.category = property;
+  }
+
+  if (amenity?.length > 0) {
+    query.Amenities = { $in: amenity };
+  }
+  if (parseInt(areaMaximum)) {
+    query.area = { $lt: areaMaximum, $gt: areaMinimum };
+  }
+  if (city?.length > 0) {
+    query.city = { $in: city };
+  }
+
+  console.log("FINAL QUERY", query);
+  Property.find(query, function (err, data) {
+    if (err) return res.json({ error: err, status: "400" });
+    console.log("Filter Data", data.length);
+    return res.status(200).json({ data: data });
+  });
 });
 
 module.exports = router;

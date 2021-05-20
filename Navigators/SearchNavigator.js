@@ -1,49 +1,41 @@
 import React from "react";
-import { StyleSheet, Text, View, Dimensions } from "react-native";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Requests from "../screens/Admin/Requests";
-import Reports from "../screens/Admin/Reports";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Image } from "react-native-elements";
+import { StyleSheet, Text, View } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+
 import SearchProperty from "../Shared/HomeShared/PostProperties/SearchProperty";
 
-var { width, height } = Dimensions.get("window");
+import FilterData from "../Shared/HomeShared/PostProperties/FilterData";
 
-const Tab = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
 
-function MyTabs() {
+function MyStack() {
   return (
-    <Tab.Navigator
-      initialRouteName="SearchProperty"
-      tabBarOptions={{
-        labelStyle: {
-          fontSize: 12,
-          fontFamily: "EBGaramond-Regular",
-          marginTop: height / 14,
-        },
-        // tabStyle: { width: 100 },
-        style: { backgroundColor: "#eff7e1" },
-        activeTintColor: "#214151",
-        inactiveTintColor: "#839b97",
-        indicatorStyle: {
-          backgroundColor: "#214151",
-          borderRadius: 5,
-        },
-      }}
-      showIcon={true}
+    <Stack.Navigator
+      headerMode="screen"
+      //   screenOptions={{
+      //     headerShown: false,
+      //   }}
     >
-      <Tab.Screen
+      <Stack.Screen
         name="SearchProperty"
         component={SearchProperty}
-        lazy={true}
         options={{
-          tabBarLabel: "Search Property",
+          title: "Search Property",
         }}
       />
-    </Tab.Navigator>
+      <Stack.Screen
+        name="FilterData"
+        component={FilterData}
+        options={{
+          title: "Results",
+        }}
+      />
+    </Stack.Navigator>
   );
 }
 
 export default function SearchNavigator() {
-  return <MyTabs />;
+  return <MyStack />;
 }
+
+const styles = StyleSheet.create({});

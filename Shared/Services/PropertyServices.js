@@ -282,3 +282,40 @@ export async function UploadProperty(data, token) {
     console.error(err);
   }
 }
+
+export async function filterProperty(data) {
+  try {
+    const {
+      priceMinimum,
+      priceMaximum,
+      areaMaximum,
+      areaMinimum,
+      type,
+      property,
+      city,
+      amenity,
+    } = data;
+    const res = await axios.get(`${baseURL}properties/filterProperty`, {
+      params: {
+        priceMinimum,
+        priceMaximum,
+        areaMaximum,
+        areaMinimum,
+        type,
+        property,
+        city,
+        amenity,
+      },
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (res.status == 200 || res.status == 201) {
+      return res.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
