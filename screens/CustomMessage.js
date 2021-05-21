@@ -27,7 +27,6 @@ const CustomMessage = ({ heading, message, visible, setVisible, shortMsg }) => {
         <Ionicons
           style={{
             marginLeft: "auto",
-            verticalAlign: "middle",
           }}
           name="md-close"
           color={"#839b97"}
@@ -44,7 +43,6 @@ const CustomMessage = ({ heading, message, visible, setVisible, shortMsg }) => {
           <FontAwesome5
             style={{
               marginRight: 8,
-              verticalAlign: "middle",
             }}
             name="check-circle"
             color={"#98ded9"}

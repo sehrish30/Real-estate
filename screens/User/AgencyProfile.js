@@ -1,11 +1,18 @@
 import React, { useLayoutEffect, useState, useReducer } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  View,
+} from "react-native";
 import { Button, Card, Image } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AntIcon from "react-native-vector-icons/AntDesign";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser, updateProfile } from "../../Redux/Actions/auth";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 import {
   uploadLogoToCloudinary,
@@ -20,7 +27,7 @@ import {
 import ProfileCard from "../../Shared/ProfileCard/ProfileCard";
 import CustomModal from "../../Shared/Input/CustomModal";
 import CustomModalPassword from "../../Shared/Input/CustomModalPassword";
-
+var { width, height } = Dimensions.get("screen");
 // Reducers State
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -159,7 +166,7 @@ const AgencyProfile = ({ navigation }) => {
       headerRight: () => (
         <TouchableOpacity onPress={logout}>
           <AntIcon
-            style={{ verticalAlign: "middle", marginRight: 15 }}
+            style={{ marginRight: 15 }}
             name="logout"
             color={"#a2d0c1"}
             size={30}
@@ -189,6 +196,7 @@ const AgencyProfile = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <ProfileCard
+        navigation={navigation}
         setShowModal={setShowModal}
         editAgency={editAgency}
         logo={profile.logo}
@@ -224,23 +232,35 @@ const AgencyProfile = ({ navigation }) => {
         navigation={navigation}
         dispatchProfile={dispatchProfile}
       />
-      <View>
-        <Card containerStyle={styles.property}>
-          <Card.Title>CARD WITH DIVIDER</Card.Title>
-          <Card.Divider />
-          <View>
-            <Image
-              style={{ width: 100, height: 100 }}
-              resizeMode="cover"
-              source={{
-                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-              }}
+
+      {/* <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          width: width,
+          marginVertical: 10,
+        }}
+      >
+        <Button
+          icon={
+            <FontAwesome5
+              style={{ marginRight: 5 }}
+              name="building"
+              size={24}
+              color="#e4fbff"
             />
-            <Text style={styles.name}>{"PROPERTY"}</Text>
-          </View>
-        </Card>
-      </View>
-      <Button title="View properties" type="outline" />
+          }
+          title="View Properties"
+          onPress={() => {
+            navigation.navigate("AgencyListings");
+          }}
+          titleStyle={styles.titlebtn}
+          buttonStyle={{
+            backgroundColor: "#214151",
+            width: width / 1.08,
+          }}
+        />
+      </View> */}
     </ScrollView>
   );
 };
@@ -261,5 +281,9 @@ const styles = StyleSheet.create({
   property: {
     backgroundColor: "white",
     borderRadius: 5,
+  },
+  titlebtn: {
+    fontFamily: "EBGaramond-Bold",
+    color: "#e4fbff",
   },
 });

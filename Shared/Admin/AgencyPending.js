@@ -32,7 +32,7 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
             <FontAwesome5
               style={{
                 marginRight: 8,
-                verticalAlign: "middle",
+
                 marginBottom: 6,
               }}
               name="phone-alt"
@@ -45,7 +45,7 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
             <MaterialCommunityIcons
               style={{
                 marginRight: 8,
-                verticalAlign: "middle",
+
                 marginBottom: 6,
               }}
               name="email"
@@ -59,7 +59,7 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
       <Card.Divider />
       <View style={styles.locationRow}>
         <Text h4 h4Style={[styles.font, { fontSize: 16 }]}>
-          <View style={{ verticalAlign: "middle" }}>
+          <View>
             <IonIcons
               style={{ marginRight: 8 }}
               name="ios-location-sharp"

@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useRef,
   useReducer,
   useCallback,
   useLayoutEffect,
@@ -16,6 +15,10 @@ import {
   FlatList,
   Animated,
 } from "react-native";
+import {
+  deleteReportedProperty,
+  reportProperties,
+} from "../../Services/PropertyServices";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -30,12 +33,10 @@ import { Video } from "expo-av";
 import PanoramaView from "@lightbase/react-native-panorama-view";
 import VideoPlayer from "expo-video-player";
 import { ScrollView } from "react-native-gesture-handler";
-import { Input, Button, Image, Header, Divider } from "react-native-elements";
+import { Button, Image } from "react-native-elements";
 import MapView, { Marker } from "react-native-maps";
-import baseURL from "../../../assets/common/baseUrl";
 import Swiper from "react-native-swiper";
 import { useSelector } from "react-redux";
-import { Icon as Native } from "react-native-elements";
 import openMap from "react-native-open-maps";
 import {
   addWishLists,
@@ -51,6 +52,8 @@ import { WebView } from "react-native-webview";
 import Toast from "react-native-toast-message";
 import RecommendedProperties from "./RecommendedProperties";
 import AmenityIcon from "./AmenityIcon";
+import DeleteConfirm from "../../Modals/DeleteConfirm";
+import Agree from "../../Modals/Agree";
 
 const PropertiesPosts = () => {
   const route = useRoute();
@@ -70,6 +73,8 @@ const PropertiesPosts = () => {
   let user = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
   let token = useSelector((state) => state.auth.token);
+  let isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  let isLoggedInAgency = useSelector((state) => state.auth.isLoggedInAgency);
   const AnimatedIcon = Animated.createAnimatedComponent(AntDesign);
   let userId;
   if (agency.id) {
@@ -93,6 +98,7 @@ const PropertiesPosts = () => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   }
 
+  const [report, setReport] = useState(false);
   const [active, setActive] = useState(0);
   const [list, setList] = useState([]);
   const [recommended, setRecommended] = useState(null);
@@ -118,11 +124,34 @@ const PropertiesPosts = () => {
       });
     }
   }, [star]);
+
+  const reportProperty = async () => {
+    setReport(false);
+    console.error(route.params.id, token);
+    await reportProperties({ propertyId: route.params.id }, token);
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: "#eff7e1" },
       headerTitleStyle: { color: "#2c6e8f", fontSize: 16 },
       headerTintColor: "#2c6e8f",
+      headerRight: () => (
+        <>
+          {isLoggedIn && (
+            <MaterialIcons
+              name="report"
+              style={{
+                marginRight: 10,
+              }}
+              onPress={async () => {
+                setReport(true);
+              }}
+              color={"#a2d0c1"}
+              size={30}
+            />
+          )}
+        </>
+      ),
     });
   });
 
@@ -539,6 +568,14 @@ const PropertiesPosts = () => {
               />
             ))}
           </View>
+          <Agree
+            modalVisible={report}
+            setModalVisible={setReport}
+            msg={"Do you want to report this property?"}
+            cancelbtn={"Report"}
+            yesbtn={"Cancel"}
+            deleteAction={reportProperty}
+          />
         </View>
       </>
     );

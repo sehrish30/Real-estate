@@ -11,8 +11,9 @@ import { Image, Card, Text, Badge } from "react-native-elements";
 import * as Linking from "expo-linking";
 import { Button } from "react-native-elements";
 import IonIcons from "react-native-vector-icons/Ionicons";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { FontAwesome5 } from "@expo/vector-icons";
 import * as MailComposer from "expo-mail-composer";
+import { agentProperties } from "../../Shared/Services/AgencyServices";
 import { useDispatch, useSelector } from "react-redux";
 import {
   SimpleLineIcons,
@@ -29,6 +30,7 @@ import CustomOptionsOverlay from "../Overlays/CustomOptionsOverlay";
 import RatingsReviews from "./RatingsReviews";
 import OfficeTiming from "../Modals/OfficeTiming";
 import VisitTimings from "../Modals/VisitTimings";
+import PropertiesCards from "../HomeShared/PostProperties/PropertiesCards";
 const ProfileCard = ({
   editAgency,
   logo,
@@ -56,6 +58,7 @@ const ProfileCard = ({
   const [timing, setTiming] = useState(false);
   const [visit, setVisit] = useState(false);
   const [showRating, setShowRating] = useState(false);
+  const [properties, setProperties] = useState([]);
 
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
@@ -71,6 +74,9 @@ const ProfileCard = ({
           token
         );
         setShowRating(data);
+      })();
+      (async () => {
+        setProperties(await agentProperties(id || agency.id, token));
       })();
     }, [])
   );
@@ -369,6 +375,38 @@ const ProfileCard = ({
           </>
         )}
         <Card.Divider />
+        {/* <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            // width: width,
+            marginBottom: 10,
+          }}
+        >
+          <Button
+            icon={
+              <FontAwesome5
+                style={{ marginRight: 5 }}
+                name="building"
+                size={24}
+                color="#e4fbff"
+              />
+            }
+            title="View Properties"
+            onPress={() => {
+              navigation.navigate("User", {
+                screen: "AgencyListings",
+                params: {
+                  agencyId: id,
+                },
+              });
+              // navigation.navigate("AgencyListings");
+            }}
+            titleStyle={styles.titlebtn}
+            buttonStyle={[styles.rate, { width: width / 1.2 }]}
+          />
+        </View> */}
+
         {agency.id && agency.officeTimingStart && (
           <>
             <View style={[styles.locationRow, { marginVertical: 10 }]}>
@@ -439,6 +477,51 @@ const ProfileCard = ({
           />
         )}
       </Card>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{
+            color: "#214151",
+            fontFamily: "EBGaramond-Bold",
+            fontSize: 20,
+            marginVertical: 10,
+          }}
+        >
+          {name} Properties
+        </Text>
+      </View>
+      {properties?.length > 0 ? (
+        <FlatList
+          style={{ flex: 1 }}
+          data={properties}
+          renderItem={({ item }) => <PropertiesCards item={item} />}
+        />
+      ) : (
+        <View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              marginVertical: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+                fontSize: 20,
+              }}
+            >
+              No Properties yet
+            </Text>
+          </View>
+        </View>
+      )}
     </>
   );
 };
@@ -514,5 +597,9 @@ const styles = StyleSheet.create({
   rate: {
     backgroundColor: "#214151",
     marginTop: 10,
+  },
+  titlebtn: {
+    fontFamily: "EBGaramond-Bold",
+    color: "#e4fbff",
   },
 });

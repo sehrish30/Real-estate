@@ -49,7 +49,6 @@
     "react-native-elements": "^3.2.0",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "~1.8.0",
-    "react-native-globalize": "^4.5.1",
     "react-native-image-picker": "^3.2.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-linear-gradient": "^2.5.6",

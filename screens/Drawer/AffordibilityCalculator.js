@@ -361,7 +361,6 @@ const AffordibilityCalculator = ({ navigation }) => {
         <Icon
           style={{
             marginLeft: "auto",
-            verticalAlign: "middle",
           }}
           name="md-close"
           color={"#839b97"}

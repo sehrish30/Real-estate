@@ -48,7 +48,6 @@ router.get("/check-chat", async (req, res) => {
 ---------------------------------------- */
 router.post("/createchat", async (req, res) => {
   try {
-    console.error(req.body);
     let chatRoom = new Chat({
       customer: req.body.customer,
       agency: req.body.agency,
@@ -75,8 +74,6 @@ router.post("/createchat", async (req, res) => {
 ---------------------------------------- */
 router.post("/send", async (req, res) => {
   try {
-    console.error(req.body);
-
     // Save message in ChatMsg table and get the object id back
     const getmsgId = async () => {
       const { content, type } = req.body;
@@ -105,10 +102,8 @@ router.post("/send", async (req, res) => {
       }
     };
     const msgId = await getmsgId();
-    console.error(msgId);
 
     // Save all messages in chat with room details
-    console.error("HERE", msgId);
 
     Chat.findOneAndUpdate(
       {
@@ -379,10 +374,18 @@ router.get("/unseenchats-agency", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
+            console.log(
+              data[i].customer,
+              data[i].chats[j].seen,
+              data[i].chats[j].author,
+              data[i].chats[j].content
+            );
+            console.log(
+              data[i].chats[j].author.toString() == data[i].customer.toString()
+            );
             if (
               data[i].chats[j].seen == false &&
-              data[i].chats[j].author !=
-                mongoose.Types.ObjectId(req.query.agency)
+              data[i].chats[j].author.toString() === data[i].customer.toString()
             ) {
               count = count + 1;
               break;
@@ -417,14 +420,14 @@ router.get("/unseenchats-customer", async (req, res) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
             console.log(
-              data[i].customer,
-              mongoose.Types.ObjectId(req.query.customer)
+              data[i].agency,
+              data[i].chats[j].seen,
+              data[i].chats[j].author,
+              data[i].chats[j].content
             );
             if (
               data[i].chats[j].seen == false &&
-              data[i].chats[j].author !=
-                mongoose.Types.ObjectId(req.query.customer) &&
-              data[i].customer == mongoose.Types.ObjectId(req.query.customer)
+              data[i].chats[j].author.toString() == data[i].agency
             ) {
               count = count + 1;
               break;

@@ -127,12 +127,14 @@ router.get("/my-properties", async (req, res) => {
   try {
     await Property.find({
       agency: mongoose.Types.ObjectId(req.query.agency),
-    }).exec((err, result) => {
-      if (err) {
-        return res.status(401).send(err);
-      }
-      return res.status(200).send(result);
-    });
+    })
+      .sort({ createdAt: -1 })
+      .exec((err, result) => {
+        if (err) {
+          return res.status(401).send(err);
+        }
+        return res.status(200).send(result);
+      });
   } catch (err) {
     return res.status(500).send(err);
   }

@@ -90,6 +90,7 @@ const MapLocations = ({ navigation }) => {
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
             info={info}
+            navigation={navigation}
           />
         </View>
       )}

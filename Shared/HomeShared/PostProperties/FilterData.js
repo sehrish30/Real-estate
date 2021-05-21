@@ -22,11 +22,25 @@ export default function FilterData({ navigation }) {
     setPropertiesData(paramsData.data);
   }, [route.params?.filterData.data]);
   return propertiesData?.length > 0 ? (
-    <FlatList
-      style={{ flex: 1 }}
-      data={propertiesData}
-      renderItem={({ item }) => <PropertiesCards item={item} />}
-    />
+    <>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Text
+          style={{
+            marginVertical: 15,
+            color: "#214151",
+            fontFamily: "EBGaramond-Bold",
+            fontSize: 20,
+          }}
+        >
+          {propertiesData.length} properties found
+        </Text>
+      </View>
+      <FlatList
+        style={{ flex: 1 }}
+        data={propertiesData}
+        renderItem={({ item }) => <PropertiesCards item={item} />}
+      />
+    </>
   ) : (
     <View
       style={{

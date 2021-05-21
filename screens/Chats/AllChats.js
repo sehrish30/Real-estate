@@ -52,6 +52,7 @@ const AllChats = ({ navigation, route }) => {
 
   useFocusEffect(
     React.useCallback(() => {
+      dispatch(actions.sendChatNotifications(0));
       dispatch(actions.currentChat(null));
       if (user.email) {
         (async () => {
@@ -206,7 +207,7 @@ const AllChats = ({ navigation, route }) => {
       }
 
       return () => {
-        // setAllChats([]);
+        setAllChats([]);
         // setSafetyChats([]);
         // setUnseencount([]);
         socket.disconnect(true);

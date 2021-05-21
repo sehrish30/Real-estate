@@ -437,7 +437,6 @@ export async function getAllNotificationDetails(notificationId, token) {
 
 export async function showNotifications(userId, token) {
   try {
-    console.error("NEHI HAI NA", token);
     if (token) {
       const res = await axios.get(`${baseURL}notifications/new-notification`, {
         headers: {

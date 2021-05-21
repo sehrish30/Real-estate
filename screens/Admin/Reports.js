@@ -1,15 +1,27 @@
 import React, { useReducer } from "react";
-import { StyleSheet, Text, View, FlatList, StatusBar } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  StatusBar,
+  Dimensions,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { Avatar, Button, Badge } from "react-native-elements";
 import { formatISO9075 } from "date-fns";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { listAllReportedProperties } from "../../Shared/Services/PropertyServices";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
+
 import {
   undoReport,
   deleteReportedProperty,
 } from "../../Shared/Services/PropertyServices";
 
+var { width, height } = Dimensions.get("screen");
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
   data: [],
@@ -26,12 +38,12 @@ const Item = ({
   agency,
   numberOfReports,
   dispatchReportedProperties,
+  navigation,
 }) => {
   // REDUCERS
 
   return (
     <View>
-      {/* ZAHRA */}
       {/* Move to whole property view */}
       <View style={[styles.item, { flexDirection: "row" }]}>
         <View>
@@ -43,22 +55,42 @@ const Item = ({
             }}
           />
         </View>
-        <View style={[styles.side]}>
+        <View style={[styles.side, { width: width / 3 }]}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text style={styles.title}>{description}</Text>
             <Badge value={numberOfReports} status="error" />
           </View>
-          <Text style={{ color: "#214151" }}>{type}</Text>
-
-          <Text style={styles.date}>
-            {formatISO9075(Date.parse(createdAt), {
-              representation: "date",
-            })}
+          <Text style={{ color: "#214151", marginTop: 15 }}>
+            <FontAwesome5
+              name="building"
+              size={15}
+              color="#214151"
+              style={{ marginRight: 5 }}
+            />
+            Property type: {type}
           </Text>
+          <View style={{ flexDirection: "row" }}>
+            <Pressable
+              onPressIn={() => {
+                navigation.navigate("PropertiesPosts", {
+                  id: id,
+                });
+              }}
+              style={{ marginVertical: 10 }}
+            >
+              <Feather name="external-link" size={25} color="#214151" />
+            </Pressable>
+            <Text style={styles.date}>
+              {formatISO9075(Date.parse(createdAt), {
+                representation: "date",
+              })}
+            </Text>
+          </View>
         </View>
       </View>
+
       <View style={styles.btns}>
         <Button
           buttonStyle={{
@@ -105,7 +137,7 @@ const Item = ({
     </View>
   );
 };
-const Reports = () => {
+const Reports = ({ navigation }) => {
   let token = useSelector((state) => state.auth.token);
 
   // REDUCERS
@@ -126,6 +158,7 @@ const Reports = () => {
       agency={item.agency}
       numberOfReports={item.noOfReports}
       dispatchReportedProperties={dispatchReportedProperties}
+      navigation={navigation}
     />
   );
 
@@ -156,7 +189,7 @@ export default Reports;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: StatusBar.currentHeight || 0,
+    // paddingTop: StatusBar.currentHeight || 0,
     backgroundColor: "#fff",
   },
   item: {

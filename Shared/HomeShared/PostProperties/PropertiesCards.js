@@ -31,6 +31,9 @@ export default PropertiesCards = ({ item }) => {
   //     setOpacity(1);
   //   }
   // }, [hasFocus]);
+  function formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+  }
 
   const {
     city,
@@ -109,7 +112,7 @@ export default PropertiesCards = ({ item }) => {
                     fontSize: 20,
                   }}
                 >
-                  {cost}{" "}
+                  {cost ? formatNumber(cost) : null}{" "}
                 </Text>
                 {item.category == "Rent" ? (
                   <Text

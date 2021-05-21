@@ -153,6 +153,7 @@ const SearchProperty = () => {
 
   // FORM STATES
   const [loading, setLoading] = useState(false);
+  const [switchInitial, setSwitchInitial] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalAmenity, setModalAmenity] = useState(false);
   const [modalProperty, setModalProperty] = useState(false);
@@ -217,6 +218,7 @@ const SearchProperty = () => {
             setCity("");
             setAmn([]);
             setLoading(false);
+            setSwitchInitial(0);
           }}
         >
           <Text
@@ -248,7 +250,7 @@ const SearchProperty = () => {
     <ScrollView>
       <View style={styles.container}>
         <SwitchSelector
-          initial={0}
+          initial={switchInitial}
           textColor="#214151" //'#7a44cf'
           selectedColor="white"
           buttonColor="#214151"

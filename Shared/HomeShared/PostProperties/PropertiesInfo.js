@@ -7,7 +7,7 @@ import {
   Dimensions,
   StatusBar,
 } from "react-native";
-import { useGlobalize } from "react-native-globalize";
+
 import { useSelector } from "react-redux";
 import { Overlay } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -25,6 +25,7 @@ import baseURL from "../../../assets/common/baseUrl";
 import { networks } from "../../../Shared/Networks";
 import { amenities } from "../../../Shared/amenities";
 import { items } from "../../../Shared/Items";
+import { items as cities } from "../../../Shared/Cities";
 import CustomHeader from "../CustomHeader";
 import Photos from "./ImageUpload/Photos";
 
@@ -100,13 +101,13 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     } else if (area.length > 0) {
       delete errors.size;
     }
-    if (cityRef.current.isFocused() && city.length == 0) {
-      dipatchPhotos({
-        errors: { ...errors, city: "City is required" },
-      });
-    } else if (city.length > 0) {
-      delete errors.city;
-    }
+    // if (cityRef.current.isFocused() && city.length == 0) {
+    //   dipatchPhotos({
+    //     errors: { ...errors, city: "City is required" },
+    //   });
+    // } else if (city.length > 0) {
+    //   delete errors.city;
+    // }
     if (descriptionRef.current.isFocused() && description.length <= 10) {
       dipatchPhotos({
         errors: {
@@ -134,7 +135,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     } else {
       delete errors.video;
     }
-  }, [name, price, area, city, description, videourl]);
+  }, [name, price, area, description, videourl]);
 
   //amenities
   function removeA(item) {
@@ -208,6 +209,13 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     };
   }
 
+  function onMultiChangeCities() {
+    return (item) => {
+      console.error("SEHRISH", item);
+      setCity(item);
+    };
+  }
+
   function removeSelectT() {
     return (item) => {
       const filteredType = type.filter((net) => net.id !== item.id);
@@ -215,9 +223,21 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     };
   }
 
+  function removeSelectCities() {
+    return (item) => {
+      setCity("");
+    };
+  }
+
   const onChange = () => {
     return (item) => {
       setType(item);
+    };
+  };
+
+  const onChangeCities = () => {
+    return (item) => {
+      setCity(item);
     };
   };
 
@@ -397,7 +417,15 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             />
 
             <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
-              <Text style={{ paddingBottom: 10 }}>Rooms</Text>
+              <Text
+                style={{
+                  paddingBottom: 10,
+                  color: "#839b97",
+                  fontWeight: "bold",
+                }}
+              >
+                Rooms
+              </Text>
               <Counter
                 start={1}
                 onChange={onChangeRoomsConter}
@@ -423,7 +451,15 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             />
             <View style={{ paddingBottom: 10 }}></View>
             <View style={{ paddingLeft: 10, paddingBottom: 10 }}>
-              <Text style={{ paddingBottom: 10 }}>Bathrooms</Text>
+              <Text
+                style={{
+                  paddingBottom: 10,
+                  color: "#839b97",
+                  fontWeight: "bold",
+                }}
+              >
+                Bathrooms
+              </Text>
               <Counter
                 start={1}
                 onChange={onChangeBathsConter}
@@ -467,7 +503,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
           placeholder="Enter City name"
           style={styles.textInput}
         /> */}
-            <Input
+            {/* <Input
               ref={cityRef}
               inputStyle={styles.inputStyle}
               label="City"
@@ -476,7 +512,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               onChangeText={(val) => setCity(val)}
               value={city}
               errorMessage={errors.city}
-            />
+            /> */}
             <Input
               ref={videoRef}
               inputStyle={styles.inputStyle}
@@ -606,11 +642,17 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               marginBottom: 10,
             }}
             label="Property Type"
+            selectedItemStyle={{
+              color: "#214151",
+            }}
             options={items}
             onChange={onChange()}
             hideInputFilter={false}
             value={type}
             onMultiSelect={onMultiChangeT()}
+            labelStyle={{
+              color: "#8dadb3",
+            }}
             onTapClose={removeSelectT()}
             arrowIconColor="#f8dc81"
             searchIconColor="#f8dc81"
@@ -623,6 +665,33 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               paddingLeft: 10,
             }}
           />
+          <SelectBox
+            containerStyle={{
+              marginBottom: 10,
+            }}
+            label="Cities"
+            selectedItemStyle={{
+              color: "#214151",
+            }}
+            labelStyle={{
+              color: "#8dadb3",
+            }}
+            options={cities}
+            onChange={onChangeCities()}
+            hideInputFilter={false}
+            value={city}
+            arrowIconColor="#f8dc81"
+            searchIconColor="#f8dc81"
+            toggleIconColor="#f8dc81"
+            inputFilterContainerStyle={{
+              backgroundColor: "#f7f6e7",
+            }}
+            optionsLabelStyle={{
+              color: "#214151",
+              paddingLeft: 10,
+            }}
+          />
+
           <SelectBox
             label="Amenities"
             options={amenities}

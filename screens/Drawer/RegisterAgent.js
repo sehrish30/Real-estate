@@ -336,8 +336,8 @@ const RegisterAgent = ({ navigation }) => {
               h4
               style={[styles.font, { color: "#5D746E", marginBottom: 10 }]}
             >
-              Upload photos of documents for registered agencies in Bahrain to
-              have verified Seller account
+              Upload photos of documents for registered agencies or certified
+              realestate agents in Bahrain to have verified Seller account
             </Text>
             <Button
               titleStyle={styles.buttonStyle}

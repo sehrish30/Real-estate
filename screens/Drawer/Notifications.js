@@ -10,33 +10,8 @@ import {
 } from "../../Shared/Services/NotificationServices";
 import * as notificationsActions from "../../Redux/Actions/consultation";
 import { useFocusEffect } from "@react-navigation/native";
-
-// const DATA = [
-//   {
-//     id: "bd7acbea-c1b1-46c2-aed5-3ad53abb28ba",
-//     content: "wants to meet you in person",
-//     author: "testing@gmail.com",
-//     time: "5:06PM",
-//     dp:
-//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-//   },
-//   {
-//     id: "3ac68afc-c605-48d3-a4f8-fbd91aa97f63",
-//     content: "has requested you to reschedule the request details to",
-//     author: "sehrishwaheed@gmail.com",
-//     time: "2 days ago",
-//     dp:
-//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-//   },
-//   {
-//     id: "58694a0f-3da1-471f-bd96-145571e29d72",
-//     content: "has accepted your consultation request",
-//     author: "ali@gmail.com",
-//     time: "Just now",
-//     dp:
-//       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fZ_ebLrIR7-37WMGcyj_RO-0TTcZGtUKtg&usqp=CAU",
-//   },
-// ];
+import { Image } from "react-native-elements";
+import Loading from "../../Shared/Loading";
 
 const Item = ({ content }) => (
   <View style={styles.item}>
@@ -108,16 +83,38 @@ const Notifications = ({ navigation }) => {
     }, [])
   );
   return (
-    <View>
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      {DATA.length > 0 ? (
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
+        <View style={styles.no}>
+          <Image
+            source={require("../../assets/notifications.png")}
+            style={{ width: 300, height: 300 }}
+            PlaceholderContent={<Loading />}
+          />
+          <Text style={styles.notification}>No Notifications</Text>
+        </View>
+      )}
     </View>
   );
 };
 
 export default Notifications;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  notification: {
+    fontFamily: "EBGaramond-Bold",
+    color: "#214151",
+    fontSize: 18,
+  },
+  no: {
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+});

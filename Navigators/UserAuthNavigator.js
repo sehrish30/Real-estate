@@ -9,6 +9,7 @@ import Profile from "../screens/User/Profile";
 
 import { useSelector, useDispatch } from "react-redux";
 import AgencyProfile from "../screens/User/AgencyProfile";
+import AgencyListings from "../screens/User/AgencyListings";
 
 const Stack = createStackNavigator();
 
@@ -30,10 +31,16 @@ function MyStack() {
     >
       <>
         {isLoggedInAgency && (
-          <Stack.Screen name="AgencyProfile" component={AgencyProfile} />
+          <>
+            <Stack.Screen name="AgencyProfile" component={AgencyProfile} />
+          </>
         )}
+
         {isLoggedIn ? (
-          <Stack.Screen name="Profile" component={Profile} />
+          <>
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="AgencyListings" component={AgencyListings} />
+          </>
         ) : (
           <>
             <Stack.Screen
@@ -41,6 +48,7 @@ function MyStack() {
               component={Login}
               options={{ title: "Login" }}
             />
+
             <Stack.Screen name="Register" component={Register} />
             <Stack.Screen name="Forgot" component={Forgot} />
           </>

@@ -242,3 +242,21 @@ export async function changePropertyVisitTimings(data, token) {
     });
   }
 }
+
+export async function agentProperties(id, token) {
+  try {
+    const response = await axios.get(`${baseURL}agencies/my-properties`, {
+      params: {
+        agency: id,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status == 200) {
+      return response.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

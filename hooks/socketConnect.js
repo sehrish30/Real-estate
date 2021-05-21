@@ -43,7 +43,6 @@ export function useSocket(user, dispatch) {
   });
 
   socket.on("typing", (userId) => {
-    console.log(userId, "SOMEBODY IS TYPING");
     dispatch(actions.userTyping(userId));
   });
 

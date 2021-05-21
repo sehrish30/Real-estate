@@ -93,7 +93,7 @@ const Profile = ({ navigation }) => {
       headerRight: () => (
         <TouchableOpacity onPress={logout}>
           <AntIcon
-            style={{ verticalAlign: "middle", marginRight: 15 }}
+            style={{ marginRight: 15 }}
             name="logout"
             color={"#a2d0c1"}
             size={30}
@@ -132,9 +132,8 @@ const Profile = ({ navigation }) => {
 
   const registerForPushNotifications = async () => {
     if (Constants.isDevice) {
-      const {
-        status: existingStatus,
-      } = await Notifications.getPermissionsAsync();
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();
@@ -189,7 +188,7 @@ const Profile = ({ navigation }) => {
           let index = items.findIndex((item) => item.item === location);
           value[index] = true;
         });
-        // console.error("VALUE", value);
+
         dispatchLocations({
           locations: value,
         });
@@ -214,18 +213,16 @@ const Profile = ({ navigation }) => {
       setPushToken(token);
     });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification.request.content.data);
-      }
-    );
+      });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
         console.error("REALESTATE", response);
         navigation.navigate("Notifications");
-      }
-    );
+      });
 
     return () => {
       Notifications.removeNotificationSubscription(
@@ -250,9 +247,8 @@ const Profile = ({ navigation }) => {
   async function registerForPushNotificationsAsync() {
     let token;
     if (Constants.isDevice) {
-      const {
-        status: existingStatus,
-      } = await Notifications.getPermissionsAsync();
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {
         const { status } = await Notifications.requestPermissionsAsync();

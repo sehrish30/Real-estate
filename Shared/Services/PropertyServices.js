@@ -319,3 +319,28 @@ export async function filterProperty(data) {
     console.error(err);
   }
 }
+
+export async function reportProperties(data, token) {
+  try {
+    console.error("MY TOKEN", token);
+    const result = await axios.put(
+      `${baseURL}properties/reportproperty`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (result.status == 200 || result.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Property reported`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

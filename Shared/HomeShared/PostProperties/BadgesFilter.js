@@ -1,4 +1,5 @@
 import React from "react";
+import { Dimensions } from "react-native";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge } from "react-native-elements";
 const BadgesFilter = ({
@@ -11,35 +12,38 @@ const BadgesFilter = ({
   handleResidential,
   handleLand,
 }) => {
+  var { width, height } = Dimensions.get("screen");
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        marginVertical: 20,
-        justifyContent: "center",
-      }}
-    >
-      <Badge
-        onPress={handleResidential}
-        badgeStyle={residential ? styles.selectedBadge : styles.badge}
-        value={<Text style={styles.badgeText}>Residential</Text>}
-      />
-      <Badge
-        onPress={handleCommercial}
-        badgeStyle={commercial ? styles.selectedBadge : styles.badge}
-        value={<Text style={styles.badgeText}>Commercial</Text>}
-      />
-      <Badge
-        onPress={handleIndustrial}
-        badgeStyle={industrial ? styles.selectedBadge : styles.badge}
-        value={<Text style={styles.badgeText}>Industrial</Text>}
-      />
-      <Badge
-        onPress={handleLand}
-        badgeStyle={land ? styles.selectedBadge : styles.badge}
-        value={<Text style={styles.badgeText}>Land</Text>}
-      />
-    </View>
+    <>
+      <View
+        style={{
+          flexDirection: "row",
+          marginVertical: 20,
+          justifyContent: "center",
+        }}
+      >
+        <Badge
+          onPress={handleResidential}
+          badgeStyle={residential ? styles.selectedBadge : styles.badge}
+          value={<Text style={styles.badgeText}>Residential</Text>}
+        />
+        <Badge
+          onPress={handleCommercial}
+          badgeStyle={commercial ? styles.selectedBadge : styles.badge}
+          value={<Text style={styles.badgeText}>Commercial</Text>}
+        />
+        <Badge
+          onPress={handleIndustrial}
+          badgeStyle={industrial ? styles.selectedBadge : styles.badge}
+          value={<Text style={styles.badgeText}>Industrial</Text>}
+        />
+        <Badge
+          onPress={handleLand}
+          badgeStyle={land ? styles.selectedBadge : styles.badge}
+          value={<Text style={styles.badgeText}>Land</Text>}
+        />
+      </View>
+    </>
   );
 };
 

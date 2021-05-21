@@ -1,10 +1,10 @@
 const { Property } = require("../models/property");
+const { Agency } = require("../models/agency");
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-const { Agency } = require("../models/agency");
 const { Expo } = require("expo-server-sdk");
 const { User } = require("../models/user");
 const expo = new Expo();
@@ -89,19 +89,25 @@ router.get("/propertyDetails", (req, res) => {
 /*----------------------------------------
       REPORT PROPERTIES
 ---------------------------------------- */
-router.put("/report-property", async (req, res) => {
+router.put("/reportproperty", async (req, res) => {
   try {
+    console.log("SEE", req.body);
     await Property.findOne({ _id: req.body.propertyId }).exec(
       async (err, result) => {
         if (err) {
-          return res.status(401).send(err);
+          console.log("ERROR", err);
+          return res.status(422).send(err);
         }
         console.log("FIRST", result);
         let count = result.noOfReports;
 
-        await Property.findByIdAndUpdate(req.body.propertyId, {
-          noOfReports: count + 1,
-        }).exec((err, result) => {
+        await Property.findByIdAndUpdate(
+          req.body.propertyId,
+          {
+            noOfReports: count + 1,
+          },
+          { new: true }
+        ).exec((err, result) => {
           console.log("COUNT", count);
           return res.status(200).send(result);
         });
@@ -194,7 +200,7 @@ router.put(`/undo-report`, async (req, res) => {
         await Property.findByIdAndUpdate(
           req.body.id,
           {
-            isReported: false,
+            noOfReports: 0,
           },
           {
             new: true,
@@ -574,13 +580,13 @@ router.post("/uploadProperty", async (req, res) => {
     const data = req.body;
     let property = new Property({
       title: data.title,
-      type: data.type,
+      type: data.type.item,
       cost: data.cost,
       location: data.location,
       bathrooms: data.bathrooms,
       rooms: data.rooms,
       description: data.description,
-      type: data.type.item,
+      // type: data.type.item,
       network: data.network,
       Amenities: data.amenity,
       propertyImages: data.images,
@@ -588,16 +594,47 @@ router.post("/uploadProperty", async (req, res) => {
       area: data.area,
       panorama_url: data.panorama_url,
       video_url: data.video_url,
-      cose: data.cost,
       category: data.category,
-      agency: data.agency,
+      agency: mongoose.Types.ObjectId(data.agency),
     });
     console.log(
       "SAVING--------------------------------------------------------"
     );
     const savedProperty = await property.save();
     if (savedProperty) {
-      return res.status(200).send(true);
+      Agency.findById(req.body.agency)
+        .select("industrial residential commercial land")
+        .exec((err, result) => {
+          if (result) {
+            console.log("RESULT COMING FROM AGENCY", result, req.body.type);
+            let copyArray = [];
+            if (data.type.item == "Residential") {
+              copyArray = result.residential;
+              copyArray.push(savedProperty._id);
+              result.residential = copyArray;
+            }
+            if (data.type.item == "Commercial") {
+              console.log("IT WSS COMMERICAL");
+              copyArray = result.commercial;
+              copyArray.push(savedProperty._id);
+              result.commercial = copyArray;
+            }
+            if (data.type.item == "Industrial") {
+              copyArray = result.commercial;
+              copyArray.push(savedProperty._id);
+              result.industrial = copyArray;
+            }
+            if (data.type.item == "Lands") {
+              copyArray = result.land;
+              copyArray.push(savedProperty._id);
+              result.land = copyArray;
+            }
+            result.save().then((anotherResult) => {
+              console.log("SAVED AGENCY", anotherResult);
+              return res.status(200).send(true);
+            });
+          }
+        });
     } else {
       console.log("WRONG");
       return res.status(422).send(false);

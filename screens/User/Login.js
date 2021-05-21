@@ -33,10 +33,8 @@ const Login = ({ navigation }) => {
       };
       const { type, accessToken, user } = await Google.logInAsync(config);
       if (type == "success") {
-        console.error(type, accessToken, user);
         dispatch(actions.googlelogin({ email: user.email }, navigation));
       } else {
-        console.error("Some error occured", type);
       }
     } catch (err) {
       console.error(err);

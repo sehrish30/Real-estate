@@ -213,7 +213,7 @@ export async function unseenChatsCustomer(customer, token) {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.error(res.status, "HJK");
+
     if (res.status == 200 || res.status == 201) {
       return res.data;
     }

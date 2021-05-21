@@ -29,9 +29,12 @@ import Splash from "../Splash";
 import { Pressable } from "react-native";
 import { useSocket } from "../../hooks/socketConnect";
 import Landing from "../../Shared/HomeShared/Landing";
+import HomeMenu from "./HomeMenu";
 
 const Home = ({ navigation }) => {
-  let [bootSplashIsVisible, setBootSplashIsVisible] = useState(false);
+  let [bootSplashIsVisible, setBootSplashIsVisible] = useState(true);
+  const [countBell, setCountBell] = useState(true);
+  const [category, setCategory] = useState("Done");
   const token = useSelector((state) => state.auth.token);
   const showNewNotification = useSelector((state) => state.consultation.new);
   const tokenAvailable = useSelector((state) => state.auth.token);
@@ -142,17 +145,22 @@ const Home = ({ navigation }) => {
           let getToken = await AsyncStorage.getItem("jwt");
           let result;
 
-          if (user.decoded && getToken) {
-            (async () => {
-              result = await unseenChatsCustomer(user.decoded.userId, getToken);
-              dispatch(actionsChats.sendChatNotifications(result));
-            })();
-          } else if (agency.id && getToken) {
-            (async () => {
-              console.error(getToken);
-              result = await unseenChatsAgency(agency.id, getToken);
-              dispatch(actionsChats.sendChatNotifications(result));
-            })();
+          if (countBell) {
+            setCountBell(false);
+            if (user.decoded && getToken) {
+              (async () => {
+                result = await unseenChatsCustomer(
+                  user.decoded.userId,
+                  getToken
+                );
+                dispatch(actionsChats.sendChatNotifications(result));
+              })();
+            } else if (agency.id && getToken) {
+              (async () => {
+                result = await unseenChatsAgency(agency.id, getToken);
+                dispatch(actionsChats.sendChatNotifications(result));
+              })();
+            }
           }
         } catch (e) {
           console.error(e);
@@ -174,74 +182,83 @@ const Home = ({ navigation }) => {
       {bootSplashIsVisible ? (
         <Splash bootSplashIsVisible={bootSplashIsVisible} />
       ) : (
-        <Header
-          containerStyle={{
-            backgroundColor: "#eff7e1",
-            justifyContent: "space-around",
-          }}
-          leftComponent={
-            <View style={styles.rightNav}>
-              {tokenAvailable ? (
-                <TouchableOpacity style={styles.menu} onPress={showMenu}>
+        <>
+          {category !== "Done" ? (
+            <Header
+              containerStyle={{
+                backgroundColor: "#eff7e1",
+                justifyContent: "space-around",
+              }}
+              leftComponent={
+                <View style={styles.rightNav}>
+                  {tokenAvailable ? (
+                    <TouchableOpacity style={styles.menu} onPress={showMenu}>
+                      <Icon
+                        name="notifications"
+                        color={"#214151"}
+                        size={30}
+                        onPress={() => {
+                          navigation.navigate("Notifications");
+                        }}
+                      />
+                      {showNewNotification && (
+                        <Badge
+                          badgeStyle={{
+                            marginLeft: 10,
+                            top: -33,
+                          }}
+                          status="warning"
+                        />
+                      )}
+                    </TouchableOpacity>
+                  ) : null}
+                  <TouchableOpacity
+                    style={styles.menu}
+                    onPress={() => {
+                      navigation.navigate("SearchAgency");
+                    }}
+                  >
+                    <MaterialIcons
+                      name="person-search"
+                      color={"#214151"}
+                      size={30}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.menu}
+                    onPress={() => {
+                      navigation.navigate("MapLocations");
+                    }}
+                  >
+                    <FontAwesome5
+                      name="map-marked"
+                      style={{ marginTop: 5 }}
+                      color={"#214151"}
+                      size={20}
+                    />
+                  </TouchableOpacity>
+                </View>
+              }
+              rightComponent={
+                <TouchableOpacity style={styles.menu}>
                   <Icon
-                    name="notifications"
+                    onPress={showMenu}
+                    name="menu"
                     color={"#214151"}
                     size={30}
-                    onPress={() => {
-                      navigation.navigate("Notifications");
-                    }}
                   />
-                  {showNewNotification && (
-                    <Badge
-                      badgeStyle={{
-                        marginLeft: 10,
-                        top: -33,
-                      }}
-                      status="warning"
-                    />
-                  )}
                 </TouchableOpacity>
-              ) : null}
-              <TouchableOpacity
-                style={styles.menu}
-                onPress={() => {
-                  navigation.navigate("SearchAgency");
-                }}
-              >
-                <MaterialIcons
-                  name="person-search"
-                  color={"#214151"}
-                  size={30}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.menu}
-                onPress={() => {
-                  navigation.navigate("MapLocations");
-                }}
-              >
-                <FontAwesome5
-                  name="map-marked"
-                  style={{ marginTop: 5 }}
-                  color={"#214151"}
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
-          }
-          rightComponent={
-            <TouchableOpacity style={styles.menu}>
-              <Icon
-                onPress={showMenu}
-                name="menu"
-                color={"#214151"}
-                size={30}
-              />
-            </TouchableOpacity>
-          }
-        />
+              }
+            />
+          ) : null}
+
+          {category === "Done" ? (
+            <HomeMenu setCategory={setCategory} />
+          ) : (
+            <Landing category={category} setCategory={setCategory} />
+          )}
+        </>
       )}
-      <Landing />
     </SafeAreaView>
   );
 };

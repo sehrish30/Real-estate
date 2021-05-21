@@ -14,7 +14,6 @@ const ChatsNotification = () => {
 
   useEffect(() => {
     let result;
-    console.error(notificationChats, "HELLO");
   }, []);
   return (
     <>
