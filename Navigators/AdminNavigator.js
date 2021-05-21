@@ -5,6 +5,7 @@ import Requests from "../screens/Admin/Requests";
 import Reports from "../screens/Admin/Reports";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Image } from "react-native-elements";
+import Affordibility from "../screens/Admin/Affordibility";
 
 var { width, height } = Dimensions.get("window");
 
@@ -45,6 +46,14 @@ function MyTabs() {
         component={Reports}
         options={{
           tabBarLabel: "Reports",
+        }}
+      />
+
+      <Tab.Screen
+        name="Affordibility"
+        component={Affordibility}
+        options={{
+          tabBarLabel: "Affordibility",
         }}
       />
     </Tab.Navigator>

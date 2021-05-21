@@ -11,7 +11,10 @@ import {
 import { useSelector } from "react-redux";
 import { Overlay } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { UploadProperty } from "../../Services/PropertyServices";
+import {
+  UploadProperty,
+  PropertiesNotifications,
+} from "../../Services/PropertyServices";
 import { Input, Button, Image } from "react-native-elements";
 import { uploadToCloudinary } from "../../../Shared/services";
 import SelectBox from "react-native-multi-selectbox";
@@ -19,9 +22,6 @@ import MapView from "react-native-maps";
 import SwitchSelector from "react-native-switch-selector";
 import Counter from "react-native-counters";
 import { connect } from "react-redux";
-import Axios from "axios";
-import { useRoute } from "@react-navigation/native";
-import baseURL from "../../../assets/common/baseUrl";
 import { networks } from "../../../Shared/Networks";
 import { amenities } from "../../../Shared/amenities";
 import { items } from "../../../Shared/Items";
@@ -304,7 +304,15 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
         agency: agency.id,
       };
 
-      await UploadProperty(variable, token);
+      const property = await UploadProperty(variable, token);
+      console.error("PROPERTY", property, "CITY", city);
+      await PropertiesNotifications(
+        {
+          location: city.item,
+          body: property._id,
+        },
+        token
+      );
     }
 
     // console.log("BaseUrl", baseURL);
@@ -369,20 +377,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               value={name}
               errorMessage={errors.name}
             />
-            {/* <TextInputMask
-              type={"money"}
-              value={price}
-              onChangeText={(text) => {
-                setPrice(text);
-              }}
-              options={{
-                // precision: 2,
-                separator: ",",
-                // delimiter: ".",
-                unit: "BD",
-                suffixUnit: "",
-              }}
-            /> */}
 
             <Input
               ref={priceRef}
@@ -395,14 +389,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               value={price}
               errorMessage={errors.price}
             />
-
-            {/* <Input
-          label="Property Price"
-          keyboardType={"numeric"}
-          leftIcon={<MaterialIcon name="phone" size={24} color="#f8dc81" />}
-          onChangeText={(value) => setPrice(value)}
-          value={price}
-        /> */}
 
             <Input
               ref={sizeRef}
@@ -669,7 +655,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             containerStyle={{
               marginBottom: 10,
             }}
-            label="Cities"
+            label="Area"
             selectedItemStyle={{
               color: "#214151",
             }}

@@ -117,7 +117,6 @@ const HomeMenu = ({ setCategory }) => {
         <View style={styles.categoryContainer}>
           <TouchableOpacity
             onPress={() => {
-              console.error("FUCK");
               navigation.navigate("SearchAgency");
             }}
           >

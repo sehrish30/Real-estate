@@ -28,6 +28,7 @@
     },
     "android": {
       "package": "host.exp.exponent",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"

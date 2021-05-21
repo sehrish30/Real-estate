@@ -31,7 +31,7 @@ import { useSocket } from "../../hooks/socketConnect";
 import Landing from "../../Shared/HomeShared/Landing";
 import HomeMenu from "./HomeMenu";
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
   let [bootSplashIsVisible, setBootSplashIsVisible] = useState(true);
   const [countBell, setCountBell] = useState(true);
   const [category, setCategory] = useState("Done");
@@ -255,7 +255,11 @@ const Home = ({ navigation }) => {
           {category === "Done" ? (
             <HomeMenu setCategory={setCategory} />
           ) : (
-            <Landing category={category} setCategory={setCategory} />
+            <Landing
+              refresh={route.params?.deleteProperty}
+              category={category}
+              setCategory={setCategory}
+            />
           )}
         </>
       )}

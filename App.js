@@ -14,20 +14,34 @@ import { Notifications } from "expo";
 export default function App() {
   const navigationRef = React.createRef();
   const responseListener = useRef();
+  const notificationListener = useRef();
+
   const [loaded] = useFonts({
     "EBGaramond-Bold": require("./assets/fonts/EBGaramond-ExtraBold.ttf"),
     "EBGaramond-Regular": require("./assets/fonts/EBGaramond-Regular.ttf"),
     "EBGaramond-Italic": require("./assets/fonts/EBGaramond-Italic.ttf"),
   });
+
+  Notification.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
+
   const handleNotification = (notification) => {
     Vibration.vibrate();
+    // console.error("HANDLING", notification.data?.property);
+
     const { data } = notification;
+
     // A simple example of passing data as the value
     // of the screen you want the user to be navigated to
     // when they click on a notification
     // console.error("BACKEND", data, navigationRef.current?.getCurrentRoute());
     // console.error(data.property, !navigationRef.current?.getCurrentRoute());
-    if (data.property) {
+    if (data?.property) {
       // navigationRef.current?.navigate("Notifications", data);
       // NEW
       (async function schedulePushNotification() {
@@ -42,34 +56,42 @@ export default function App() {
         const indentifier = await Notification.scheduleNotificationAsync({
           content: {
             title: "ICONIC properties",
-            body: "Here is the notification body",
+            body: "One of your subscribed location got new property ️‍🔥",
             data: data,
           },
           trigger: { seconds: 2 },
         });
         // await Notification.cancelScheduledNotificationAsync(indentifier);
       })();
-      responseListener.current = Notification.addNotificationResponseReceivedListener(
-        (response) => {
-          console.error(
-            "REALESTATE",
-            response.notification.request.content.data,
-            navigationRef.current?.getCurrentRoute()
-          );
+      responseListener.current =
+        Notification.addNotificationResponseReceivedListener((response) => {
+          // console.error(
+          //   "REALESTATE",
+          //   response.notification.request.content.data,
+          //   navigationRef.current?.getCurrentRoute()
+          // );
           // ZAHRA
           // route you want to navigate to
-          navigationRef.current?.navigate("Notifications", data);
-        }
-      );
+          console.log("TRY---------------------------------", data);
+          navigationRef.current?.navigate("PropertiesPosts", {
+            id: data?.property,
+          });
+        });
     }
   };
 
   useEffect(() => {
-    const subscribe = Notifications.addListener(handleNotification);
+    // notificationListener.current =
+    //   Notification.addNotificationReceivedListener(handleNotification);
 
+    // responseListener.current =
+    //   Notification.addNotificationResponseReceivedListener(handleNotification);
+
+    const subscribe = Notifications.addListener(handleNotification);
     return () => {
       subscribe.remove();
-      Notification.removeNotificationSubscription(responseListener.current);
+      // Notification.removeNotificationSubscription(notificationListener.current);
+      // Notification.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 

@@ -16,7 +16,7 @@ import {
   Animated,
 } from "react-native";
 import {
-  deleteReportedProperty,
+  deletePropertyBySeller,
   reportProperties,
 } from "../../Services/PropertyServices";
 
@@ -62,7 +62,10 @@ const PropertiesPosts = () => {
 
   useEffect(() => {
     getData();
-  }, []);
+    return () => {
+      setList([]);
+    };
+  }, [list]);
 
   const [{ recommendations }, dispatchRecommendations] = useReducer(
     reducer,
@@ -87,6 +90,7 @@ const PropertiesPosts = () => {
       property: route.params.id,
       userId: userId || null,
     });
+    console.error(res.data);
     if (res.data) {
       setList([res.data]);
       setRecommended(res.data);
@@ -98,11 +102,13 @@ const PropertiesPosts = () => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   }
 
+  const [deleteProperty, setDeleteProperty] = useState(false);
   const [report, setReport] = useState(false);
   const [active, setActive] = useState(0);
   const [list, setList] = useState([]);
   const [recommended, setRecommended] = useState(null);
   const [animationVisibile, setAnimationVisible] = useState(false);
+  const [agencyDel, setAgencyDel] = useState("");
   const [mute, setMute] = useState("volume-mute");
   const [star, setStar] = useState(false);
   const [shouldPlay, setShouldPlay] = useState("pause");
@@ -127,8 +133,17 @@ const PropertiesPosts = () => {
 
   const reportProperty = async () => {
     setReport(false);
-    console.error(route.params.id, token);
+
     await reportProperties({ propertyId: route.params.id }, token);
+  };
+
+  const deletePropertyAction = async () => {
+    setDeleteProperty(false);
+    const result = await deletePropertyBySeller(route.params.id, token);
+    navigation.goBack();
+    navigation.navigate("Home", {
+      deleteProperty: true,
+    });
   };
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -148,6 +163,22 @@ const PropertiesPosts = () => {
               }}
               color={"#a2d0c1"}
               size={30}
+            />
+          )}
+
+          {isLoggedInAgency && list[0]?.agency?.id === agency.id && (
+            <FontAwesome5
+              name="trash"
+              style={{
+                marginRight: 10,
+              }}
+              onPress={async () => {
+                setDeleteProperty(true);
+                // await deleteReportedProperty(route.params.id, token);
+              }}
+              color="black"
+              color={"#a2d0c1"}
+              size={20}
             />
           )}
         </>
@@ -189,6 +220,7 @@ const PropertiesPosts = () => {
     const Like = async () => {
       let login = await AsyncStorage.getItem("isLoggedIn");
       let loginAgency = await AsyncStorage.getItem("isLoggedInAgency");
+      setAgencyDel(item.agency.id);
 
       if (login || loginAgency) {
         if (star) {
@@ -245,7 +277,7 @@ const PropertiesPosts = () => {
               style={{ height: width }}
               showButtons={true}
               autoplay={true}
-              autoplayTimeout={6}
+              autoplayTimeout={10}
               dotColor="#214151"
               activeDotColor="#a2d0c1"
             >
@@ -381,7 +413,7 @@ const PropertiesPosts = () => {
                 setShowFullDescription(!showFullDescription);
               }}
             >
-              {item.description.length > 40 && (
+              {item.description.length > 75 && (
                 <>{!showFullDescription ? "Read more" : "Read less"}</>
               )}
             </Text>
@@ -575,6 +607,14 @@ const PropertiesPosts = () => {
             cancelbtn={"Report"}
             yesbtn={"Cancel"}
             deleteAction={reportProperty}
+          />
+          <Agree
+            modalVisible={deleteProperty}
+            setModalVisible={setDeleteProperty}
+            msg={"Do you want to delete this property?"}
+            cancelbtn={"Delete"}
+            yesbtn={"Cancel"}
+            deleteAction={deletePropertyAction}
           />
         </View>
       </>

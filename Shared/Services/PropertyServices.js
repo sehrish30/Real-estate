@@ -277,6 +277,7 @@ export async function UploadProperty(data, token) {
         visibilityTime: 2000,
         topOffset: 30,
       });
+      return res.data;
     }
   } catch (err) {
     console.error(err);
@@ -343,4 +344,53 @@ export async function reportProperties(data, token) {
   } catch (err) {
     console.error(err);
   }
+}
+
+export async function PropertiesNotifications(data, token) {
+  try {
+    const result = await axios.post(
+      `${baseURL}properties/send-notifications`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function deletePropertyBySeller(id, token) {
+  try {
+    const res = await axios.delete(
+      `${baseURL}properties/delete-property/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      console.error("WHT TO DO", res.data);
+      if (res.data) {
+        Toast.show({
+          type: "success",
+          text1: `Pull up to refresh`,
+          visibilityTime: 2000,
+          topOffset: 30,
+        });
+        return res.data;
+      } else {
+        Toast.show({
+          type: "info",
+          text1: `Property can only be deleted `,
+          text2: `after 2 hours of post`,
+          visibilityTime: 2000,
+          topOffset: 30,
+        });
+      }
+    }
+  } catch (err) {}
 }

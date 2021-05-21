@@ -8,6 +8,7 @@ import {
   Dimensions,
   StatusBar,
 } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   ScrollView,
   TouchableWithoutFeedback,
@@ -29,6 +30,9 @@ const RenderDayRow = ({ item, navigation }) => {
 
   return (
     <TouchableWithoutFeedback
+      style={{
+        marginVertical: 10,
+      }}
       onPress={() => {
         navigation.navigate("PropertiesPosts", {
           //   item: item.property,
@@ -128,15 +132,23 @@ const Favorite = ({ navigation }) => {
   let agency = useSelector((state) => state.auth.agency);
 
   const [wishlists, setWishlists] = useState([]);
-  useEffect(() => {
-    (async () => {
-      if (agency.id) {
-        setWishlists(await getAllWishlistsAdmin(agency.id, token));
-      } else {
-        setWishlists(await getAllWishlistsUser(user.decoded.userId, token));
-      }
-    })();
-  }, []);
+  const [refreshing, setRefreshing] = useState(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+        if (agency.id) {
+          setWishlists(await getAllWishlistsAdmin(agency.id, token));
+        } else {
+          setWishlists(await getAllWishlistsUser(user.decoded.userId, token));
+        }
+      })();
+
+      return () => {
+        setWishlists([]);
+      };
+    }, [refreshing])
+  );
+
   const showMenu = () => {
     navigation.toggleDrawer();
   };
@@ -147,6 +159,10 @@ const Favorite = ({ navigation }) => {
       <CustomHeader showMenu={showMenu} title={"Saved properties"} />
       <FlatList
         pagingEnabled
+        refreshing={refreshing}
+        onRefresh={() => {
+          setRefreshing(false);
+        }}
         data={wishlists}
         renderItem={({ item }) => (
           <RenderDayRow item={item} navigation={navigation} />

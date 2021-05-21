@@ -17,7 +17,7 @@ import { set } from "date-fns";
 
 // import Navigation from "./Navigators/imageNavigation";
 
-export default function Landing({ category, setCategory }) {
+export default function Landing({ category, setCategory, refresh }) {
   const [loading, setLoading] = useState(false);
   const [categoryChosen, setCategoryChosen] = useState(category);
   const [propertiesData, setPropertiesData] = useState([]);
@@ -53,7 +53,7 @@ export default function Landing({ category, setCategory }) {
     setResidential(false);
     setIndutrial(false);
     setLand(false);
-    console.error(categoryChosen);
+
     if (categoryChosen === "Commercial") {
       setCategoryChosen("");
     } else {
@@ -112,7 +112,7 @@ export default function Landing({ category, setCategory }) {
       setCategory("");
     }
     call();
-  }, [page, categoryChosen]);
+  }, [page, categoryChosen, refresh]);
 
   const call = async () => {
     if (page === 0) {
@@ -183,7 +183,13 @@ export default function Landing({ category, setCategory }) {
             });
           }}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <PropertiesCards item={item} />}
+          renderItem={({ item }) => (
+            <PropertiesCards
+              propertiesData={propertiesData}
+              item={item}
+              setPropertiesData={setPropertiesData}
+            />
+          )}
         />
       ) : (
         <>

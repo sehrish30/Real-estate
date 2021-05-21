@@ -3,10 +3,10 @@ import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 // import { useNavigation } from "react-navigation-hooks";
 // import { SharedElement } from "react-navigation-shared-element";
-import { FontAwesome as Icon } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useSelector } from "react-redux";
 const { width } = Dimensions.get("window");
 
 // export interface Listing {
@@ -22,7 +22,13 @@ const { width } = Dimensions.get("window");
 //   listing: Listing;
 // }
 
-export default PropertiesCards = ({ item }) => {
+export default PropertiesCards = ({
+  item,
+  propertiesData,
+  setPropertiesData,
+}) => {
+  let isLoggedInAgency = useSelector((state) => state.auth.isLoggedInAgency);
+  let userAgency = useSelector((state) => state.auth.agency);
   // const [opacity, setOpacity] = useState(1);
   // // const { navigate, isFocused } = useNavigation();
   // const hasFocus = isFocused();

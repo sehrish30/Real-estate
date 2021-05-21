@@ -11,8 +11,4 @@ export const networks = [
     id: "Batelco",
     item: "Batelco",
   },
-  {
-    id: "Others",
-    item: "Others",
-  },
 ];

@@ -1,6 +1,7 @@
 const { Property } = require("../models/property");
 const { Agency } = require("../models/agency");
 const express = require("express");
+const cloudinary = require("cloudinary");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -10,6 +11,12 @@ const { User } = require("../models/user");
 const expo = new Expo();
 const Wishlist = require("../models/wishlist.js");
 const { populate } = require("../models/wishlist.js");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API,
+  api_secret: process.env.CLOUD_SECRET,
+});
 
 /*----------------------------------------
       GET ALL PROPERTIES
@@ -222,6 +229,7 @@ router.put(`/undo-report`, async (req, res) => {
      SEND NOTIFICATION
 ---------------------------------------- */
 router.post(`/send-notifications`, async (req, res) => {
+  console.log("SENDING-------------------------------------", req.body);
   try {
     User.find({
       enableNotification: true,
@@ -307,7 +315,8 @@ router.post(`/send-notifications`, async (req, res) => {
           }
         }
       }
-      return res.status(200).send(result);
+      // result
+      return res.status(200).send(true);
     });
   } catch (err) {
     return res.status(400).send(err);
@@ -575,6 +584,7 @@ router.get("/typeOfProperties", async (req, res) => {
        UPLOAD PROPERTIEs
 ---------------------------------------- */
 router.post("/uploadProperty", async (req, res) => {
+  console.log("UPLOAD---------------", req.body);
   try {
     console.log("Body", req.body);
     const data = req.body;
@@ -590,7 +600,7 @@ router.post("/uploadProperty", async (req, res) => {
       network: data.network,
       Amenities: data.amenity,
       propertyImages: data.images,
-      city: data.city,
+      city: data.city.item,
       area: data.area,
       panorama_url: data.panorama_url,
       video_url: data.video_url,
@@ -630,8 +640,8 @@ router.post("/uploadProperty", async (req, res) => {
               result.land = copyArray;
             }
             result.save().then((anotherResult) => {
-              console.log("SAVED AGENCY", anotherResult);
-              return res.status(200).send(true);
+              console.log("SAVED AGENCY", savedProperty);
+              return res.status(200).send(savedProperty);
             });
           }
         });
@@ -640,6 +650,7 @@ router.post("/uploadProperty", async (req, res) => {
       return res.status(422).send(false);
     }
   } catch (err) {
+    console.log(err);
     return res.status(500).send(err);
   }
 });
@@ -705,6 +716,47 @@ router.get("/filterProperty", (req, res) => {
     console.log("Filter Data", data.length);
     return res.status(200).json({ data: data });
   });
+});
+
+/*----------------------------------------
+           DELETE PROPERTY
+---------------------------------------- */
+router.delete("/delete-property/:id", async (req, res) => {
+  try {
+    console.error(req.params.id);
+    Property.findById(req.params.id).exec((err, ans) => {
+      if (err) {
+        return res.status(422).send(err);
+      }
+
+      if (ans) {
+        let date = Date.parse(ans.createdAt);
+
+        console.log(date > Date.now(), Date.now() - date > 2921973258);
+        if (Date.now() - date > 700000) {
+          Property.findByIdAndDelete(req.params.id).exec((error, result) => {
+            if (error) {
+              return res.status(422).send(error);
+            }
+            result.propertyImages.map((attach) => {
+              cloudinary.uploader.destroy(attach.public_id, async (result) => {
+                if (result.result == "ok") {
+                  console.log("DONE");
+                } else {
+                  console.log("COULDNT FIND");
+                }
+              });
+            });
+            return res.status(200).send(true);
+          });
+        } else {
+          return res.status(200).send(false);
+        }
+      }
+    });
+  } catch (err) {
+    return res.status(500).send(err);
+  }
 });
 
 module.exports = router;

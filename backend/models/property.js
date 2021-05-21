@@ -69,12 +69,12 @@ const propertySchema = mongoose.Schema(
   }
 );
 
-propertySchema.set("toJSON", {
-  virtuals: true,
-});
-
 propertySchema.virtual("id").get(function () {
   return this._id.toHexString();
+});
+
+propertySchema.set("toJSON", {
+  virtuals: true,
 });
 
 exports.Property = mongoose.model("Property", propertySchema);
