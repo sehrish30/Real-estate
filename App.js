@@ -12,7 +12,7 @@ import { navigationRef, isReadyRef } from "./RootNavigation";
 // import * as Notifications from "expo-notifications";
 import { Notifications } from "expo";
 
-// LogBox.ignoreAllLogs(true);
+LogBox.ignoreAllLogs(true);
 // import { navigationRef } from "./app/navigation/rootNavigation";
 export default function App() {
   // const navigationRef = React.createRef();

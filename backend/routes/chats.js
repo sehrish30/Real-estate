@@ -374,15 +374,6 @@ router.get("/unseenchats-agency", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            console.log(
-              data[i].customer,
-              data[i].chats[j].seen,
-              data[i].chats[j].author,
-              data[i].chats[j].content
-            );
-            console.log(
-              data[i].chats[j].author.toString() == data[i].customer.toString()
-            );
             if (
               data[i].chats[j].seen == false &&
               data[i].chats[j].author.toString() === data[i].customer.toString()
@@ -419,12 +410,6 @@ router.get("/unseenchats-customer", async (req, res) => {
       .exec((err, data) => {
         for (let i = 0; i < data.length; i++) {
           for (let j = 0; j < data[i].chats.length; j++) {
-            console.log(
-              data[i].agency,
-              data[i].chats[j].seen,
-              data[i].chats[j].author,
-              data[i].chats[j].content
-            );
             if (
               data[i].chats[j].seen == false &&
               data[i].chats[j].author.toString() == data[i].agency

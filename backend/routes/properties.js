@@ -734,7 +734,7 @@ router.delete("/delete-property/:id", async (req, res) => {
         let date = Date.parse(ans.createdAt);
 
         console.log(date > Date.now(), Date.now() - date > 2921973258);
-        if (Date.now() - date < 700000) {
+        if (Date.now() - date > 700000) {
           Property.findByIdAndDelete(req.params.id).exec((error, result) => {
             if (error) {
               return res.status(422).send(error);
