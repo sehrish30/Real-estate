@@ -49,6 +49,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     initialState
   );
   // FORM STATES
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState({});
   const [amenity, setAmenity] = useState([]);
@@ -260,6 +261,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
   }
 
   const onSubmit = async () => {
+    setLoading(true);
     let sentPhotos = [];
     console.error("DEJJ");
     let done = null;
@@ -309,7 +311,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
       await PropertiesNotifications(
         {
           location: city.item,
-          body: property._id,
+          propertyId: property._id,
         },
         token
       );
@@ -740,6 +742,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               }}
             />
             <Button
+              loading={loading}
               disabled={Object.keys(type).length == 0}
               buttonStyle={styles.register}
               containerStyle={{ width: width / 2.5 }}

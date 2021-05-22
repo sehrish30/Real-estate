@@ -45,7 +45,6 @@ export default function Landing({ category, setCategory, refresh }) {
       setCategoryChosen("Residential");
     }
     setPropertiesData([]);
-    call();
   };
   const handleCommercial = () => {
     setPage(0);
@@ -61,7 +60,6 @@ export default function Landing({ category, setCategory, refresh }) {
     }
 
     setPropertiesData([]);
-    call();
   };
   const handleIndustrial = () => {
     setPage(0);
@@ -76,7 +74,6 @@ export default function Landing({ category, setCategory, refresh }) {
     }
 
     setPropertiesData([]);
-    call();
   };
   const handleLand = () => {
     setPage(0);
@@ -85,13 +82,14 @@ export default function Landing({ category, setCategory, refresh }) {
     setCommercial(false);
     setIndutrial(false);
     if (categoryChosen === "Lands") {
+      console.error("CHOOSING LANDS");
       setCategoryChosen("");
     } else {
+      console.error("UNCHOOSING LANDS");
       setCategoryChosen("Lands");
     }
 
     setPropertiesData([]);
-    call();
   };
 
   useEffect(() => {
@@ -118,7 +116,7 @@ export default function Landing({ category, setCategory, refresh }) {
     if (page === 0) {
       setLoading(true);
     }
-
+    console.error("SEHRISH SEE MY CATEGORY", categoryChosen);
     Axios.get(`${baseURL}properties/allProperties`, {
       params: {
         page: page,

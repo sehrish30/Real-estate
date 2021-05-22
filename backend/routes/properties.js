@@ -316,6 +316,7 @@ router.post(`/send-notifications`, async (req, res) => {
         }
       }
       // result
+
       return res.status(200).send(true);
     });
   } catch (err) {

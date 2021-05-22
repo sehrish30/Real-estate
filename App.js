@@ -8,13 +8,14 @@ import { Provider } from "react-redux";
 import { useFonts } from "expo-font";
 import { toastConfig } from "./Shared/config";
 import * as Notification from "expo-notifications";
+import { navigationRef, isReadyRef } from "./RootNavigation";
 // import * as Notifications from "expo-notifications";
 import { Notifications } from "expo";
 
-LogBox.ignoreAllLogs(true);
+// LogBox.ignoreAllLogs(true);
 // import { navigationRef } from "./app/navigation/rootNavigation";
 export default function App() {
-  const navigationRef = React.createRef();
+  // const navigationRef = React.createRef();
   const responseListener = useRef();
   const notificationListener = useRef();
 
@@ -31,10 +32,9 @@ export default function App() {
       shouldSetBadge: false,
     }),
   });
-
+  console.error("HANDLING", isReadyRef.current, navigationRef.current);
   const handleNotification = (notification) => {
     Vibration.vibrate();
-    // console.error("HANDLING", notification.data?.property);
 
     const { data } = notification;
 
@@ -67,20 +67,31 @@ export default function App() {
       })();
       responseListener.current =
         Notification.addNotificationResponseReceivedListener((response) => {
-          // console.error(
-          //   "REALESTATE",
-          //   response.notification.request.content.data,
-          //   navigationRef.current?.getCurrentRoute()
-          // );
+          console.error(
+            "REALESTATE",
+            response.notification.request.content.data,
+            navigationRef.current?.getCurrentRoute(),
+            navigationRef.current
+          );
           // ZAHRA
           // route you want to navigate to
-          console.log("TRY---------------------------------", data);
+          console.log(
+            "TRY---------------------------------",
+            data,
+            navigationRef.current
+          );
           navigationRef.current?.navigate("PropertiesPosts", {
             id: data?.property,
           });
         });
     }
   };
+
+  React.useEffect(() => {
+    return () => {
+      isReadyRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     // notificationListener.current =
@@ -103,7 +114,12 @@ export default function App() {
 
   return (
     <Provider store={store}>
-      <NavigationContainer ref={navigationRef}>
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          isReadyRef.current = true;
+        }}
+      >
         {/* <DrawerNavigator /> */}
         <Main />
         <Toast config={toastConfig} ref={(ref) => Toast.setRef(ref)} />
