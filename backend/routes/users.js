@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
-
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 const mongoose = require("mongoose");
 const { Consultation } = require("../models/consultation.js");
 const { Chat } = require("../models/chat.js");
@@ -18,6 +18,22 @@ const transporter = nodemailer.createTransport({
     api: process.env.SENDINBLUE_API,
   },
 });
+
+const sendtransporter = nodemailer.createTransport(
+  sendgridTransport({
+    auth: {
+      api_key: process.env.SENDGRID_API,
+    },
+  })
+);
+
+sendtransporter.use(
+  "compile",
+  hbs({
+    viewEngine: "express-handlebars",
+    viewPath: "./views/",
+  })
+);
 
 transporter.use(
   "compile",
@@ -171,36 +187,40 @@ router.post("/reset-password", async (req, res) => {
     user.expireToken = Date.now() + 3600000;
 
     user.save().then((result) => {
+      // let mailOptions = {
+      //   from: process.env.EMAIL,
+      //   to: user.email,
+      //   subject: "Iconic Real Estate ✔",
+      //   template: "index",
+      //   context: {
+      //     code: code,
+      //   },
+      // };
+
       let mailOptions = {
-        from: process.env.EMAIL,
-        to: user.email,
+        from: process.env.SENDGRI_EMAIL,
+        to: req.body.email,
         subject: "Iconic Real Estate ✔",
-        template: "index",
+        template: "agency",
         context: {
-          code: code,
+          password: password,
         },
       };
 
-      transporter.sendMail(mailOptions, (err, data) => {
+      // transporter.sendMail(mailOptions, (err, data) => {
+      //   if (err) {
+      //     return res.status(401).send(err);
+      //   }
+      //   return res.status(200).send({ code, token });
+      // });
+
+      sendtransporter.sendMail(mailOptions, (err, data) => {
         if (err) {
+          console.log(err);
           return res.status(401).send(err);
         }
         return res.status(200).send({ code, token });
       });
-      // transporter.sendMail(
-      //   {
-      //     to: user.email,
-      //     from: process.env.EMAIL,
-      //     subject: "Iconic Real Estate ✔",
-      //     html: `<h1>Your code is ${code}</h1><h5>Expires in 1 hr</h5>`,
-      //   },
-      //   (err, data) => {
-      //     if (err) {
-      //       return res.status(401).send(err);
-      //     }
-      //     return res.status(200).send({ code, token });
-      //   }
-      // );
     });
   } catch (err) {
     return res.status(500).json({ error: err });

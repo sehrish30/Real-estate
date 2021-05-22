@@ -9,23 +9,6 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 
-const transporter = nodemailer.createTransport({
-  service: "SendinBlue", // no need to set host or port etc.
-  auth: {
-    user: process.env.SENDINBLUE_USER,
-    pass: process.env.SENDINBLUE_PW,
-    api: process.env.SENDINBLUE_API,
-  },
-});
-
-transporter.use(
-  "compile",
-  hbs({
-    viewEngine: "express-handlebars",
-    viewPath: "./views/",
-  })
-);
-
 /*----------------------------------------
   GET ALL CONSULTATION REQUESTS for USER
 ----------------------------------------- */

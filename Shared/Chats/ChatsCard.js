@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { formatDistanceToNow } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
 
-// import TouchableScale from "react-native-touchable-scale";
+import TouchableScale from "react-native-touchable-scale";
 var { height, width } = Dimensions.get("screen");
 const ChatsCard = ({
   name,
@@ -60,7 +60,7 @@ const ChatsCard = ({
         }}
         key={id}
         bottomDivider
-        // Component={TouchableScale}
+        Component={TouchableScale}
         friction={90} //
         tension={100} // These props are passed to the parent component (here TouchableScale)
         activeScale={0.95} //

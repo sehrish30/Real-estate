@@ -41,7 +41,6 @@ const DrawerNavigator = () => {
         <Drawer.Screen name="Dashboard" component={DashboardNavigator} />
       )}
 
-      <Drawer.Screen name="Register Seller" component={RegisterAgent} />
       {isLoggedIn && (
         <Drawer.Screen
           name="Affordibility calculator"
@@ -54,6 +53,7 @@ const DrawerNavigator = () => {
       {(isLoggedInAgency || isLoggedIn) && (
         <Drawer.Screen name="Saved properties" component={Favorite} />
       )}
+      <Drawer.Screen name="Register Seller" component={RegisterAgent} />
     </Drawer.Navigator>
   );
 };

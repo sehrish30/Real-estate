@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { StyleSheet, Text, View, Vibration } from "react-native";
+import { StyleSheet, Text, View, Vibration, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import Main from "./Navigators/Main";
 import Toast from "react-native-toast-message";
@@ -10,6 +10,8 @@ import { toastConfig } from "./Shared/config";
 import * as Notification from "expo-notifications";
 // import * as Notifications from "expo-notifications";
 import { Notifications } from "expo";
+
+LogBox.ignoreAllLogs(true);
 // import { navigationRef } from "./app/navigation/rootNavigation";
 export default function App() {
   const navigationRef = React.createRef();

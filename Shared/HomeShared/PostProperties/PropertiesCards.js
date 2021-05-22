@@ -104,9 +104,13 @@ export default PropertiesCards = ({
               <Text style={[styles.title, { fontSize: 15 }]}>
                 {city || null}
               </Text>
-              <Text style={[styles.title, { fontSize: 15, color: "#839b97" }]}>
-                By {agency?.name}
-              </Text>
+              {agency?.name ? (
+                <Text
+                  style={[styles.title, { fontSize: 15, color: "#839b97" }]}
+                >
+                  By {agency?.name}
+                </Text>
+              ) : null}
             </View>
             <View style={{ justifyContent: "center" }}>
               <View style={{ flexDirection: "row" }}>
