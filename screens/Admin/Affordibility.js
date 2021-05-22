@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,11 +7,21 @@ import {
   Dimensions,
   View,
 } from "react-native";
+import { formatDistanceToNow } from "date-fns";
+import { useFocusEffect } from "@react-navigation/native";
 import { Button } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Ionicons } from "@expo/vector-icons";
+
+import {
+  getAffordibility,
+  postAffordibility,
+} from "../../Shared/Services/AffordibilityServices";
+import { useSelector } from "react-redux";
 
 var { width, height } = Dimensions.get("screen");
 const Affordibility = () => {
+  const [id, setId] = useState("");
   const [final10, setFinal10] = useState("");
   const [final20, setFinal20] = useState("");
   const [final30, setFinal30] = useState("");
@@ -22,6 +32,28 @@ const Affordibility = () => {
   const [final80, setFinal80] = useState("");
   const [final90, setFinal90] = useState("");
   const [final100, setFinal100] = useState("");
+  const [time, setTime] = useState("");
+  let token = useSelector((state) => state.auth.token);
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const res = await getAffordibility(token);
+        setFinal10(res[0].first);
+        setFinal20(res[0].second);
+        setFinal30(res[0].third);
+        setFinal40(res[0].four);
+        setFinal50(res[0].five);
+        setFinal60(res[0].six);
+        setFinal70(res[0].seven);
+        setFinal80(res[0].eight);
+        setFinal90(res[0].nine);
+        setFinal100(res[0].ten);
+        setTime(res[0].updatedAt);
+        setId(res[0].id);
+      })();
+    }, [])
+  );
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={styles.main}>
@@ -42,6 +74,27 @@ const Affordibility = () => {
         >
           Final = Mortgage rate + (monthly expenditure/monthly income) *100
         </Text>
+        {time ? (
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Ionicons
+              style={{ marginTop: 2 }}
+              name="time"
+              size={20}
+              color="#214151"
+            />
+            <Text
+              style={{
+                marginTop: 5,
+                color: "#214151",
+                fontFamily: "EBGaramond-Bold",
+              }}
+            >
+              {formatDistanceToNow(Date.parse(time), {
+                addSuffix: true,
+              })}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={{ marginVertical: 5 }}>
@@ -58,11 +111,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal10("");
+          onChangeText={(text) => {
+            setFinal10(text);
           }}
           value={final10}
         />
@@ -81,11 +134,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal20("");
+          onChangeText={(text) => {
+            setFinal20(text);
           }}
           value={final20}
         />
@@ -104,11 +157,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal30("");
+          onChangeText={(text) => {
+            setFinal30(text);
           }}
           value={final30}
         />
@@ -127,11 +180,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal40("");
+          onChangeText={(text) => {
+            setFinal40(text);
           }}
           value={final40}
         />
@@ -150,11 +203,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal50("");
+          onChangeText={(text) => {
+            setFinal50(text);
           }}
           value={final50}
         />
@@ -173,11 +226,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal60("");
+          onChangeText={(text) => {
+            setFinal60(text);
           }}
           value={final60}
         />
@@ -196,11 +249,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal70("");
+          onChangeText={(text) => {
+            setFinal70(text);
           }}
           value={final70}
         />
@@ -219,11 +272,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal80("");
+          onChangeText={(text) => {
+            setFinal80(text);
           }}
           value={final80}
         />
@@ -242,11 +295,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal90("");
+          onChangeText={(text) => {
+            setFinal90(text);
           }}
           value={final90}
         />
@@ -265,11 +318,11 @@ const Affordibility = () => {
         <TextInput
           style={styles.input}
           editable
-          maxLength={40}
+          maxLength={200}
           multiline
           numberOfLines={5}
-          onChangeText={() => {
-            setFinal100("");
+          onChangeText={(text) => {
+            setFinal100(text);
           }}
           value={final100}
         />
@@ -284,6 +337,24 @@ const Affordibility = () => {
           fontFamily: "EBGaramond-Bold",
         }}
         title="Save"
+        onPress={async () => {
+          await postAffordibility(
+            {
+              first: final10,
+              second: final20,
+              third: final30,
+              four: final40,
+              five: final50,
+              six: final60,
+              seven: final70,
+              eight: final80,
+              nine: final90,
+              ten: final100,
+              id: id,
+            },
+            token
+          );
+        }}
       />
     </KeyboardAwareScrollView>
   );
@@ -307,7 +378,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#214151",
-    paddingHorizontal: 5,
   },
   input: {
     margin: 12,
@@ -315,5 +385,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     borderColor: "#839b97",
+    paddingHorizontal: 5,
+    color: "#214151",
   },
 });

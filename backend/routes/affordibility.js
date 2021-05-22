@@ -10,10 +10,12 @@ router.post(`/postAdmin`, async (req, res) => {
   try {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(` `)[1];
+
     jwt.verify(token, process.env.SECRET, async (err, decoded) => {
       if (err) {
-        return res.status(401).json({ error: err });
+        return res.status(422).json({ error: err });
       }
+      console.log("WHAT=====", req.body);
       // access this user in our controller
       const { isAdmin } = decoded;
       if (isAdmin) {

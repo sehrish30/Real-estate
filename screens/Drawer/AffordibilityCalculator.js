@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,14 +16,51 @@ import { Input, Overlay } from "react-native-elements";
 import Toast from "react-native-toast-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import CustomHeader from "../../Shared/HomeShared/CustomHeader";
+import { useFocusEffect } from "@react-navigation/native";
+import { getAffordibility } from "../../Shared/Services/AffordibilityServices";
+import { formatDistanceToNow } from "date-fns";
+import { useSelector } from "react-redux";
 
 var { width, height } = Dimensions.get("window");
 const AffordibilityCalculator = ({ navigation }) => {
+  let token = useSelector((state) => state.auth.token);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [annualIncome, setAnnualIncome] = useState("");
   const [monthlyexp, setMonthlyExp] = useState("");
   const [mortgage, setMortgage] = useState("");
+
+  // values
+  const [final10, setFinal10] = useState("");
+  const [final20, setFinal20] = useState("");
+  const [final30, setFinal30] = useState("");
+  const [final40, setFinal40] = useState("");
+  const [final50, setFinal50] = useState("");
+  const [final60, setFinal60] = useState("");
+  const [final70, setFinal70] = useState("");
+  const [final80, setFinal80] = useState("");
+  const [final90, setFinal90] = useState("");
+  const [final100, setFinal100] = useState("");
+  const [time, setTime] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const res = await getAffordibility();
+        setFinal10(res[0].first);
+        setFinal20(res[0].second);
+        setFinal30(res[0].third);
+        setFinal40(res[0].four);
+        setFinal50(res[0].five);
+        setFinal60(res[0].six);
+        setFinal70(res[0].seven);
+        setFinal80(res[0].eight);
+        setFinal90(res[0].nine);
+        setFinal100(res[0].ten);
+        setTime(res[0].updatedAt);
+      })();
+    }, [])
+  );
 
   const calculations = () => {
     const monthlyIncome = annualIncome / 12;
@@ -31,7 +68,6 @@ const AffordibilityCalculator = ({ navigation }) => {
     const mortgageRate = (mortgage / monthlyIncome) * 100;
     const final = Math.round(mortgageRate + dir);
 
-    // console.error(Math.round(final));
     if (annualIncome !== "" && monthlyexp !== "" && mortgage !== "") {
       if (final > 50 && final <= 100) {
         // Now tell the customer how much should he reduce
@@ -66,6 +102,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                       {chgdAnnual}
                     </Text>{" "}
                     BD
+                    <Text
+                      style={{
+                        color: "#214151",
+                        fontFamily: "EBGaramond-Bold",
+                      }}
+                    >
+                      {" "}
+                      Admin's response:
+                    </Text>
+                    <Text>{final10}</Text>
                   </Text>
                 );
                 toggleOverlay();
@@ -87,6 +133,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final20}</Text>
             </Text>
           );
         }
@@ -102,6 +158,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final30}</Text>
             </Text>
           );
           toggleOverlay();
@@ -119,6 +185,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final40}</Text>
             </Text>
           );
           toggleOverlay();
@@ -136,6 +212,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final50}</Text>
             </Text>
           );
           toggleOverlay();
@@ -153,6 +239,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final60}</Text>
             </Text>
           );
           toggleOverlay();
@@ -170,6 +266,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final70}</Text>
             </Text>
           );
           toggleOverlay();
@@ -187,7 +293,17 @@ const AffordibilityCalculator = ({ navigation }) => {
               <Text style={{ color: "#2c6e8f", fontWeight: "800" }}>
                 {mortgage}
               </Text>{" "}
-              BD / month
+              BD / month.
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final80}</Text>
             </Text>
           );
           toggleOverlay();
@@ -205,6 +321,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month in {Math.round((40000 - mortgage) / 12)} years
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final90}</Text>
             </Text>
           );
           toggleOverlay();
@@ -222,6 +348,16 @@ const AffordibilityCalculator = ({ navigation }) => {
                 {mortgage}
               </Text>{" "}
               BD / month in {Math.round((40000 - mortgage) / 12)} years
+              <Text
+                style={{
+                  color: "#214151",
+                  fontFamily: "EBGaramond-Bold",
+                }}
+              >
+                {" "}
+                Admin's response:
+              </Text>
+              <Text>{final100}</Text>
             </Text>
           );
         } else {

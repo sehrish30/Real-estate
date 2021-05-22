@@ -2,13 +2,12 @@ import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
 
-export async function getAffordibility(token) {
+export async function getAffordibility() {
   try {
     const result = await axios.get(`${baseURL}affordibility/get`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     });
     if (result.status == 200 || result.status == 201) {
@@ -20,8 +19,9 @@ export async function getAffordibility(token) {
 }
 
 export async function postAffordibility(data, token) {
+  console.error(token, data);
   try {
-    const result = await axios.get(`${baseURL}affordibility/postAdmin`, data, {
+    const result = await axios.post(`${baseURL}affordibility/postAdmin`, data, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -29,6 +29,12 @@ export async function postAffordibility(data, token) {
       },
     });
     if (result.status == 200 || result.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: ` Recommendation Updated`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
       return result.data;
     }
   } catch (err) {
