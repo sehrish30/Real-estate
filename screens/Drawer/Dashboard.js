@@ -14,6 +14,7 @@ import {
   RefreshControl,
   Animated,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { formatDistanceToNow } from "date-fns";
 import { useSelector, useDispatch } from "react-redux";
@@ -254,6 +255,21 @@ const Dashboard = ({ navigation }) => {
           ) : (
             <Animated.FlatList
               ref={scrollViewRef}
+              ListFooterComponent={
+                <>
+                  {consultationsStored.length >= limit && (
+                    <ActivityIndicator size="large" color="#f8dc81" />
+                  )}
+                </>
+              }
+              ListFooterComponentStyle={{
+                marginVertical: 10,
+              }}
+              onEndReached={() => {
+                setLimit(limit + 10);
+              }}
+              onEndReachedThreshold={0.5}
+              refreshing={refreshing}
               refreshControl={
                 <RefreshControl
                   tintColor="#214151"
@@ -270,7 +286,7 @@ const Dashboard = ({ navigation }) => {
           )}
         </>
       )}
-
+      {/* 
       {!loading && limit <= consultationsStored.length && (
         <Button
           icon={
@@ -296,7 +312,7 @@ const Dashboard = ({ navigation }) => {
             setLimit(limit + 10);
           }}
         />
-      )}
+      )} */}
     </SafeAreaView>
   );
 };
