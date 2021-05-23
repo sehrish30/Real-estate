@@ -4,6 +4,7 @@ import React, {
   useReducer,
   useCallback,
   useLayoutEffect,
+  useRef,
 } from "react";
 import { FontAwesome5, MaterialIcons, Ionicons } from "@expo/vector-icons";
 import {
@@ -19,6 +20,7 @@ import {
   deletePropertyBySeller,
   reportProperties,
 } from "../../Services/PropertyServices";
+import * as WebBrowser from "expo-web-browser";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -54,10 +56,18 @@ import RecommendedProperties from "./RecommendedProperties";
 import AmenityIcon from "./AmenityIcon";
 import DeleteConfirm from "../../Modals/DeleteConfirm";
 import Agree from "../../Modals/Agree";
-
+import PropertyImage from "../../Overlays/PropertyImage";
+import EditProperty from "../../Overlays/EditProperty";
+const editReducer = (state, newState) => ({ ...state, ...newState });
+const initialstate = {
+  editerrors: {},
+};
 const PropertiesPosts = () => {
   const route = useRoute();
-
+  const descriptionEditRef = useRef();
+  const nameEditRef = useRef();
+  const priceEditRef = useRef();
+  const videoEditRef = useRef();
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -90,7 +100,7 @@ const PropertiesPosts = () => {
       property: route.params.id,
       userId: userId || null,
     });
-    console.error(res.data);
+
     if (res.data) {
       setList([res.data]);
       setRecommended(res.data);
@@ -102,6 +112,12 @@ const PropertiesPosts = () => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
   }
 
+  const handlePressButtonAsync = async (url) => {
+    await WebBrowser.openBrowserAsync(url);
+  };
+
+  const [visible, setVisible] = useState("");
+  const [showEdit, setShowEdit] = useState(false);
   const [deleteProperty, setDeleteProperty] = useState(false);
   const [report, setReport] = useState(false);
   const [active, setActive] = useState(0);
@@ -166,21 +182,42 @@ const PropertiesPosts = () => {
             />
           )}
 
-          {isLoggedInAgency && list[0]?.agency?.id === agency.id && (
-            <FontAwesome5
-              name="trash"
-              style={{
-                marginRight: 10,
-              }}
-              onPress={async () => {
-                setDeleteProperty(true);
-                // await deleteReportedProperty(route.params.id, token);
-              }}
-              color="black"
-              color={"#a2d0c1"}
-              size={20}
-            />
-          )}
+          <View style={{ flexDirection: "row" }}>
+            {isLoggedInAgency && list[0]?.agency?.id === agency.id && (
+              <TouchableOpacity style={{ marginHorizontal: 5 }}>
+                <FontAwesome5
+                  name="edit"
+                  style={{
+                    marginRight: 10,
+                  }}
+                  onPress={async () => {
+                    console.error("HAAN");
+                    setShowEdit(true);
+                    // await deleteReportedProperty(route.params.id, token);
+                  }}
+                  color="black"
+                  color={"#a2d0c1"}
+                  size={20}
+                />
+              </TouchableOpacity>
+            )}
+            {isLoggedInAgency && list[0]?.agency?.id === agency.id && (
+              <TouchableOpacity style={{ marginHorizontal: 5 }}>
+                <FontAwesome5
+                  name="trash"
+                  style={{
+                    marginRight: 10,
+                  }}
+                  onPress={async () => {
+                    setDeleteProperty(true);
+                    // await deleteReportedProperty(route.params.id, token);
+                  }}
+                  color={"#E18574"}
+                  size={20}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
         </>
       ),
     });
@@ -283,6 +320,9 @@ const PropertiesPosts = () => {
             >
               {item?.propertyImages?.map((e, index) => (
                 <Image
+                  onPress={() => {
+                    setVisible(true);
+                  }}
                   key={e}
                   resizeMode="stretch"
                   style={styles.wrap}
@@ -343,7 +383,7 @@ const PropertiesPosts = () => {
                 />
                 {/* <Text style={styles.description}> Property size(sqft)</Text> */}
                 <Text style={[styles.description, { fontWeight: "bold" }]}>
-                  {item.area ? formatNumber(item.area) : null}
+                  {item?.area ? formatNumber(item.area) : null}
                   {" sqft "}
                 </Text>
               </View>
@@ -522,6 +562,7 @@ const PropertiesPosts = () => {
                 title="Open Map"
                 buttonStyle={{
                   paddingBottom: 10,
+                  marginTop: 10,
                 }}
                 titleStyle={{
                   color: "#214151",
@@ -536,7 +577,6 @@ const PropertiesPosts = () => {
                 }}
                 type="clear"
               />
-
               {item.video_url ? (
                 <YoutubePlayer
                   play={playing}
@@ -544,6 +584,22 @@ const PropertiesPosts = () => {
                   height={300}
                   width={width / 1.2}
                   videoId={item.video_url.split("=")[1]}
+                />
+              ) : null}
+              {item?.panorama_url ? (
+                <Button
+                  onPress={() => {
+                    handlePressButtonAsync(item.panorama_url);
+                  }}
+                  title="360 VIEW"
+                  buttonStyle={{
+                    paddingBottom: 10,
+                    backgroundColor: "#f8dc81",
+                  }}
+                  titleStyle={{
+                    color: "#214151",
+                    fontFamily: "EBGaramond-Bold",
+                  }}
                 />
               ) : null}
             </View>
@@ -615,6 +671,28 @@ const PropertiesPosts = () => {
             cancelbtn={"Delete"}
             yesbtn={"Cancel"}
             deleteAction={deletePropertyAction}
+          />
+          <PropertyImage
+            visible={visible}
+            setVisible={setVisible}
+            attachments={item.propertyImages}
+          />
+
+          <EditProperty
+            id={item._id}
+            sentprice={item.cost}
+            sentname={item.title}
+            sentvideo={item.video_url}
+            sentimage={item.panorama_url}
+            sentdescription={item.description}
+            setVisible={setShowEdit}
+            visible={showEdit}
+            navigation={navigation}
+            setList={setList}
+            descriptionEditRef={descriptionEditRef}
+            nameEditRef={nameEditRef}
+            priceEditRef={priceEditRef}
+            videoEditRef={videoEditRef}
           />
         </View>
       </>

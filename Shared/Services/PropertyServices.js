@@ -392,5 +392,41 @@ export async function deletePropertyBySeller(id, token) {
         });
       }
     }
-  } catch (err) {}
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function updateProperty(data, token) {
+  try {
+    const res = await axios.put(
+      `${baseURL}properties/updatePropertyByUser`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (res.status == 200 || res.status == 201) {
+      console.error("WHT TO DO", res.data);
+      if (res.data) {
+        Toast.show({
+          type: "info",
+          text1: `Pull up to refresh `,
+          visibilityTime: 2000,
+          topOffset: 30,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: `Property couldnot be updated `,
+          visibilityTime: 2000,
+          topOffset: 30,
+        });
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }

@@ -760,4 +760,40 @@ router.delete("/delete-property/:id", async (req, res) => {
   }
 });
 
+/*----------------------------------------
+           EDIT PROPERTY
+---------------------------------------- */
+router.put("/updatePropertyByUser", async (req, res) => {
+  console.log("Body", req.body);
+  const data = req.body;
+  try {
+    let property = {
+      title: data.name,
+      cost: parseInt(data.price),
+      description: data.description,
+      panorama_url: data.panorama_url,
+      video_url: data.video_url,
+    };
+
+    Property.findByIdAndUpdate(
+      data.property_id,
+      property,
+      {
+        new: true,
+      },
+      function (err, property) {
+        if (err) {
+          console.log("ERROR", err);
+          res.status(400).send(err);
+        } else {
+          res.status(200).send(property);
+        }
+      }
+    );
+  } catch (err) {
+    //console.log(err);
+    res.status(500).send(err);
+  }
+});
+
 module.exports = router;

@@ -208,18 +208,18 @@ const styles = StyleSheet.create({
     color: "white",
   },
   superhost: {
-    borderColor: "#F0C948",
+    borderColor: "#214151",
     borderRadius: 30,
     borderWidth: 1,
     padding: 4,
-    backgroundColor: "#F0C948",
+    backgroundColor: "#214151",
   },
   superhostLabel: {
     fontSize: 10,
     fontFamily: "EBGaramond-Regular",
   },
   card: {
-    backgroundColor: "#21534A",
+    backgroundColor: "#214151",
     padding: 10,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
