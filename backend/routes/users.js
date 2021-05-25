@@ -201,9 +201,9 @@ router.post("/reset-password", async (req, res) => {
         from: process.env.SENDGRI_EMAIL,
         to: req.body.email,
         subject: "Iconic Real Estate ✔",
-        template: "agency",
+        template: "index",
         context: {
-          password: password,
+          code: code,
         },
       };
 
@@ -223,6 +223,7 @@ router.post("/reset-password", async (req, res) => {
       });
     });
   } catch (err) {
+    console.log(err);
     return res.status(500).json({ error: err });
   }
 });

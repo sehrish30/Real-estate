@@ -14,6 +14,7 @@ import { SafeAreaView } from "react-native";
 
 const { height, width } = Dimensions.get("screen");
 const SearchAgency = ({ navigation }) => {
+  const [isVerified, setIsVerified] = useState(false);
   const [search, setSearch] = useState(null);
   const [location, setLocation] = useState("");
   const searchField = useRef();
@@ -34,14 +35,23 @@ const SearchAgency = ({ navigation }) => {
   };
 
   const searchTypedAgency = async (value) => {
-    if (value?.length > 0 || location || highRating || lowRating || recent) {
+    if (
+      value?.length > 0 ||
+      location ||
+      highRating ||
+      lowRating ||
+      recent ||
+      isVerified
+    ) {
       setLoading(true);
+      console.error("HAY", isVerified);
       const res = await searchAgencies(
         value,
         location.item,
         highRating,
         lowRating,
-        recent
+        recent,
+        isVerified
       );
 
       setAgencies(res);
@@ -56,7 +66,15 @@ const SearchAgency = ({ navigation }) => {
       clearTimeout(timer);
       setLoading(true);
     };
-  }, [search, debounceValue, location, highRating, lowRating, recent]);
+  }, [
+    search,
+    debounceValue,
+    location,
+    highRating,
+    lowRating,
+    recent,
+    isVerified,
+  ]);
 
   const onChange = () => {
     return (val) => {
@@ -113,6 +131,8 @@ const SearchAgency = ({ navigation }) => {
       />
 
       <BadgeView
+        isVerified={isVerified}
+        setIsVerified={setIsVerified}
         highRating={highRating}
         setHighRating={setHighRating}
         lowRating={lowRating}

@@ -40,6 +40,7 @@ const Forgot = ({ navigation, route }) => {
     setValue,
   });
 
+  console.error("FORGET ABT IT", route.params);
   const { agencyForgot } = route.params;
 
   useLayoutEffect(() => {

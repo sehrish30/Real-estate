@@ -2,6 +2,8 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Badge } from "react-native-elements";
 const BadgeView = ({
+  isVerified,
+  setIsVerified,
   highRating,
   setHighRating,
   lowRating,
@@ -20,6 +22,7 @@ const BadgeView = ({
       setRecent(false);
       setSearch("");
       setLocation("");
+      setIsVerified("");
     }
   };
 
@@ -32,6 +35,7 @@ const BadgeView = ({
       setRecent(false);
       setSearch("");
       setLocation("");
+      setIsVerified("");
     }
   };
 
@@ -44,8 +48,23 @@ const BadgeView = ({
       setHighRating("");
       setSearch("");
       setLocation("");
+      setIsVerified("");
     }
   };
+
+  const handleVerified = () => {
+    if (isVerified) {
+      setIsVerified(false);
+    } else {
+      setIsVerified(true);
+      setRecent("");
+      setLowRating("");
+      setHighRating("");
+      setSearch("");
+      setLocation("");
+    }
+  };
+
   return (
     <View
       style={{
@@ -69,6 +88,11 @@ const BadgeView = ({
         onPress={handleNewItems}
         badgeStyle={recent ? styles.selectedBadge : styles.badge}
         value={<Text style={styles.badgeText}>New</Text>}
+      />
+      <Badge
+        onPress={handleVerified}
+        badgeStyle={isVerified ? styles.selectedBadge : styles.badge}
+        value={<Text style={styles.badgeText}>Verified</Text>}
       />
     </View>
   );

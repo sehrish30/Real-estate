@@ -14,7 +14,8 @@ export async function searchAgencies(
   location,
   highRating,
   lowRating,
-  recent
+  recent,
+  isVerified
 ) {
   try {
     let data;
@@ -28,9 +29,12 @@ export async function searchAgencies(
       data = { params: { lowRating } };
     } else if (recent) {
       data = { params: { recent } };
+    } else if (isVerified) {
+      data = { params: { isVerified } };
     } else {
       data = { params: { name } };
     }
+
     const res = await axios.get(`${baseURL}agencies`, data, config);
     if (res.status == 200) {
       return res.data;

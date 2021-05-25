@@ -340,7 +340,7 @@ const ChatsContent = ({
           {chatExists && route.params.notsure ? (
             <CreateChat
               data={route.params}
-              message="Seems like you are already in contact with this agency. Kindly, visit your messages."
+              message="Seems like you are already in contact with this seller. Kindly, visit your messages."
               navigation={navigation}
               dontshowBtn={true}
             />
@@ -348,7 +348,7 @@ const ChatsContent = ({
             !chatExists && (
               <CreateChat
                 data={route.params}
-                message="You don't have any conversation with this agency"
+                message="You don't have any conversation with this seller"
                 navigation={navigation}
               />
             )

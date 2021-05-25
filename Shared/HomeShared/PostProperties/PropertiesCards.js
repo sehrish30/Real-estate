@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   superhost: {
-    borderColor: "#F0C948",
+    borderColor: "#214151",
     borderRadius: 30,
     borderWidth: 1,
     padding: 4,

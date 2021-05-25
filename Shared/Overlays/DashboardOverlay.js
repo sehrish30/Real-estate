@@ -248,14 +248,25 @@ const DashboardOverlay = ({
               type="clear"
               onPress={() => {
                 toggleOverlay();
-                navigation.navigate("ScheduleConsultationForm", {
-                  email: title,
-                  phoneNumber: phoneNumber,
-                  customerId: customer,
-                  consultationId: consultationId,
-                  startTiming: officeTimingEnd,
-                  endTiming: officeTimingStart,
+                navigation.navigate("Home", {
+                  screen: "ScheduleConsultationForm",
+                  params: {
+                    email: title,
+                    phoneNumber: phoneNumber,
+                    customerId: customer,
+                    consultationId: consultationId,
+                    startTiming: officeTimingEnd,
+                    endTiming: officeTimingStart,
+                  },
                 });
+                // navigation.navigate("ScheduleConsultationForm", {
+                //   email: title,
+                //   phoneNumber: phoneNumber,
+                //   customerId: customer,
+                //   consultationId: consultationId,
+                //   startTiming: officeTimingEnd,
+                //   endTiming: officeTimingStart,
+                // });
               }}
             />
           </>

@@ -59,7 +59,7 @@ const Item = ({
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
-            <Text style={styles.title}>{description}</Text>
+            <Text style={styles.title}>{description.substring(0, 80)}...</Text>
             <Badge value={numberOfReports} status="error" />
           </View>
           <Text style={{ color: "#214151", marginTop: 15 }}>

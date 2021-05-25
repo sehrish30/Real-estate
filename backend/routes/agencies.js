@@ -58,11 +58,12 @@ router.get(`/`, async (req, res) => {
   try {
     // function to convert to regex
     const rgx = (pattern) => new RegExp(`.*${pattern}.*`);
-
+    console.log("WHAT", req.query);
     const searchRgx = rgx(req.query.name);
     let highRating = undefined;
     let lowRating = undefined;
     let updatedOnes = undefined;
+    let isVerified = undefined;
 
     if (req.query.highRating) {
       highRating = parseInt(req.query.highRating);
@@ -71,6 +72,10 @@ router.get(`/`, async (req, res) => {
     if (req.query.lowRating) {
       console.log("LOWRATING", req.query.lowRating);
       lowRating = parseInt(req.query.lowRating);
+    }
+    if (req.query.isVerified) {
+      console.log("VERIFIED", req.query.isVerified);
+      isVerified = req.query.isVerified;
     }
 
     if (req.query.recent) {
@@ -93,6 +98,7 @@ router.get(`/`, async (req, res) => {
         { totalRating: { $gt: highRating } },
         { totalRating: { $lt: lowRating } },
         { updatedAt: { $gt: updatedOnes } },
+        { isVerified: req.query.isVerified },
       ],
     };
 
