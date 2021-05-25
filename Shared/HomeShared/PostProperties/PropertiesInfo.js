@@ -60,7 +60,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
   const [rooms, setRooms] = useState(1);
   const [bathRooms, setBathRooms] = useState(1);
   const [extra, setExtra] = useState(false);
-  const [property, setProperty] = useState("Rent");
+  const [mineproperty, setMineProperty] = useState("Rent");
   const [uploadPhotos, setUploadPhotos] = useState(false);
   const [map, setMap] = useState(false);
   const [city, setCity] = useState("");
@@ -162,7 +162,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
     return (item) => {
       const filteredAmn = amn.filter((amnty) => amnty.id !== item.id);
       const filteredAmenities = amenity.filter((amnty) => amnty !== item.id);
-      console.error("Item", item, "Filtered Aminities", filteredAmenities);
+
       setAmn(filteredAmn);
       setAmenity(filteredAmenities);
     };
@@ -212,7 +212,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
 
   function onMultiChangeCities() {
     return (item) => {
-      console.error("SEHRISH", item);
       setCity(item);
     };
   }
@@ -263,7 +262,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
   const onSubmit = async () => {
     setLoading(true);
     let sentPhotos = [];
-    console.error("DEJJ");
+
     let done = null;
 
     for (let i = 0; i < selectedPhotos.length; i++) {
@@ -282,7 +281,6 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
         const imageURL = await uploadToCloudinary(cloudPhoto.newfile);
 
         sentPhotos.push(imageURL);
-        console.error("IMAGE", sentPhotos);
       });
       done = await Promise.all(promises);
     }
@@ -297,7 +295,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
         cost: parseInt(price),
         rooms,
         bathrooms: bathRooms,
-        category: property,
+        category: mineproperty,
         area: parseInt(area),
         city,
         images: sentPhotos,
@@ -307,7 +305,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
       };
 
       const property = await UploadProperty(variable, token);
-      console.error("PROPERTY", property, "CITY", city);
+
       await PropertiesNotifications(
         {
           location: city.item,
@@ -352,7 +350,9 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             buttonColor="#214151"
             borderColor="#214151"
             hasPadding
-            onPress={(value) => setProperty(value)}
+            onPress={(value) => {
+              setMineProperty(value);
+            }}
             options={[
               { label: "rent", value: "rent" },
               { label: "buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')

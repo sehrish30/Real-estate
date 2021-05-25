@@ -211,6 +211,7 @@ const AgencyProfile = ({ navigation }) => {
         changePassword={changePassword}
         id={profile.id}
         name={profile.name}
+        isVerified={profile.isVerified}
       />
 
       <CustomModal

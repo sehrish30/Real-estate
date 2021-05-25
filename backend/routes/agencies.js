@@ -345,17 +345,22 @@ router.get(`/check-users-rating`, async (req, res) => {
             Agency DETAILS
 ---------------------------------------- */
 router.get("/:id", async (req, res) => {
-  const agency = await Agency.findById(req.params.id)
-    .select("-attachments -password")
-    .populate("reviews.user", "dp email");
+  try {
+    const agency = await Agency.findById(req.params.id)
+      .select("-attachments -password")
+      .populate("reviews.user", "dp email");
 
-  if (!agency) {
-    return res
-      .status(400)
-      .json({ message: "The user with the given ID was not found" });
+    if (!agency) {
+      return res
+        .status(400)
+        .json({ message: "The user with the given ID was not found" });
+    }
+
+    res.status(200).send(agency);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send(err);
   }
-
-  res.status(200).send(agency);
 });
 
 /*----------------------------------------
@@ -378,6 +383,7 @@ router.post("/register", async (req, res) => {
 
     return res.send(agency);
   } catch (e) {
+    console.log(e);
     res.status(500).json({ error: e });
   }
 });
@@ -595,7 +601,7 @@ router.post("/login", async (req, res) => {
         secret,
         { expiresIn: "5d" }
       );
-
+      console.log("TOKEN", agency);
       return res.status(200).json({ agency: agency, token });
     } else {
       return res.status(400).send("Password Incorrect");

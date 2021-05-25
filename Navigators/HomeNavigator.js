@@ -48,7 +48,7 @@ function MyStack() {
         name="AgencyDetail"
         component={AgencyDetail}
         options={{
-          title: "Agency Details",
+          title: "Seller Details",
         }}
       />
       <Stack.Screen

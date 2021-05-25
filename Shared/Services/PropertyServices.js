@@ -33,9 +33,21 @@ export async function deleteReportedProperty(data, token) {
       }
     );
     if (res.status == 200 || res.status == 201) {
+      Toast.show({
+        type: "success",
+        text1: `Property permanently deleted`,
+        visibilityTime: 2000,
+        topOffset: 30,
+      });
       return res.data;
     }
   } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Property couldn't be deleted`,
+      visibilityTime: 2000,
+      topOffset: 30,
+    });
     console.error(err);
   }
 }

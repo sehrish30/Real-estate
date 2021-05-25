@@ -41,12 +41,11 @@ const DrawerNavigator = () => {
         <Drawer.Screen name="Dashboard" component={DashboardNavigator} />
       )}
 
-      {isLoggedIn && (
-        <Drawer.Screen
-          name="Affordibility calculator"
-          component={AffordibilityCalculator}
-        />
-      )}
+      <Drawer.Screen
+        name="Affordibility calculator"
+        component={AffordibilityCalculator}
+      />
+
       {isLoggedInAgency && (
         <Drawer.Screen name="Post a property" component={PropertiesInfo} />
       )}

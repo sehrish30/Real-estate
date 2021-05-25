@@ -17,6 +17,7 @@ import NetInfo from "@react-native-community/netinfo";
 import Toast from "react-native-toast-message";
 import { FontAwesome5 } from "@expo/vector-icons";
 import * as actionsChats from "../../Redux/Actions/chat";
+import { getAgencyDetails } from "../../Shared/Services/AgencyServices";
 import {
   unseenChatsAgency,
   unseenChatsCustomer,
@@ -103,7 +104,30 @@ const Home = ({ navigation, route }) => {
             (await AsyncStorage.getItem("isLoggedIn")) == "true"
           );
           let agencyData = await AsyncStorage.getItem("agency");
+
           let agency = agencyData ? JSON.parse(agencyData) : {};
+          let data;
+          let newAgency = {};
+          (async () => {
+            data = await getAgencyDetails(agency.id);
+            newAgency = {
+              id: data._id,
+              name: data.name,
+              email: data.email,
+              phoneNumber: data.phoneNumber,
+              logo: data.logo,
+              location: data.location,
+              bio: data.bio,
+              commercial: data.commercial,
+              residential: data.residential,
+              industrial: data.residential,
+              land: data.land,
+              officeTimingStart: data.officeTimingStart,
+              officeTimingEnd: data.officeTimingEnd,
+              isVerified: data.isVerified,
+            };
+            console.error("DATA", data);
+          })();
           let isLoggedInAgency = !!(
             (await AsyncStorage.getItem("isLoggedInAgency")) == "true"
           );

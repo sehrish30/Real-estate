@@ -44,6 +44,7 @@ const Form = ({
           value={password}
         />
       )}
+
       {name !== "Change Password" && (
         <Button
           buttonStyle={styles.register}

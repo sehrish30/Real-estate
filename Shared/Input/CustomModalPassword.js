@@ -10,6 +10,7 @@ import { changeUserPasswordSrv } from "../../Shared/Services/AuthServices";
 import { SafeAreaView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 var { width, height } = Dimensions.get("window");
 
@@ -33,70 +34,87 @@ const CustomModalPassword = ({
   const [loading, setLoading] = useState(false);
 
   const servicePassword = async () => {
-    if (newPassword !== "") {
-      if (confirmNewPassword !== "") {
-        if (confirmNewPassword === newPassword) {
-          const token = await AsyncStorage.getItem("jwt");
-          setLoading(true);
-          let res;
-          let resuser;
-          if (userPassword) {
-            const userData = {
-              id: userId,
-              password: oldPassword,
-              newPassword: newPassword,
-            };
+    let passRegex = /^(?=(.*\d){1})(.*\S)(?=.*[a-zA-Z\S])[0-9a-zA-Z\S]{6,}/g;
+    if (passRegex.test(confirmNewPassword) || passRegex.test(newPassword)) {
+      if (newPassword !== "") {
+        if (confirmNewPassword !== "") {
+          if (confirmNewPassword === newPassword) {
+            const token = await AsyncStorage.getItem("jwt");
+            setLoading(true);
+            let res;
+            let resuser;
+            if (userPassword) {
+              const userData = {
+                id: userId,
+                password: oldPassword,
+                newPassword: newPassword,
+              };
 
-            resuser = await changeUserPasswordSrv(userData, token);
-            if (resuser) {
+              resuser = await changeUserPasswordSrv(userData, token);
+              if (resuser) {
+                setShowPasswordModal(false);
+                setShowSuccess(true);
+                console.error(res);
+                setOldPassword("");
+                setConfirmNewPassword("");
+                setNewPassword("");
+                setLoading(false);
+              }
+            } else {
+              const data = {
+                id: agencyId,
+                password: oldPassword,
+                newPassword: newPassword,
+              };
+              res = await changeAgencyPassword(data, token);
+            }
+            if (res) {
               setShowPasswordModal(false);
               setShowSuccess(true);
-              console.error(res);
               setOldPassword("");
               setConfirmNewPassword("");
               setNewPassword("");
+
+              dispatch(
+                actions.loginAgencyAction({
+                  agency: res.newAgency,
+                  token: res.token,
+                  isLoggedInAgency: true,
+                })
+              );
+              dispatchProfile({
+                profile: res.newAgency,
+                commercial: res.newAgency.commercial?.length,
+                residential: res.newAgency.residential?.length,
+                industrial: res.newAgency.industrial?.length,
+                land: res.newAgency.land?.length,
+              });
+              await AsyncStorage.setItem(
+                "agency",
+                JSON.stringify(res.newAgency)
+              );
               setLoading(false);
             }
           } else {
-            const data = {
-              id: agencyId,
-              password: oldPassword,
-              newPassword: newPassword,
-            };
-            res = await changeAgencyPassword(data, token);
-          }
-          if (res) {
-            setShowPasswordModal(false);
-            setShowSuccess(true);
-            setOldPassword("");
-            setConfirmNewPassword("");
-            setNewPassword("");
-
-            dispatch(
-              actions.loginAgencyAction({
-                agency: res.newAgency,
-                token: res.token,
-                isLoggedInAgency: true,
-              })
-            );
-            dispatchProfile({
-              profile: res.newAgency,
-              commercial: res.newAgency.commercial?.length,
-              residential: res.newAgency.residential?.length,
-              industrial: res.newAgency.industrial?.length,
-              land: res.newAgency.land?.length,
-            });
-            await AsyncStorage.setItem("agency", JSON.stringify(res.newAgency));
-            setLoading(false);
+            setErrorMessage2("Passwords don't match");
           }
         } else {
-          setErrorMessage2("Passwords don't match");
+          setErrorMessage2("Please enter password");
         }
       } else {
-        setErrorMessage2("Please enter password");
+        setErrorMessage1("Please enter password");
       }
     } else {
-      setErrorMessage1("Please enter password");
+      setErrorMessage2(
+        "Password must be atleast 6 characters and should contain number"
+      );
+      Toast.show({
+        type: "error",
+        text1: `Password must be atleast 6 characters`,
+        text2: `Must contain number`,
+        visibilityTime: 4000,
+        topOffset: 30,
+      });
     }
   };
 

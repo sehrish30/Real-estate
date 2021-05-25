@@ -35,6 +35,7 @@ const AgencyLogin = ({ navigation }) => {
         land,
         officeTimingStart,
         officeTimingEnd,
+        isVerified,
       } = res.data.agency;
       const agency = {
         id,
@@ -50,6 +51,7 @@ const AgencyLogin = ({ navigation }) => {
         land,
         officeTimingStart,
         officeTimingEnd,
+        isVerified,
       };
 
       // navigation.replace("Home");

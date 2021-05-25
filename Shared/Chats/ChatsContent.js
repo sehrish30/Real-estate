@@ -86,7 +86,7 @@ const ChatsContent = ({
                 }}
                 badgeStyle={styles.badgeText}
                 value={
-                  <Text style={{ color: "#214151" }}>
+                  <Text style={{ color: "#ae061c" }}>
                     You have blocked this user
                   </Text>
                 }

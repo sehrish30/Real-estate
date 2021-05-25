@@ -19,13 +19,11 @@ const Register = ({ navigation }) => {
   const dispatch = useDispatch();
 
   function registerUser() {
-    emailRegex = "/S+@S+.S+/";
-    passRegex = "/(?=.*d)(?=.*[a-z]).{6,}/";
-    if (
-      email !== "" &&
-      /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
-    ) {
-      if (password.length >= 6 && "/(?=.*d)(?=.*[a-z]).{6,}/".test(password)) {
+    let emailRegex = "/S+@S+.S+/";
+    let passRegex = /^(?=(.*\d){1})(.*\S)(?=.*[a-zA-Z\S])[0-9a-zA-Z\S]{6,}/g;
+    let emailRegexx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,}$/i;
+    if (email !== "" && emailRegexx.test(email)) {
+      if (password.length >= 6 && passRegex.test(password)) {
         setLoading(true);
         let newEmail = email;
         newEmail = newEmail.toLowerCase().trim();

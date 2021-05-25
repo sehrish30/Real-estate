@@ -42,7 +42,7 @@ const RecommendedProperties = ({
             </View>
             <View style={styles.rating}>
               <Icon name="star" color="#fdca40" />
-              <Text style={styles.ratingLabel}>{agency.totalRating}</Text>
+              <Text style={styles.ratingLabel}>{agency?.totalRating}</Text>
             </View>
           </View>
           <View
@@ -56,7 +56,7 @@ const RecommendedProperties = ({
                 {city || null}
               </Text>
               <Text style={[styles.title, { fontSize: 15, color: "#839b97" }]}>
-                By {agency.name}
+                By {agency?.name}
               </Text>
             </View>
             <View style={{ justifyContent: "center" }}>

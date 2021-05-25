@@ -191,7 +191,6 @@ const PropertiesPosts = () => {
                     marginRight: 10,
                   }}
                   onPress={async () => {
-                    console.error("HAAN");
                     setShowEdit(true);
                     // await deleteReportedProperty(route.params.id, token);
                   }}
@@ -402,9 +401,15 @@ const PropertiesPosts = () => {
               </View>
             </View>
             <View style={{ justifyContent: "flex-end", alignSelf: "center" }}>
-              <Text style={{ color: "#214151", fontWeight: "bold" }}>
-                {item.cost ? formatNumber(item.cost) : null} BHD
-              </Text>
+              {item.category === "rent" ? (
+                <Text style={{ color: "#214151", fontWeight: "bold" }}>
+                  {item.cost ? formatNumber(item.cost) : null} BHD/month
+                </Text>
+              ) : (
+                <Text style={{ color: "#214151", fontWeight: "bold" }}>
+                  {item.cost ? formatNumber(item.cost) : null} BHD
+                </Text>
+              )}
 
               <Text style={{ alignSelf: "center", color: "#214151" }}>
                 for {item.category}
@@ -459,7 +464,9 @@ const PropertiesPosts = () => {
             </Text>
             <View style={styles.divider} />
 
-            <Text style={styles.bio}>Amenities</Text>
+            {item.Amenities.length > 0 ? (
+              <Text style={styles.bio}>Amenities</Text>
+            ) : null}
             <FlatList
               style={styles.amenities}
               horizontal={true}
@@ -488,9 +495,11 @@ const PropertiesPosts = () => {
                 </View>
               )}
             />
-            <View style={styles.divider} />
+            {item.Amenities.length > 0 ? <View style={styles.divider} /> : null}
 
-            <Text style={styles.bio}>Network Coverage</Text>
+            {item.network.length > 0 ? (
+              <Text style={styles.bio}>Network Coverage</Text>
+            ) : null}
             <FlatList
               showsHorizontalScrollIndicator={true}
               horizontal={true}
@@ -533,8 +542,7 @@ const PropertiesPosts = () => {
                 </>
               )}
             />
-
-            <View style={styles.divider} />
+            {item.network.length > 0 ? <View style={styles.divider} /> : null}
 
             <Text style={styles.bio}>Location </Text>
             <View>
@@ -622,7 +630,9 @@ const PropertiesPosts = () => {
                 }}
               >
                 <Icon name="star" color="#fdb827" size={18} />
-                <Text>{item.agency.totalRating}</Text>
+                <Text style={{ color: "#214151" }}>
+                  {item.agency?.totalRating}
+                </Text>
               </View>
               <TouchableOpacity style={styles.superhost}>
                 <Text

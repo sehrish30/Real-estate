@@ -62,6 +62,7 @@ const ProfileCard = ({
 
   let customer = useSelector((state) => state.auth.user);
   let agency = useSelector((state) => state.auth.agency);
+  console.error("AGENCY", agency);
   let token = useSelector((state) => state.auth.token);
 
   let userId = null;
@@ -145,6 +146,7 @@ const ProfileCard = ({
           showTiming={showTiming}
           toggleOverlay={toggleOverlay}
           showVisitTimings={showVisitTimings}
+          verified={isVerified}
         />
         <Modal
           animationType="slide"

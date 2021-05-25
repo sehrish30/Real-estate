@@ -14,7 +14,9 @@ const CustomOptionsOverlay = ({
   editAgency,
   showTiming,
   showVisitTimings,
+  verified,
 }) => {
+  console.error("VERIFIED", verified);
   return (
     <Overlay
       overlayStyle={{ width: width / 1.3 }}
@@ -75,62 +77,65 @@ const CustomOptionsOverlay = ({
         }
         title="Password"
       />
-
-      <Button
-        onPress={() => {
-          toggleOverlay();
-          showTiming();
-        }}
-        type="outline"
-        buttonStyle={{
-          backgroundColor: "#fff",
-          borderColor: "#214151",
-          height: 50,
-          marginVertical: 5,
-        }}
-        titleStyle={{
-          color: "#214151",
-        }}
-        icon={
-          <AntDesign
-            style={{
-              marginRight: 15,
+      {verified ? (
+        <>
+          <Button
+            onPress={() => {
+              toggleOverlay();
+              showTiming();
             }}
-            name="clockcircle"
-            color={"#214151"}
-            size={15}
-          />
-        }
-        title="Office hours"
-      />
-
-      <Button
-        onPress={() => {
-          toggleOverlay();
-          showVisitTimings();
-        }}
-        type="outline"
-        buttonStyle={{
-          backgroundColor: "#fff",
-          borderColor: "#214151",
-          height: 50,
-          marginVertical: 5,
-        }}
-        titleStyle={{
-          color: "#214151",
-        }}
-        icon={
-          <MaterialCommunityIcons
-            style={{
-              marginRight: 15,
+            type="outline"
+            buttonStyle={{
+              backgroundColor: "#fff",
+              borderColor: "#214151",
+              height: 50,
+              marginVertical: 5,
             }}
-            name="map-clock"
-            size={20}
-            color={"#214151"}
+            titleStyle={{
+              color: "#214151",
+            }}
+            icon={
+              <AntDesign
+                style={{
+                  marginRight: 15,
+                }}
+                name="clockcircle"
+                color={"#214151"}
+                size={15}
+              />
+            }
+            title="Office hours"
           />
-        }
-        title="Property visit hours"
-      />
+
+          <Button
+            onPress={() => {
+              toggleOverlay();
+              showVisitTimings();
+            }}
+            type="outline"
+            buttonStyle={{
+              backgroundColor: "#fff",
+              borderColor: "#214151",
+              height: 50,
+              marginVertical: 5,
+            }}
+            titleStyle={{
+              color: "#214151",
+            }}
+            icon={
+              <MaterialCommunityIcons
+                style={{
+                  marginRight: 15,
+                }}
+                name="map-clock"
+                size={20}
+                color={"#214151"}
+              />
+            }
+            title="Property visit hours"
+          />
+        </>
+      ) : null}
 
       <Button
         onPress={toggleOverlay}

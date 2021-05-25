@@ -4,6 +4,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Card, Button, Image, Badge, CheckBox } from "react-native-elements";
+import { formatISO9075 } from "date-fns";
 
 import ImagesOverlay from "../Overlays/ImagesOverlay";
 
@@ -14,6 +15,13 @@ const AgencyPending = ({ agency, rejectService, acceptService }) => {
   return (
     <Card containerStyle={styles.card}>
       <Card.Title style={styles.cardTitle}>{agency.name}</Card.Title>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Text style={styles.date}>
+          {formatISO9075(Date.parse(agency.createdAt), {
+            representation: "date",
+          })}
+        </Text>
+      </View>
       <Card.Divider />
       <View style={styles.cardContent}>
         <View style={{ alignItems: "center" }}>
@@ -228,4 +236,5 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#a2d0c1",
   },
+  date: { color: "#839b97", alignItems: "center", fontSize: 12 },
 });

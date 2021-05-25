@@ -85,6 +85,7 @@ router.get("/propertyDetails", (req, res) => {
             if (info) {
               exists = true;
             }
+            console.log("RESULT", { data, exists });
             return res.status(200).json({ data, exists });
           });
       } else if (!req.query.userId && data) {
@@ -153,6 +154,16 @@ router.delete(`/reported-property/:id/:agencyId`, async (req, res) => {
       if (err) {
         return res.status(422).send(err);
       }
+      // delete from cloudinary
+      result.propertyImages.map((attach) => {
+        cloudinary.uploader.destroy(attach.public_id, async (result) => {
+          if (result.result == "ok") {
+            console.log("DONE");
+          } else {
+            console.log("COULDNT FIND");
+          }
+        });
+      });
 
       // Delete property from agency array
       let search;

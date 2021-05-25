@@ -9,6 +9,19 @@ const config = {
   },
 };
 
+export async function getAgencyDetails(id) {
+  try {
+    if (id) {
+      const res = await axios.get(`${baseURL}agencies/${id}`);
+      if (res.status == 200 || res.status == 201) {
+        return res.data;
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function getPendingAgencies() {
   try {
     const res = await axios.get(`${baseURL}agencies/pending-agencies`);
@@ -62,7 +75,7 @@ export async function rejectAgency(id, token) {
     if (res.status == 200 || res.status == 201) {
       Toast.show({
         type: "success",
-        text1: `Agency successfully Rejected`,
+        text1: `Seller successfully Rejected`,
         visibilityTime: 2000,
         topOffset: 30,
       });
@@ -72,7 +85,7 @@ export async function rejectAgency(id, token) {
     console.error(err);
     Toast.show({
       type: "error",
-      text1: `Agency couldn't be rejected`,
+      text1: `Seller couldn't be rejected`,
       text2: `Try again!`,
       visibilityTime: 2000,
       topOffset: 30,
@@ -93,7 +106,7 @@ export async function acceptAgency(data, token) {
     if (res.status == 200 || res.status == 201) {
       Toast.show({
         type: "success",
-        text1: `Agency successfully Accepted`,
+        text1: `Seller successfully Accepted`,
         visibilityTime: 4000,
         topOffset: 30,
       });
@@ -103,7 +116,7 @@ export async function acceptAgency(data, token) {
     console.error(err);
     Toast.show({
       type: "error",
-      text1: `Agency couldn't be accepted`,
+      text1: `Seller couldn't be accepted`,
       text2: `Try again!`,
       visibilityTime: 4000,
       topOffset: 30,

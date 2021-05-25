@@ -124,7 +124,7 @@ export default PropertiesCards = ({
                 >
                   {cost ? formatNumber(cost) : null}{" "}
                 </Text>
-                {item.category == "Rent" ? (
+                {item.category === "rent" ? (
                   <Text
                     style={{
                       color: "#F0C948",
