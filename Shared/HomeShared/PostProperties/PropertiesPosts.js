@@ -594,12 +594,14 @@ const PropertiesPosts = () => {
                   videoId={item.video_url.split("=")[1]}
                 />
               ) : null}
+
               {item?.panorama_url ? (
                 <Button
                   onPress={() => {
                     handlePressButtonAsync(item.panorama_url);
                   }}
-                  title="360 VIEW"
+                  title="Virtual tour
+                  "
                   buttonStyle={{
                     paddingBottom: 10,
                     backgroundColor: "#f8dc81",

@@ -127,6 +127,7 @@ router.get("/notification-detail", async (req, res) => {
 ----------------------------------------- */
 router.get(`/new-notification`, async (req, res) => {
   try {
+    console.log("HATE", req.query);
     await Notification.countDocuments({
       receiver: req.query.userId,
       isSeen: false,

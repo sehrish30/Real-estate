@@ -49,9 +49,15 @@ const RecommendedProperties = ({
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <View style={{}}>
-              <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
-                {title}
-              </Text>
+              {title.length > 20 ? (
+                <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
+                  {title.substring(0, 20)}....
+                </Text>
+              ) : (
+                <Text style={[styles.title, { fontFamily: "EBGaramond-Bold" }]}>
+                  {title}
+                </Text>
+              )}
               <Text style={[styles.title, { fontSize: 15 }]}>
                 {city || null}
               </Text>
@@ -70,15 +76,29 @@ const RecommendedProperties = ({
                 >
                   {cost}
                 </Text>
-                <Text
-                  style={{
-                    color: "#F0C948",
-                    fontSize: 20,
-                  }}
-                >
-                  {" "}
-                  BD
-                </Text>
+                {category === "rent" ? (
+                  <Text
+                    style={{
+                      color: "#F0C948",
+                      fontSize: 12,
+                      marginTop: 7,
+                    }}
+                  >
+                    {" "}
+                    BD/month
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      color: "#F0C948",
+                      fontSize: 12,
+                      marginTop: 7,
+                    }}
+                  >
+                    {" "}
+                    BD
+                  </Text>
+                )}
               </View>
 
               <View style={{ flexDirection: "row", alignSelf: "center" }}>

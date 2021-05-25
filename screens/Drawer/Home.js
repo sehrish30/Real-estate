@@ -138,22 +138,6 @@ const Home = ({ navigation, route }) => {
             );
 
             useSocket({ user: user.decoded ? user : agency }, dispatch);
-
-            (async () => {
-              if (agency.id) {
-                let data = await showNotifications(agency.id, tokenAvailable);
-
-                if (data > 0) {
-                  dispatch(notificationConsultation.requestConsultation());
-                }
-              } else {
-                let data = await showNotifications(user.decoded.userId, jwt);
-
-                if (data > 0) {
-                  dispatch(notificationConsultation.requestConsultation());
-                }
-              }
-            })();
           }
 
           // Check to show notifications
@@ -168,6 +152,31 @@ const Home = ({ navigation, route }) => {
           // notify new chats
           let getToken = await AsyncStorage.getItem("jwt");
           let result;
+          (async () => {
+            console.error(
+              "ENEMY",
+              agency.id,
+              getToken,
+              user?.decoded?.userId,
+              agency.id && getToken
+            );
+            if (agency.id && getToken) {
+              let resultShow = await showNotifications(agency.id, getToken);
+              console.error("DOUBLE ENEMY", resultShow);
+              if (resultShow > 0) {
+                dispatch(notificationConsultation.requestConsultation());
+              }
+            } else if (getToken && user.decoded.userId) {
+              let resultShow = await showNotifications(
+                user.decoded.userId,
+                getToken
+              );
+
+              if (resultShow > 0) {
+                dispatch(notificationConsultation.requestConsultation());
+              }
+            }
+          })();
 
           if (countBell) {
             setCountBell(false);

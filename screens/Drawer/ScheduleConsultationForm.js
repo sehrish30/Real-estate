@@ -99,8 +99,10 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
         });
       }
 
+      console.error("SJDJSDMS", userDate, dateRef.current.isFocused());
       if (dateRef.current.isFocused() || userDate.length > 0) {
         let difference = userDate - new Date();
+        console.error("DIFFERENCE", difference < 0);
         if (difference < 0) {
           dispatchErrors({
             errors: {
@@ -132,6 +134,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
 
     if (mode === "date") {
       setUserDate(selectedDate);
+      console.error("DATEEEE", selectedDate);
     }
 
     if (mode === "time" && level === 1) {
@@ -178,7 +181,7 @@ const ScheduleConsultationForm = ({ navigation, route }) => {
       }
     })();
     return () => {};
-  }, [startTime, endTime]);
+  }, [startTime, endTime, userDate]);
 
   const showMode = (currentMode) => {
     setShow(true);

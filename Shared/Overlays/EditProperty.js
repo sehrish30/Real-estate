@@ -146,7 +146,7 @@ const EditProperty = ({
           <Input
             ref={nameEditRef}
             inputStyle={styles.inputStyle}
-            label="Property Name"
+            label="Property Title"
             labelStyle={styles.fieldLabels}
             inputContainerStyle={[styles.inputContainer]}
             onChangeText={(value) => setName(value)}

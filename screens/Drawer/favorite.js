@@ -91,7 +91,7 @@ const RenderDayRow = ({ item, navigation }) => {
               >
                 {item.property.cost}{" "}
               </Text>
-              {item.property.category == "Rent" ? (
+              {item.property.category == "rent" ? (
                 <Text
                   style={{
                     color: "#F0C948",
@@ -157,18 +157,35 @@ const Favorite = ({ navigation }) => {
       style={[styles.container, { marginTop: StatusBar.currentHeight || 0 }]}
     >
       <CustomHeader showMenu={showMenu} title={"Saved properties"} />
-      <FlatList
-        pagingEnabled
-        refreshing={refreshing}
-        onRefresh={() => {
-          setRefreshing(false);
-        }}
-        data={wishlists}
-        renderItem={({ item }) => (
-          <RenderDayRow item={item} navigation={navigation} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+
+      {wishlists.length === 0 ? (
+        <View
+          style={{ justifyContent: "center", flex: 1, alignItems: "center" }}
+        >
+          <Text
+            style={{
+              fontFamily: "EBGaramond-Bold",
+              color: "#214151",
+              fontSize: 16,
+            }}
+          >
+            You haven't saved any property yet
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          pagingEnabled
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(false);
+          }}
+          data={wishlists}
+          renderItem={({ item }) => (
+            <RenderDayRow item={item} navigation={navigation} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </SafeAreaView>
   );
 };

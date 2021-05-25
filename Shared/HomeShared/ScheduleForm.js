@@ -72,10 +72,10 @@ const ScheduleForm = ({
         return errors[x] === "" || errors[x] === null; // or just "return o[x];" for falsy values
       });
     };
-
+    console.error(checkProceed(), Object.keys(errors).length);
     if (
       checkProceed() &&
-      Object.keys(errors).length > 3 &&
+      Object.keys(errors).length >= 3 &&
       startTime &&
       endTime &&
       email &&

@@ -60,7 +60,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
   const [rooms, setRooms] = useState(1);
   const [bathRooms, setBathRooms] = useState(1);
   const [extra, setExtra] = useState(false);
-  const [mineproperty, setMineProperty] = useState("Rent");
+  const [mineproperty, setMineProperty] = useState("rent");
   const [uploadPhotos, setUploadPhotos] = useState(false);
   const [map, setMap] = useState(false);
   const [city, setCity] = useState("");
@@ -285,6 +285,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
       done = await Promise.all(promises);
     }
     if (done) {
+      console.error(mineproperty, "MINE");
       const variable = {
         title: name,
         type,
@@ -357,7 +358,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
               { label: "rent", value: "rent" },
               { label: "buy", value: "buy" }, //images.feminino = require('./path_to/assets/img/feminino.png')
               //images.masculino = require('./path_to/assets/img/masculino.png')
-              { label: "Both", value: "buyAndRent" },
+              // { label: "Both", value: "buyAndRent" },
             ]}
             testID="gender-switch-selector"
             accessibilityLabel="gender-switch-selector"
@@ -372,7 +373,7 @@ const PropertiesInfo = ({ navigation, image, imageUri }) => {
             <Input
               ref={nameRef}
               inputStyle={styles.inputStyle}
-              label="Property Name"
+              label="Property Title"
               labelStyle={styles.fieldLabels}
               inputContainerStyle={[styles.inputContainer]}
               onChangeText={(value) => setName(value)}
