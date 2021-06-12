@@ -1,16 +1,16 @@
 **REALESTATE mobile app**
 <br/>
 👉WELCOME SCREEN<br/>
-<img src="readmeimages/12.png" height=500 width=200>
+<img src="readmeimages/12.png" height=500 width=300>
 
 👉PUSH NOTIFICATIONS<br/>
-<img src="readmeimages/11.png" height=500 width=200>
+<img src="readmeimages/11.png" height=500 width=300>
 
 👉SUBSCRIBE LOCATIONS to get notified for properties posted on those locations<br/>
-<img src="readmeimages/5.jpeg" height=500 width=200>
+<img src="readmeimages/5.jpeg" height=500 width=300>
 
 👉PROPERTIES<br/>
-<img src="readmeimages/8.jpeg" height=500 width=200>
+<img src="readmeimages/8.jpeg" height=500 width=300>
 
 👉PROPERTY DETAILS
 ![](readmeimages/2.jpeg)
