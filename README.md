@@ -1,6 +1,6 @@
 **REALESTATE mobile app**
 👉WELCOME SCREEN
-![](readmeimages/12.png)
+<img src="readmeimages/12.png" height=400 width=200>
 
 👉PUSH NOTIFICATIONS
 ![](readmeimages/11.png)
