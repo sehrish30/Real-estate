@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     color: "#214151",
     marginVertical: 12,
     textAlign: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: "EBGaramond-Regular",
   },
   googlelogin: {

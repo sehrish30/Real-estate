@@ -3,7 +3,7 @@ import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
 import jwt_decode from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { StatusBar } from "react-native";
 const config = {
   headers: {
     Accept: "application/json",
@@ -29,7 +29,7 @@ export async function consultationRequest(data, token) {
         text1: `Consultation session requested`,
         text2: `We will notify you agency's response`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     } else if (res.status == 404) {
@@ -38,7 +38,7 @@ export async function consultationRequest(data, token) {
         text1: `Consultation request couldn't be sent`,
         text2: `Please! Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     } else {
       Toast.show({
@@ -46,7 +46,7 @@ export async function consultationRequest(data, token) {
         text1: `Our servers are down`,
         text2: `Please! Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -77,7 +77,7 @@ export async function agencyConsultations(agencyId, limit, token) {
         type: "info",
         text1: `Please! Refresh the page`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -107,7 +107,7 @@ export async function userConsultations(userId, limit, token) {
         type: "info",
         text1: `Please! Refresh the page`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -132,7 +132,7 @@ export async function declineConsultation(data, token) {
         text1: `Consultation declined`,
         text2: `We have notified them`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -141,7 +141,7 @@ export async function declineConsultation(data, token) {
         type: "info",
         text1: `Your seller account isn't logged in`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     } else {
       Toast.show({
@@ -149,7 +149,7 @@ export async function declineConsultation(data, token) {
         text1: `Consultation couldn't be declined`,
         text2: `Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -173,7 +173,7 @@ export async function acceptConsultationRequest(data, token) {
         type: "success",
         text1: `Consultation request accepted`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -183,7 +183,7 @@ export async function acceptConsultationRequest(data, token) {
         text1: `Consultation couldn't be accepted`,
         text2: `Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -208,7 +208,7 @@ export async function rescheduleConsultationRequest(data, token) {
         text1: `We have notified customer`,
         text2: `about your reschedule consultation request`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -218,7 +218,7 @@ export async function rescheduleConsultationRequest(data, token) {
         text1: `Consultation couldn't be reschduled`,
         text2: `Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -243,7 +243,7 @@ export async function markPayedConsultation(data, token) {
         text1: `Consultation marked as paid`,
         text2: `Keep it up!`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -253,7 +253,7 @@ export async function markPayedConsultation(data, token) {
         text1: `Please, refresh tha page`,
         text2: `Try again!`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -261,7 +261,7 @@ export async function markPayedConsultation(data, token) {
       type: "error",
       text1: `Our server is down please try again`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
     console.log(err);
   }

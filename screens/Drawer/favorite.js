@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
     color: "white",
   },
   superhost: {
-    borderColor: "#214151",
+    borderColor: "#F0C948",
     borderRadius: 30,
     borderWidth: 1,
     padding: 4,
-    backgroundColor: "#214151",
+    backgroundColor: "#F0C948",
   },
   superhostLabel: {
     fontSize: 10,

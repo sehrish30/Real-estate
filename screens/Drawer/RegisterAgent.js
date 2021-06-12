@@ -208,7 +208,7 @@ const RegisterAgent = ({ navigation }) => {
             text1: `${res.data.name} has been registered successfully`,
             text2: "Our team will connect with you shortly",
             visibilityTime: 8000,
-            topOffset: 30,
+            topOffset: StatusBar.currentHeight + 10,
           });
           setVisibleModal(true);
           setName("");
@@ -238,7 +238,7 @@ const RegisterAgent = ({ navigation }) => {
           type: "error",
           text1: `${Object.values(validationErrors).join(" ")}`,
           visibilityTime: 4000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       }
     } catch (e) {
@@ -249,7 +249,7 @@ const RegisterAgent = ({ navigation }) => {
         text1: `${name} could not be registered`,
         text2: "Please try again",
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };

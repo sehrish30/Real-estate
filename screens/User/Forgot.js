@@ -8,6 +8,7 @@ import {
 } from "../../Shared/Services/AuthServices";
 import { Button, Input } from "react-native-elements";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 import {
   CodeField,
   Cursor,
@@ -61,7 +62,7 @@ const Forgot = ({ navigation, route }) => {
         text1: `Wrong code`,
         text2: `Try again!`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     } else {
       setShowPassword(true);
@@ -98,7 +99,7 @@ const Forgot = ({ navigation, route }) => {
             text1: `Email is not registered in Ionic`,
             text2: `Try again`,
             visibilityTime: 2000,
-            topOffset: 30,
+            topOffset: StatusBar.currentHeight + 10,
           });
         }
       } else {
@@ -116,7 +117,7 @@ const Forgot = ({ navigation, route }) => {
         type: "error",
         text1: `Please enter a valid email`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };
@@ -144,7 +145,7 @@ const Forgot = ({ navigation, route }) => {
             type: "success",
             text1: `Password updated`,
             visibilityTime: 4000,
-            topOffset: 30,
+            topOffset: StatusBar.currentHeight + 10,
           });
         }
       } else {
@@ -160,7 +161,7 @@ const Forgot = ({ navigation, route }) => {
             type: "success",
             text1: `Password updated`,
             visibilityTime: 4000,
-            topOffset: 30,
+            topOffset: StatusBar.currentHeight + 10,
           });
         }
       }
@@ -172,7 +173,7 @@ const Forgot = ({ navigation, route }) => {
         text1: `Password must be atleast 6 characters`,
         text2: `Password must have atleast 1 number`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };
@@ -308,6 +309,8 @@ const styles = StyleSheet.create({
     width: width / 1.2,
     minHeight: 300,
     textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: { textAlign: "center", fontSize: 30, fontFamily: "EBGaramond-Italic" },
   codeFiledRoot: {

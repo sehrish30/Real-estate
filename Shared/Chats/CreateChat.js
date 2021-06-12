@@ -7,7 +7,7 @@ import { createChat } from "../../Shared/Services/ChatServices";
 import { useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { CommonActions } from "@react-navigation/native";
-
+import { StatusBar } from "react-native";
 const CreateChat = ({
   data,
   searchAgency = false,
@@ -33,7 +33,7 @@ const CreateChat = ({
           text1: `You are offline`,
           text2: `Be online by clicking on chat tab below`,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       } else {
         const res = await createChat(data, token);
@@ -74,7 +74,7 @@ const CreateChat = ({
                 text1: `Kindly visit your chats to activate it`,
                 text2: `You are offline`,
                 visibilityTime: 2000,
-                topOffset: 30,
+                topOffset: StatusBar.currentHeight + 10,
               });
             } else {
               socket.emit("newChat", {

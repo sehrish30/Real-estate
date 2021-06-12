@@ -2,6 +2,7 @@ import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
 import jwt_decode from "jwt-decode";
+import { StatusBar } from "react-native";
 // import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -22,7 +23,7 @@ export async function loginUser(data) {
         type: "success",
         text1: `${res.data.email} successfully logged in`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       //   await SecureStore.setItemAsync("jwt", res.data.token);
       await AsyncStorage.setItem("jwt", res.data.token);
@@ -49,7 +50,7 @@ export async function loginGoogleUser(data) {
         type: "success",
         text1: `${res.data.email} successfully logged in`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       //   await SecureStore.setItemAsync("jwt", res.data.token);
       await AsyncStorage.setItem("jwt", res.data.token);
@@ -62,6 +63,12 @@ export async function loginGoogleUser(data) {
     }
     return sendData;
   } catch (err) {
+    Toast.show({
+      type: "error",
+      text1: `Our Server is down`,
+      visibilityTime: 2000,
+      topOffset: StatusBar.currentHeight + 10,
+    });
     console.log(err);
   }
 }
@@ -80,7 +87,7 @@ export async function registerUser(data) {
       type: "error",
       text1: `Some error has occurred`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -102,9 +109,9 @@ export async function registerGoogleUser(data) {
     console.err(e);
     Toast.show({
       type: "error",
-      text1: `Some error has occurred`,
+      text1: `You are already registered`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -132,7 +139,7 @@ export async function forgotUser(data) {
         type: "success",
         text1: `Check your email for code`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res;
     }
@@ -142,7 +149,7 @@ export async function forgotUser(data) {
       text1: `Email incorrect`,
       text2: `Make sure email is registered`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -162,7 +169,7 @@ export async function resetUserPassword(data, token) {
         text1: `You successfully changed your password`,
         text2: `Login to proceed`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -172,7 +179,7 @@ export async function resetUserPassword(data, token) {
       text1: `Some error occured try again`,
       text2: `${err}`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -185,7 +192,7 @@ export async function loginAgencySrv(data, navigation) {
         type: "success",
         text1: `Successfully logged in`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       navigation.navigate("Home");
       return res;
@@ -194,7 +201,7 @@ export async function loginAgencySrv(data, navigation) {
         type: "error",
         text1: `${err}`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -202,7 +209,7 @@ export async function loginAgencySrv(data, navigation) {
       type: "error",
       text1: `Email or password incorrect`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
     console.error(err);
   }
@@ -229,7 +236,7 @@ export async function changeAgencyPassword(data, token) {
       text1: `Password incorrect`,
       text2: `Try again`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -252,7 +259,7 @@ export async function changeUserPasswordSrv(data, token) {
         text1: `Wrong previous password`,
         text2: `Try again`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -261,7 +268,7 @@ export async function changeUserPasswordSrv(data, token) {
       text1: `Password couldn't be changed`,
       text2: `Try again`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }

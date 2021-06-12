@@ -11,7 +11,7 @@ import { SafeAreaView } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-
+import { StatusBar } from "react-native";
 var { width, height } = Dimensions.get("window");
 
 const CustomModalPassword = ({
@@ -113,7 +113,7 @@ const CustomModalPassword = ({
         text1: `Password must be atleast 6 characters`,
         text2: `Must contain number`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };

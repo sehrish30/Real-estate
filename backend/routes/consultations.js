@@ -443,7 +443,9 @@ router.delete("/delete-consultation/:id", async (req, res) => {
         console.log("ERRR", err);
       }
     });
-
+    await Notification.findOneAndDelete({
+      consultationId: req.params.id,
+    });
     Consultation.findOneAndDelete(
       {
         _id: req.params.id,

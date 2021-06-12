@@ -1,7 +1,7 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
-
+import { StatusBar } from "react-native";
 export async function getAffordibility() {
   try {
     const result = await axios.get(`${baseURL}affordibility/get`, {
@@ -33,7 +33,7 @@ export async function postAffordibility(data, token) {
         type: "success",
         text1: ` Recommendation Updated`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return result.data;
     }

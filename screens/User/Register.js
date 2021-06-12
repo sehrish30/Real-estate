@@ -11,7 +11,7 @@ import * as Google from "expo-google-app-auth";
 import { ANDROID_CLIENT_ID, IOS_CLIENT_ID } from "@env";
 import { LinearGradient } from "expo-linear-gradient";
 import { SimpleLineIcons } from "@expo/vector-icons";
-
+import { StatusBar } from "react-native";
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +35,7 @@ const Register = ({ navigation }) => {
           text1: `Password must be atleast 6 characters`,
           text2: `Must contain number`,
           visibilityTime: 4000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
         setLoading(false);
       }
@@ -45,7 +45,7 @@ const Register = ({ navigation }) => {
         text1: `Email not in correct format`,
         text2: `e.g: email@exp.com`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       setLoading(false);
     }

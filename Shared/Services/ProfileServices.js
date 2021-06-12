@@ -1,7 +1,7 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
-
+import { StatusBar } from "react-native";
 const config = {
   headers: {
     Accept: "application/json",
@@ -23,7 +23,7 @@ export async function editAgencyProfile(data, token) {
         type: "success",
         text1: `Profile updated`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
 
       return res.data;
@@ -35,7 +35,7 @@ export async function editAgencyProfile(data, token) {
       text1: `Couldn't update profile`,
       text2: `Try again`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }

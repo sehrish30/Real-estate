@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View, Platform, StatusBar } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  StatusBar,
+  TouchableOpacity,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -72,9 +79,7 @@ const Main = () => {
         component={SearchNavigator}
         options={{
           tabBarIcon: ({ color }) => (
-            <View>
-              <Icon name="search" color={color} size={25} />
-            </View>
+            <Icon name="search" color={color} size={25} />
           ),
         }}
       />

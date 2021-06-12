@@ -24,9 +24,14 @@ const NotificationsOverlay = ({
   let agency = useSelector((state) => state.auth.agency);
   let user = useSelector((state) => state.auth.user);
   return (
-    <View>
+    <View style={{ justifyContent: "center", alignItems: "center" }}>
       <Overlay
-        overlayStyle={{ width: width, height: height }}
+        overlayStyle={{
+          width: width,
+          height: height,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
         backdropStyle={{ backgroundColor: "rgba(239, 247, 225, 0.4)" }}
         isVisible={visible}
         onBackdropPress={toggleOverlay}

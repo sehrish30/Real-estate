@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 var { width, height } = Dimensions.get("window");
 import { blockChat, unblockChat } from "../Services/ChatServices";
 import Toast from "react-native-toast-message";
-
+import { StatusBar } from "react-native";
 const MenuOverlay = ({
   visible,
   setVisible,
@@ -69,7 +69,7 @@ const MenuOverlay = ({
                   text1: `User blocked`,
                   text2: `They will be notified that they have been blocked`,
                   visibilityTime: 4000,
-                  topOffset: 30,
+                  topOffset: StatusBar.currentHeight + 10,
                 });
               }
             }}
@@ -105,7 +105,7 @@ const MenuOverlay = ({
                   type: "success",
                   text1: `User Unblocked`,
                   visibilityTime: 2000,
-                  topOffset: 30,
+                  topOffset: StatusBar.currentHeight + 10,
                 });
               }
             }}

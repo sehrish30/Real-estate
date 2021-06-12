@@ -9,6 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { useSelector } from "react-redux";
+import { StatusBar } from "react-native";
 import Toast from "react-native-toast-message";
 import { Button, AirbnbRating, Text } from "react-native-elements";
 import {
@@ -71,7 +72,7 @@ const UserRateReview = ({ navigation, route, navigation: { goBack } }) => {
         type: "success",
         text1: `Thank you for your review`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };

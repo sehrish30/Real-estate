@@ -1,6 +1,7 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 
 export async function listAllReportedProperties(token) {
   try {
@@ -37,7 +38,7 @@ export async function deleteReportedProperty(data, token) {
         type: "success",
         text1: `Property permanently deleted`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -46,7 +47,7 @@ export async function deleteReportedProperty(data, token) {
       type: "error",
       text1: `Property couldn't be deleted`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
     console.error(err);
   }
@@ -84,7 +85,7 @@ export async function propertyLocation(data, token) {
         type: "success",
         text1: `Subscribed locations updated`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -287,7 +288,7 @@ export async function UploadProperty(data, token) {
         type: "success",
         text1: `Post updated`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -350,7 +351,7 @@ export async function reportProperties(data, token) {
         type: "success",
         text1: `Property reported`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -391,7 +392,7 @@ export async function deletePropertyBySeller(id, token) {
           type: "success",
           text1: `Pull up to refresh`,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
         return res.data;
       } else {
@@ -400,7 +401,7 @@ export async function deletePropertyBySeller(id, token) {
           text1: `Property can only be deleted `,
           text2: `after 2 hours of post`,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       }
     }
@@ -427,14 +428,14 @@ export async function updateProperty(data, token) {
           type: "info",
           text1: `Pull up to refresh `,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       } else {
         Toast.show({
           type: "error",
           text1: `Property couldnot be updated `,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       }
     }

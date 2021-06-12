@@ -375,7 +375,7 @@ const AffordibilityCalculator = ({ navigation }) => {
         text1: `All information is required to make it work`,
         text2: "Please, fill all the fields",
         visibilityTime: 8000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   };

@@ -15,6 +15,7 @@ import {
   UPDATEIMAGES,
 } from "../constants";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 
 export const login = (data, navigation, setLoading) => (dispatch) => {
   loginUser(data)
@@ -32,7 +33,7 @@ export const login = (data, navigation, setLoading) => (dispatch) => {
         text1: `Email or password not correct`,
         text2: `Please try again`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     });
 };
@@ -53,7 +54,7 @@ export const googlelogin = (data, navigation) => (dispatch) => {
         text1: `Email or password not correct`,
         text2: `Please try again`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     });
 };
@@ -73,7 +74,7 @@ export const register = (data, navigation, setLoading) => async (dispatch) => {
       text1: `Couldn't register user`,
       text2: `Please try again`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
     setLoading(false);
   }
@@ -93,7 +94,7 @@ export const googleRegister = (data, navigation) => async (dispatch) => {
       text1: `Couldn't register user`,
       text2: `Please try again`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 };

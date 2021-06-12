@@ -6,6 +6,7 @@ import { updateProperty } from "../../Shared/Services/PropertyServices";
 var { width, height } = Dimensions.get("window");
 import { useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 const initialstate = {
   editerrors: {},
 };
@@ -231,7 +232,7 @@ const EditProperty = ({
                     type: "error",
                     text1: `Fill all fields`,
                     visibilityTime: 2000,
-                    topOffset: 30,
+                    topOffset: StatusBar.currentHeight + 10,
                   });
                 }
               }}

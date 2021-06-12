@@ -1,6 +1,7 @@
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import Toast from "react-native-toast-message";
+import { StatusBar } from "react-native";
 
 const config = {
   headers: {
@@ -36,7 +37,7 @@ export async function getPendingAgencies() {
       text1: `It's an error on our end`,
       text2: `Thanks for your patience`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -55,7 +56,7 @@ export async function getReportedProperties() {
       text1: `It's an error on our end`,
       text2: `Thanks for your patience`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -77,7 +78,7 @@ export async function rejectAgency(id, token) {
         type: "success",
         text1: `Seller successfully Rejected`,
         visibilityTime: 2000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
     return id;
@@ -88,7 +89,7 @@ export async function rejectAgency(id, token) {
       text1: `Seller couldn't be rejected`,
       text2: `Try again!`,
       visibilityTime: 2000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -108,7 +109,7 @@ export async function acceptAgency(data, token) {
         type: "success",
         text1: `Seller successfully Accepted`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
     return data.id;
@@ -119,7 +120,7 @@ export async function acceptAgency(data, token) {
       text1: `Seller couldn't be accepted`,
       text2: `Try again!`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -139,7 +140,7 @@ export async function checkIfEmailExists(email) {
         text1: `Sorry, we have no agency registered with this email`,
         text2: `Try again!`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
     }
   } catch (err) {
@@ -148,7 +149,7 @@ export async function checkIfEmailExists(email) {
       text1: `Our servers are down`,
       text2: `Try again!`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }
@@ -212,7 +213,7 @@ export async function changeOfficeTiming(data, token) {
         type: "success",
         text1: `Office hours updated`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -222,7 +223,7 @@ export async function changeOfficeTiming(data, token) {
       text1: `Office hours couldn't be updated`,
       text2: `Try again`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
     console.error(err);
   }
@@ -241,7 +242,7 @@ export async function changePropertyVisitTimings(data, token) {
         type: "success",
         text1: `Property visit hours updated`,
         visibilityTime: 4000,
-        topOffset: 30,
+        topOffset: StatusBar.currentHeight + 10,
       });
       return res.data;
     }
@@ -251,7 +252,7 @@ export async function changePropertyVisitTimings(data, token) {
       text1: `Property visit time couldn't be updated`,
       text2: `Try again`,
       visibilityTime: 4000,
-      topOffset: 30,
+      topOffset: StatusBar.currentHeight + 10,
     });
   }
 }

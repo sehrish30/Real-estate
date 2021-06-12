@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 150,
-    width: width - 32,
+    width: width / 1.1,
     resizeMode: "cover",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   superhost: {
-    borderColor: "#214151",
+    borderColor: "#F0C948",
     borderRadius: 30,
     borderWidth: 1,
     padding: 4,

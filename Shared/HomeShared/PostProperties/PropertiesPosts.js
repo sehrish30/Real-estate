@@ -21,6 +21,7 @@ import {
   reportProperties,
 } from "../../Services/PropertyServices";
 import * as WebBrowser from "expo-web-browser";
+import { StatusBar } from "react-native";
 
 const reducer = (state, newState) => ({ ...state, ...newState });
 const initialState = {
@@ -288,7 +289,7 @@ const PropertiesPosts = () => {
           type: "error",
           text1: `Please Login First`,
           visibilityTime: 2000,
-          topOffset: 30,
+          topOffset: StatusBar.currentHeight + 10,
         });
       }
     };
@@ -308,7 +309,17 @@ const PropertiesPosts = () => {
     return (
       <>
         <View style={styles.container}>
-          <View style={styles.wrap}>
+          <View
+            style={[
+              styles.wrap,
+              {
+                alignItems: "center",
+                justifyContent: "center",
+
+                width: width / 1.1,
+              },
+            ]}
+          >
             <Swiper
               style={{ height: width }}
               showButtons={true}
@@ -324,7 +335,14 @@ const PropertiesPosts = () => {
                   }}
                   key={e}
                   resizeMode="stretch"
-                  style={styles.wrap}
+                  style={[
+                    styles.wrap,
+                    {
+                      width: width,
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+                  ]}
                   source={{ uri: e.url }}
                 />
               ))}
@@ -545,8 +563,18 @@ const PropertiesPosts = () => {
             {item.network.length > 0 ? <View style={styles.divider} /> : null}
 
             <Text style={styles.bio}>Location </Text>
-            <View>
-              <View style={{ height: 150 }}>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  height: 150,
+                  width: width,
+                }}
+              >
                 <MapView
                   style={styles.maps}
                   initialRegion={{
@@ -569,8 +597,8 @@ const PropertiesPosts = () => {
               <Button
                 title="Open Map"
                 buttonStyle={{
-                  paddingBottom: 10,
-                  marginTop: 10,
+                  paddingBottom: 15,
+                  marginTop: 15,
                 }}
                 titleStyle={{
                   color: "#214151",
@@ -747,6 +775,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 10,
+    backgroundColor: "#fff",
   },
   viewer: {
     height: 230,
@@ -923,7 +952,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   superhost: {
-    borderColor: "black",
+    borderColor: "#F0C948",
     borderRadius: 30,
     borderWidth: 1,
     padding: 4,
