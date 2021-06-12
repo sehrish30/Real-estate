@@ -1,4 +1,4 @@
-**REALESTATE mobile app**
+**REALESTATE mobile app** <br/>
 👉WELCOME SCREEN
 <img src="readmeimages/12.png" height=400 width=200>
 
